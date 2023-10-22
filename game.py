@@ -70,7 +70,7 @@ class MyGame(arcade.Window):
         self.actor_list = arcade.SpriteList()
 
         # Set up the player
-        self.player_sprite = Player(filename="sprite.png",
+        self.player_sprite = Player(filename="static/sprite.png",
                                     scale=SPRITE_SCALING)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50

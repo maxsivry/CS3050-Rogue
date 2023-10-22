@@ -27,13 +27,13 @@ class Actor(arcade.Sprite):
         if direction == 'Up' and self.center_y > 0:
             self.change_y += HEIGHT
             self.change_x = 0
-        elif direction == 'Down' and self.center_y < ROW_COUNT:
+        elif direction == 'Down' and self.center_y < SCREEN_HEIGHT:
             self.change_y -= HEIGHT
             self.change_x = 0
         elif direction == 'Left' and self.center_x > 0:
             self.change_x -= WIDTH
             self.change_y = 0
-        elif direction == 'Right' and self.center_x < COLUMN_COUNT:
+        elif direction == 'Right' and self.center_x < SCREEN_WIDTH:
             self.change_x += WIDTH
             self.change_y = 0
 
