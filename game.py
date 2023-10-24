@@ -1,6 +1,6 @@
 import arcade
-from actor import Player
 import tile
+from classes.actor import Player
 
 # Global variables are a complete mess
 # but this can be fixed when we combine everything

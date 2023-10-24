@@ -1,6 +1,7 @@
 from tile import *
 from random import randint
 
+
 class Grid:
     grid: list[list[Tile]]
     n_rows: int
