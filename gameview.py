@@ -1,7 +1,6 @@
 import arcade
 import tile
 from classes.actor import Player
-
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
 
@@ -27,19 +26,18 @@ SCREEN_TITLE = "Rogue Testing"
 ROW_COUNT = 40
 COLUMN_COUNT = 70
 
-
-class MyGame(arcade.Window):
+class GameView(arcade.View):
     """
     Main application class.
     """
 
-    def __init__(self, width, height, title):
+    def __init__(self):
         """
         Initializer
         """
 
         # Call the parent class initializer
-        super().__init__(width, height, title)
+        super().__init__()
 
         # Variables that will hold sprite lists
         self.actor_list = None
@@ -172,13 +170,3 @@ class MyGame(arcade.Window):
 
                 current_rect = arcade.create_rectangle_filled(x, y, WIDTH, HEIGHT, color)
                 self.shape_list.append(current_rect)
-
-def main():
-    """ Main function """
-    window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    window.setup()
-    arcade.run()
-
-
-if __name__ == "__main__":
-    main()
