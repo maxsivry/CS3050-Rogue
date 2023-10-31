@@ -124,7 +124,6 @@ class Player(Actor):
             validmove = False
             return None     #exits function
         #access tile information at direction moved
-        i = grid[rowindex,columnindex].tile_type
         if (grid[rowindex,columnindex].tile_type == TileType.Wall):
             validmove = False
             return None
