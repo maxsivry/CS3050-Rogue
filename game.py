@@ -1,6 +1,7 @@
 import arcade
 from actor import Player
 import tile
+from binarytree import *
 
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
@@ -60,6 +61,8 @@ class MyGame(arcade.Window):
 
         self.down_pressed = False
 
+        self.rooms: list[RoomContainer] = []
+
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -74,6 +77,11 @@ class MyGame(arcade.Window):
                                     scale=SPRITE_SCALING)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
+
+        tree = Tree()
+        tree.insert(RoomContainer(0, 200, 70, 40))
+        populate_tree(tree.root, 4)
+        self.rooms = tree_to_list(tree.root)
 
         # This might all need to be in init
         for row in range(ROW_COUNT):
@@ -98,6 +106,9 @@ class MyGame(arcade.Window):
         self.actor_list.draw()
 
         self.player_sprite.draw()
+        # for room in self.rooms:
+        #     center_x, center_y = room.center
+        #     arcade.draw_rectangle_outline(center_x, center_y, room.w, room.h, arcade.color.WHITE)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
