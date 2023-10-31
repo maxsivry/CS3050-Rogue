@@ -99,3 +99,63 @@ class Player(Actor):
 
         # Return the formatted string
         return return_str
+    
+    #ovverides super class mov_dir, checking tiles and items before moving player 
+    #ERROR WITH MOTION IN GRID WITHOUT TILES   
+    def move_dir(self, direction, grid):
+
+        #initialize variables
+        validmove = True
+        #convert location to tile location
+        columnindex = int(self.center_x // (WIDTH + MARGIN))
+        rowindex = int(self.center_y // (HEIGHT + MARGIN))
+
+        if (direction == "Up"):
+            columnindex += 1
+        elif (direction == "Down"):
+            columnindex -= 1
+        elif (direction == "Right"):
+            rowindex += 1
+        elif (direction == "Left"):
+            rowindex -= 1
+        #if potential move is out of grid 
+        if ((rowindex >= ROW_COUNT) | (columnindex >= COLUMN_COUNT) | (rowindex < 0) | (columnindex < 0)):
+            validmove = False
+            return None     #exits function
+        #access tile information at direction moved
+        if (grid[rowindex][columnindex].tile_type == TileType.Wall):
+            validmove = False
+            return None
+
+        #perform some action with t.tile_type (if trap/stairs etc)
+        # ilif t.tile_type == TileType.Stairs
+            # self.level += 1
+            #game_view = GameView() #changing level
+                # game_view.setup()
+                # self.window.show_view(game_view)
+
+        # elif t.tile_type == TileType.Trap
+            # self.hp -= random.randint(1, 4)
+        # . . .
+        #check for items
+        #for item in self.actor_list:
+            #itemrow = item.center_x / WIDTH
+            #itemcolumn = item.center_y / HEIGHT
+            #if itemrow == rowidnex and itemcolumn == columnindex
+            #perform item action / add item to inventory
+        
+
+        #update sprite location
+        if (validmove):
+            if direction == 'Up' and self.center_y > 0:
+                self.change_y += HEIGHT
+                self.change_x = 0
+            elif direction == 'Down' and self.center_y < SCREEN_HEIGHT:
+                self.change_y -= HEIGHT
+                self.change_x = 0
+            elif direction == 'Left' and self.center_x > 0:
+                self.change_x -= WIDTH
+                self.change_y = 0
+            elif direction == 'Right' and self.center_x < SCREEN_WIDTH:
+                self.change_x += WIDTH
+                self.change_y = 0
