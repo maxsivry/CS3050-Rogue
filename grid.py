@@ -23,6 +23,16 @@ class Grid:
 
         print("made room")
 
+    # method to get item at index
+    def __getitem__(self, index):
+        row, col = index
+        return self.grid[row][col]
+
+    # Method to set item at index
+    def __setitem__(self, index, value):
+        row, col = index
+        self.grid[row][col] = value
+
     def populate_floor(self):
         max_room_size = 15
         min_room_size = 5
@@ -44,3 +54,4 @@ class Grid:
         for row in range(x, x + w):
             for col in range(y, y + h):
                 self.grid[row][col].tile_type = TileType.Floor
+

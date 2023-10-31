@@ -1,6 +1,4 @@
 from enum import Enum, auto
-from item import *
-
 
 class TileType(Enum):
     Empty = auto(),

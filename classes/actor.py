@@ -24,7 +24,7 @@ SCREEN_HEIGHT = (HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 class Actor(arcade.Sprite):
 
     # gets direction
-    def move_dir(self, direction):
+    def move_dir(self, direction, grid):
         if direction == 'Up' and self.center_y > 0:
             self.change_y += HEIGHT
             self.change_x = 0
@@ -124,7 +124,8 @@ class Player(Actor):
             validmove = False
             return None     #exits function
         #access tile information at direction moved
-        if (grid[rowindex][columnindex].tile_type == TileType.Wall):
+        i = grid[rowindex,columnindex].tile_type
+        if (grid[rowindex,columnindex].tile_type == TileType.Wall):
             validmove = False
             return None
 
