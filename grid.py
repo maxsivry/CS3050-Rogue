@@ -21,6 +21,8 @@ class Grid:
 
             self.grid.append(new_col)
 
+        print("made room")
+
     def populate_floor(self):
         max_room_size = 15
         min_room_size = 5

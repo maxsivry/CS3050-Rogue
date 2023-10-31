@@ -1,5 +1,6 @@
 from typing import Optional
 import arcade
+from tile import *
 from arcade import Texture
 
 # Global variables are a complete mess
