@@ -1,9 +1,9 @@
 import arcade
-from actor import Player
 from grid import Grid
-from tile import *
-import tile
-from classes.actor import Player
+from classes.tile import *
+from classes.actor import *
+from classes.item import *
+
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
 
@@ -29,10 +29,16 @@ SCREEN_TITLE = "Rogue Testing"
 ROW_COUNT = 40
 COLUMN_COUNT = 70
 
+
 class GameView(arcade.View):
-    """
-    Main application class.
-    """
+    # Global variables
+    grid = None
+    actor_list = None
+    player_sprite = None
+    left_pressed = False
+    right_pressed = False
+    up_pressed = False
+    down_pressed = False
 
     def __init__(self):
         """
@@ -140,6 +146,24 @@ class GameView(arcade.View):
         elif key == arcade.key.LEFT:
             self.player_sprite.move_dir("Left", self.grid)
 
+    def recreate_grid(self):
+
+        self.shape_list = arcade.ShapeElementList()
+        x: int = 0
+        y: int = 0
+        for row in self.grid.grid:
+            for t in row:
+                if t.tile_type == TileType.Floor:
+                    color = arcade.color.WHITE
+                else:
+                    color = arcade.color.BLACK
+                current_rect = arcade.create_rectangle_filled(x * WIDTH, y * HEIGHT, WIDTH, HEIGHT, color)
+                self.shape_list.append(current_rect)
+                x += 1
+            y += 1
+            x = 0
+
+
     # def on_key_release(self, key, modifiers):
     #     """
     #     Called when the user releases a key
@@ -152,21 +176,3 @@ class GameView(arcade.View):
     #         self.right_pressed = False
     #     if key == arcade.key.LEFT:
     #         self.left_pressed = False
-
-    def recreate_grid(self):
-
-        self.shape_list = arcade.ShapeElementList()
-        x: int = 0
-        y: int = 0
-        for row in self.grid.grid:
-            for t in row:
-                if t.tile_type == TileType.Floor:
-                    color = arcade.color.WHITE
-                else:
-                    color = arcade.color.BLACK
-
-                current_rect = arcade.create_rectangle_filled(x * WIDTH, y * HEIGHT, WIDTH, HEIGHT, color)
-                self.shape_list.append(current_rect)
-                x += 1
-            y += 1
-            x = 0

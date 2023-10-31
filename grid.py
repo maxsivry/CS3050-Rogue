@@ -1,4 +1,4 @@
-from tile import *
+from classes.tile import *
 from random import randint
 
 
