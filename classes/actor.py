@@ -127,6 +127,7 @@ class Player(Actor):
             validmove = False
             return None
 
+       
         #perform some action with t.tile_type (if trap/stairs etc)
         # ilif t.tile_type == TileType.Stairs
             # self.level += 1
@@ -138,10 +139,9 @@ class Player(Actor):
             # self.hp -= random.randint(1, 4)
         # . . .
         #check for items
-        #for item in self.actor_list:
-            #itemrow = item.center_x / WIDTH
-            #itemcolumn = item.center_y / HEIGHT
-            #if itemrow == rowidnex and itemcolumn == columnindex
+        #if (grid[rowindex][columnindex].has_item):
+            #item = grid[rowindex][columnindex].get_item 
+            #call item method
             #perform item action / add item to inventory
         
 
