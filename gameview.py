@@ -134,13 +134,13 @@ class GameView(arcade.View):
         """
 
         if key == arcade.key.UP:
-            self.player_sprite.move_dir("Up")
+            self.player_sprite.move_dir("Up", self.grid)
         elif key == arcade.key.DOWN:
-            self.player_sprite.move_dir("Down")
+            self.player_sprite.move_dir("Down", self.grid)
         elif key == arcade.key.RIGHT:
-            self.player_sprite.move_dir("Right")
+            self.player_sprite.move_dir("Right", self.grid)
         elif key == arcade.key.LEFT:
-            self.player_sprite.move_dir("Left")
+            self.player_sprite.move_dir("Left", self.grid)
 
     # def on_key_release(self, key, modifiers):
     #     """
