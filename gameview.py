@@ -1,8 +1,8 @@
 import arcade
-
-import grid
-import tile
-from classes.actor import Player
+from grid import Grid
+from classes.tile import *
+from classes.actor import *
+from classes.item import *
 
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
@@ -31,9 +31,14 @@ COLUMN_COUNT = 70
 
 
 class GameView(arcade.View):
-    """
-    Main application class.
-    """
+    # Global variables
+    grid = None
+    actor_list = None
+    player_sprite = None
+    left_pressed = False
+    right_pressed = False
+    up_pressed = False
+    down_pressed = False
 
     def __init__(self):
         """
@@ -47,7 +52,7 @@ class GameView(arcade.View):
         self.actor_list = None
 
         # Grid
-        self.grid = []
+        self.grid: Grid = Grid(100, 60)
 
         # Set up the actor info
         self.player_sprite = None
@@ -78,12 +83,7 @@ class GameView(arcade.View):
         self.player_sprite.center_y = 50
 
         # This might all need to be in init
-        for row in range(ROW_COUNT):
-            # Add an empty array that will hold each cell
-            # in this row
-            self.grid.append([])
-            for column in range(COLUMN_COUNT):
-                self.grid[row].append(0)  # Append a cell
+        self.grid.add_room(0, 0, 15, 15)
 
         self.recreate_grid()
 
@@ -124,10 +124,10 @@ class GameView(arcade.View):
             return
 
         # Flip the location between 1 and 0.
-        if self.grid[row][column] == 0:
-            self.grid[row][column] = 1
-        else:
-            self.grid[row][column] = 0
+        # if self.grid[row][column] == 0:
+        #     self.grid[row][column] = 1
+        # else:
+        #     self.grid[row][column] = 0
 
         # Rebuild the shapes
         self.recreate_grid()
@@ -138,13 +138,31 @@ class GameView(arcade.View):
         """
 
         if key == arcade.key.UP:
-            self.player_sprite.move_dir("Up")
+            self.player_sprite.move_dir("Up", self.grid)
         elif key == arcade.key.DOWN:
-            self.player_sprite.move_dir("Down")
+            self.player_sprite.move_dir("Down", self.grid)
         elif key == arcade.key.RIGHT:
-            self.player_sprite.move_dir("Right")
+            self.player_sprite.move_dir("Right", self.grid)
         elif key == arcade.key.LEFT:
-            self.player_sprite.move_dir("Left")
+            self.player_sprite.move_dir("Left", self.grid)
+
+    def recreate_grid(self):
+
+        self.shape_list = arcade.ShapeElementList()
+        x: int = 0
+        y: int = 0
+        for row in self.grid.grid:
+            for t in row:
+                if t.tile_type == TileType.Floor:
+                    color = arcade.color.WHITE
+                else:
+                    color = arcade.color.BLACK
+                current_rect = arcade.create_rectangle_filled(x * WIDTH, y * HEIGHT, WIDTH, HEIGHT, color)
+                self.shape_list.append(current_rect)
+                x += 1
+            y += 1
+            x = 0
+
 
     # def on_key_release(self, key, modifiers):
     #     """
@@ -158,19 +176,3 @@ class GameView(arcade.View):
     #         self.right_pressed = False
     #     if key == arcade.key.LEFT:
     #         self.left_pressed = False
-
-    def recreate_grid(self):
-
-        self.shape_list = arcade.ShapeElementList()
-        for row in range(ROW_COUNT):
-            for column in range(COLUMN_COUNT):
-                if self.grid[row][column] == tile:
-                    color = arcade.color.WHITE
-                else:
-                    color = arcade.color.BLACK
-
-                x = (MARGIN + WIDTH) * column + MARGIN + WIDTH // 2
-                y = (MARGIN + HEIGHT) * row + MARGIN + HEIGHT // 2
-
-                current_rect = arcade.create_rectangle_filled(x, y, WIDTH, HEIGHT, color)
-                self.shape_list.append(current_rect)

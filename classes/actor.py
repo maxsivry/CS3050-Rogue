@@ -1,6 +1,7 @@
 from typing import Optional
 import arcade
 import random
+from tile import *
 from arcade import Texture
 
 # Global variables are a complete mess
@@ -29,7 +30,7 @@ XP_LEVELS = {1: 0, 2: 10, 3: 20, 4: 40, 5: 80, 6: 160, 7: 320, 8: 640, 9: 1300, 
 class Actor(arcade.Sprite):
 
     # gets direction
-    def move_dir(self, direction):
+    def move_dir(self, direction, grid):
         if direction == 'Up' and self.center_y > 0:
             self.change_y += HEIGHT
             self.change_x = 0
@@ -125,6 +126,48 @@ class Player(Actor):
 
         # Return the formatted string
         return return_str
+
+    #ovverides super class mov_dir, checking tiles and items before moving player
+    #ERROR WITH MOTION IN GRID WITHOUT TILES
+    def move_dir(self, direction, grid):
+        # initialize variables
+        validmove = True
+        # convert location to tile location
+        columnindex = int(self.center_x // (WIDTH + MARGIN))
+        rowindex = int(self.center_y // (HEIGHT + MARGIN))
+
+        if (direction == "Up"):
+            columnindex += 1
+        elif (direction == "Down"):
+            columnindex -= 1
+        elif (direction == "Right"):
+            rowindex += 1
+        elif (direction == "Left"):
+            rowindex -= 1
+        # if potential move is out of grid
+        if ((rowindex >= ROW_COUNT) | (columnindex >= COLUMN_COUNT) | (rowindex < 0) | (columnindex < 0)):
+            validmove = False
+            return None  # exits function
+        # access tile information at direction moved
+        if (grid[rowindex, columnindex].tile_type == TileType.Wall):
+            validmove = False
+            return None
+
+        # perform some action with t.tile_type (if trap/stairs etc)
+        # ilif t.tile_type == TileType.Stairs
+        # self.level += 1
+        # game_view = GameView() #changing level
+        # game_view.setup()
+        # self.window.show_view(game_view)
+
+        # elif t.tile_type == TileType.Trap
+        # self.hp -= random.randint(1, 4)
+        # . . .
+        # check for items
+        # if (grid[rowindex][columnindex].has_item):
+        # item = grid[rowindex][columnindex].get_item
+        # call item method
+        # perform item action / add item to inventory
 
     def update_level(self, input_xp: int):
         """ update_level takes an input xp increase and updates the players level
