@@ -2,7 +2,7 @@ import arcade
 from grid import Grid
 from classes.tile import *
 from classes.actor import *
-from classes.item import *
+import classes.item as i
 
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
