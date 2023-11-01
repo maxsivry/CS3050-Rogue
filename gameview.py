@@ -1,6 +1,9 @@
 import arcade
+
+import grid
 import tile
 from classes.actor import Player
+
 # Global variables are a complete mess
 # but this can be fixed when we combine everything
 
@@ -25,6 +28,7 @@ SCREEN_TITLE = "Rogue Testing"
 
 ROW_COUNT = 40
 COLUMN_COUNT = 70
+
 
 class GameView(arcade.View):
     """
@@ -80,7 +84,7 @@ class GameView(arcade.View):
             self.grid.append([])
             for column in range(COLUMN_COUNT):
                 self.grid[row].append(0)  # Append a cell
-        
+
         self.recreate_grid()
 
     def on_draw(self):
