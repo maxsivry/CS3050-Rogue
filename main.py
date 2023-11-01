@@ -1,7 +1,4 @@
 import arcade
-import tile
-from classes.actor import Player
-from gameview import GameView
 from instructionsview import StartView
 
 ROW_COUNT = 40

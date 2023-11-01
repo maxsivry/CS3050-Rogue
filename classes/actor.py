@@ -1,7 +1,7 @@
 from typing import Optional
 import arcade
 import random
-from tile import *
+from classes.tile import *
 from arcade import Texture
 
 # Global variables are a complete mess
