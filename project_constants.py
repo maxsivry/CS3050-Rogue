@@ -1,6 +1,6 @@
 # Number of rows and columns
-ROW_COUNT = 100
-COLUMN_COUNT = 60
+ROW_COUNT = 60
+COLUMN_COUNT = 100
 
 # This sets the WIDTH and HEIGHT of each grid location
 TILE_WIDTH = 15
