@@ -59,28 +59,28 @@ def determine_items() -> list:
             match ITEMS[item][1]:
                 case "scroll":
                     if spawn_again:
-                        sublist[1] = ITEMS[item][3]
+                        sublist[1] = items_list[len(items_list) - 1][1]
                     else:
                         index = randint(0, len(scroll_papers) - 1)
                         sublist[1] = scroll_papers[index]
                         scroll_papers.pop(index)
                 case "potion":
                     if spawn_again:
-                        sublist[1] = ITEMS[item][3]
+                        sublist[1] = items_list[len(items_list) - 1][1]
                     else:
                         index = randint(0, len(potion_colors) - 1)
                         sublist[1] = potion_colors[index]
                         potion_colors.pop(index)
                 case "wand":
                     if spawn_again:
-                        sublist[1] = ITEMS[item][3]
+                        sublist[1] = items_list[len(items_list) - 1][1]
                     else:
                         index = randint(0, len(wand_woods) - 1)
                         sublist[1] = wand_woods[index]
                         wand_woods.pop(index)
                 case "ring":
                     if spawn_again:
-                        sublist[1] = ITEMS[item][3]
+                        sublist[1] = items_list[len(items_list) - 1][1]
                     else:
                         index = randint(0, len(ring_metals) - 1)
                         sublist[1] = ring_metals[index]
