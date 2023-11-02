@@ -1,6 +1,7 @@
+# Project-Wide Constants
 # Number of rows and columns
-ROW_COUNT = 60
-COLUMN_COUNT = 100
+ROW_COUNT = 40
+COLUMN_COUNT = 70
 
 # This sets the WIDTH and HEIGHT of each grid location
 TILE_WIDTH = 15

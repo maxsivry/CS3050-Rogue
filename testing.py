@@ -69,3 +69,4 @@ if __name__ == '__main__':
             print(f"title: {cls.title}, hidden title: {cls.hidden_title}, id: {cls.id}")
         else:
             print(f"title: {cls.title}, id: {cls.id}")
+
