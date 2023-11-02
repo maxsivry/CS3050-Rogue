@@ -89,8 +89,10 @@ class GameView(arcade.View):
 
     def on_draw(self):
         """ Render the screen. """
+        # TODO: On creation of new level, grab the descriptions and values of the classes seen so far and put them
+        #  in a list for data persistence
 
-        # Clear the screen
+        # Reset the screen
         self.clear()
 
         # Draw the shapes representing our current grid
