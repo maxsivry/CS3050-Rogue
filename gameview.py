@@ -1,8 +1,5 @@
-import arcade
-from grid import Grid
-from classes.tile import *
+from classes.grid import Grid
 from classes.actor import *
-import classes.item as i
 
 # Global variables are a complete mess
 # but this can be fixed when we combine everything

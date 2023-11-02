@@ -1,6 +1,6 @@
 import arcade
-from arcade import Texture
-from typing import Optional
+from classes.tile import TileType
+from classes.grid import Grid
 from random import randint
 import sys
 
@@ -32,6 +32,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"]}
 
 
+# Method to determine which items actually spawn
 def determine_items() -> list:
     """ """
     # Create a return list of lists
@@ -126,6 +127,36 @@ class Item(arcade.Sprite):
         self.spawn_chance = spawn_chance
         self.enchantment = enchantment
         self.id = randint(0, sys.maxsize)
+
+    # Method to determine center_x and center_y of an item
+    def rand_pos(self, grid: Grid, screen_w: int, screen_h: int, tile_w: int, tile_h: int, margin: int):
+        # Get random absolute position
+        x = randint(0, screen_w)
+        y = randint(0, screen_h)
+
+        # Get random grid position
+        row = int(y // (tile_h + margin))
+        col = int(x // (tile_w + margin))
+
+        # Set the temporary grid position
+        temp_pos = grid.grid[row][col]
+
+        # While TileType != Floor or TileType != Trail
+        while temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail:
+            # Determine random position again
+            # Get random absolute position
+            x = randint(0, screen_w)
+            y = randint(0, screen_h)
+
+            # Get random grid position
+            row = int(y // (tile_h + margin))
+            col = int(x // (tile_w + margin))
+
+            # Set the temporary grid position
+            temp_pos = grid.grid[row][col]
+
+        # Set this Item's position
+        self.set_position(x, y)
 
 
 # ---Armor Classes---
