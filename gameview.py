@@ -1,32 +1,8 @@
 import arcade
+import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
-
-# Global variables are a complete mess
-# but this can be fixed when we combine everything
-
-# Set how many rows and columns we will have
-ROW_COUNT = 40
-COLUMN_COUNT = 70
-
-# This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 15
-HEIGHT = 15
-
-MARGIN = 2
-
-# This needs to be changed later I just have it like this for
-# an example sprite
-SPRITE_SCALING = HEIGHT / 1920
-
-# Do the math to figure out our screen dimensions
-SCREEN_WIDTH = (WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
-SCREEN_HEIGHT = (HEIGHT + MARGIN) * ROW_COUNT + MARGIN
-SCREEN_TITLE = "Rogue Testing"
-
-ROW_COUNT = 100
-COLUMN_COUNT = 60
 
 
 class GameView(arcade.View):
@@ -79,15 +55,15 @@ class GameView(arcade.View):
 
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
-                                    scale=SPRITE_SCALING)
+                                    scale=constants.SPRITE_SCALING)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
 
         # TEMP item setup
         # TODO: Create all the designated items and put in item_list. This will be it's own function called in setup
         i1 = Item(filename="static/item.png",
-                  scale=SPRITE_SCALING)
-        i1.rand_pos(self.grid, SCREEN_WIDTH, SCREEN_HEIGHT, WIDTH, HEIGHT, MARGIN)
+                  scale=constants.SPRITE_SCALING)
+        i1.rand_pos(self.grid)
         self.item_list.append(i1)
 
         # This might all need to be in init
@@ -123,14 +99,14 @@ class GameView(arcade.View):
         """
 
         # Convert the clicked mouse position into grid coordinates
-        column = int(x // (WIDTH + MARGIN))
-        row = int(y // (HEIGHT + MARGIN))
+        column = int(x // (constants.TILE_WIDTH + constants.MARGIN))
+        row = int(y // (constants.TILE_HEIGHT + constants.MARGIN))
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column})")
 
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
-        if row >= ROW_COUNT or column >= COLUMN_COUNT:
+        if row >= constants.ROW_COUNT or column >= constants.COLUMN_COUNT:
             # Simply return from this method since nothing needs updating
             return
 
@@ -168,12 +144,12 @@ class GameView(arcade.View):
                     color = arcade.color.WHITE
                 else:
                     color = arcade.color.BLACK
-                current_rect = arcade.create_rectangle_filled(x * WIDTH, y * HEIGHT, WIDTH, HEIGHT, color)
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
+                                                              constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
                 x += 1
             y += 1
             x = 0
-
 
     # def on_key_release(self, key, modifiers):
     #     """

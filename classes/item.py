@@ -3,6 +3,7 @@ from classes.tile import TileType
 from classes.grid import Grid
 from random import randint
 import sys
+import project_constants as constants
 
 # Constants
 # Colors of Potions
@@ -129,16 +130,16 @@ class Item(arcade.Sprite):
         self.id = randint(0, sys.maxsize)
 
     # Method to determine center_x and center_y of an item
-    def rand_pos(self, grid: Grid, screen_w: int, screen_h: int, tile_w: int, tile_h: int, margin: int):
+    def rand_pos(self, grid: Grid):
         """ """
 
         # Get random absolute position
-        x = randint(0, screen_w)
-        y = randint(0, screen_h)
+        x = randint(0, constants.SCREEN_WIDTH)
+        y = randint(0, constants.SCREEN_HEIGHT)
 
         # Get random grid position
-        row = int(y // (tile_h + margin))
-        col = int(x // (tile_w + margin))
+        row = int(y // (constants.TILE_HEIGHT + constants.MARGIN))
+        col = int(x // (constants.TILE_WIDTH + constants.MARGIN))
 
         # Set the temporary grid position
         temp_pos = grid.grid[row][col]
@@ -147,12 +148,12 @@ class Item(arcade.Sprite):
         while temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail:
             # Determine random position again
             # Get random absolute position
-            x = randint(0, screen_w)
-            y = randint(0, screen_h)
+            x = randint(0, constants.SCREEN_WIDTH)
+            y = randint(0, constants.SCREEN_HEIGHT)
 
             # Get random grid position
-            row = int(y // (tile_h + margin))
-            col = int(x // (tile_w + margin))
+            row = int(y // (constants.TILE_HEIGHT + constants.MARGIN))
+            col = int(x // (constants.TILE_WIDTH + constants.MARGIN))
 
             # Set the temporary grid position
             temp_pos = grid.grid[row][col]

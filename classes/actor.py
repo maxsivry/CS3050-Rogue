@@ -2,24 +2,8 @@ from typing import Optional
 import arcade
 import random
 from classes.tile import *
+import project_constants as constants
 from arcade import Texture
-
-# Global variables are a complete mess
-# but this can be fixed when we combine everything
-
-# Set how many rows and columns we will have
-ROW_COUNT = 40
-COLUMN_COUNT = 70
-
-# This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 15
-HEIGHT = 15
-
-MARGIN = 2
-
-# Do the math to figure out our screen dimensions
-SCREEN_WIDTH = (WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
-SCREEN_HEIGHT = (HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 
 # Define xp levels
 XP_LEVELS = {1: 0, 2: 10, 3: 20, 4: 40, 5: 80, 6: 160, 7: 320, 8: 640, 9: 1300, 10: 2600, 11: 5200, 12: 13000,
@@ -32,16 +16,16 @@ class Actor(arcade.Sprite):
     # gets direction
     def move_dir(self, direction, grid):
         if direction == 'Up' and self.center_y > 0:
-            self.change_y += HEIGHT
+            self.change_y += constants.TILE_HEIGHT
             self.change_x = 0
-        elif direction == 'Down' and self.center_y < SCREEN_HEIGHT:
-            self.change_y -= HEIGHT
+        elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
+            self.change_y -= constants.TILE_HEIGHT
             self.change_x = 0
         elif direction == 'Left' and self.center_x > 0:
-            self.change_x -= WIDTH
+            self.change_x -= constants.TILE_WIDTH
             self.change_y = 0
-        elif direction == 'Right' and self.center_x < SCREEN_WIDTH:
-            self.change_x += WIDTH
+        elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
+            self.change_x += constants.TILE_WIDTH
             self.change_y = 0
 
     # Physically moves
@@ -52,13 +36,13 @@ class Actor(arcade.Sprite):
         # Check for out-of-bounds
         if self.left < 0:
             self.left = 0
-        elif self.right > SCREEN_WIDTH - WIDTH:
-            self.right = SCREEN_WIDTH
+        elif self.right > constants.SCREEN_WIDTH - constants.TILE_WIDTH:
+            self.right = constants.SCREEN_WIDTH
 
         if self.bottom < 0:
             self.bottom = 0
-        elif self.top > SCREEN_HEIGHT - HEIGHT:
-            self.top = SCREEN_HEIGHT
+        elif self.top > constants.SCREEN_HEIGHT - constants.TILE_HEIGHT:
+            self.top = constants.SCREEN_HEIGHT
 
         self.change_x = 0
         self.change_y = 0
@@ -127,29 +111,30 @@ class Player(Actor):
         # Return the formatted string
         return return_str
 
-    #ovverides super class mov_dir, checking tiles and items before moving player
-    #ERROR WITH MOTION IN GRID WITHOUT TILES
+    # overrides super class mov_dir, checking tiles and items before moving player
+    # ERROR WITH MOTION IN GRID WITHOUT TILES
     def move_dir(self, direction, grid):
         # initialize variables
         validmove = True
         # convert location to tile location
-        columnindex = int(self.center_x // (WIDTH + MARGIN))
-        rowindex = int(self.center_y // (HEIGHT + MARGIN))
+        columnindex = int(self.center_x // (constants.TILE_WIDTH + constants.MARGIN))
+        rowindex = int(self.center_y // (constants.TILE_HEIGHT + constants.MARGIN))
 
-        if (direction == "Up"):
+        if direction == "Up":
             columnindex += 1
-        elif (direction == "Down"):
+        elif direction == "Down":
             columnindex -= 1
-        elif (direction == "Right"):
+        elif direction == "Right":
             rowindex += 1
-        elif (direction == "Left"):
+        elif direction == "Left":
             rowindex -= 1
         # if potential move is out of grid
-        if ((rowindex >= ROW_COUNT) | (columnindex >= COLUMN_COUNT) | (rowindex < 0) | (columnindex < 0)):
+        if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
+                (columnindex < 0)):
             validmove = False
             return None  # exits function
         # access tile information at direction moved
-        if (grid[rowindex, columnindex].tile_type == TileType.Wall):
+        if grid[rowindex, columnindex].tile_type == TileType.Wall:
             validmove = False
             return None
 
