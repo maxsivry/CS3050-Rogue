@@ -18,7 +18,6 @@ WAND_WOODS = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "c
 # Paper of Scrolls
 SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper"]
 
-# TODO: Fix this
 # Global instance of class_info
 # key: [spawn_chance, class type, discovered, description]
 items = {"Leather": [20, "armor", False, ''], "Ring Mail": [15, "armor", False, ''],
@@ -50,11 +49,6 @@ def determine_items() -> list:
     # Create a flag to set if the item is getting spawned more than once
     spawn_again = False
 
-    # Declare items as global
-    global items
-    if 'items' not in globals():
-        items = {}
-
     # Go through each class and determine if it spawns
     for item in items.keys():
         # Determine how many of the item will spawn
@@ -71,7 +65,7 @@ def determine_items() -> list:
                     else:
                         index = randint(0, len(scroll_papers) - 1)
                         sublist[1] = scroll_papers[index]
-                        items[item] = [items[item][0], items[item][1], items[item][2], scroll_papers[index]]
+                        globals()['items'][item][3] = scroll_papers[index]
                         scroll_papers.pop(index)
                 case "potion":
                     if spawn_again:
@@ -79,7 +73,7 @@ def determine_items() -> list:
                     else:
                         index = randint(0, len(potion_colors) - 1)
                         sublist[1] = potion_colors[index]
-                        items[item] = [items[item][0], items[item][1], items[item][2], potion_colors[index]]
+                        globals()['items'][item][3] = potion_colors[index]
                         potion_colors.pop(index)
                 case "wand":
                     if spawn_again:
@@ -87,7 +81,7 @@ def determine_items() -> list:
                     else:
                         index = randint(0, len(wand_woods) - 1)
                         sublist[1] = wand_woods[index]
-                        items[item] = [items[item][0], items[item][1], items[item][2], wand_woods[index]]
+                        globals()['items'][item][3] = wand_woods[index]
                         wand_woods.pop(index)
                 case "ring":
                     if spawn_again:
@@ -95,7 +89,7 @@ def determine_items() -> list:
                     else:
                         index = randint(0, len(ring_metals) - 1)
                         sublist[1] = ring_metals[index]
-                        items[item] = [items[item][0], items[item][1], items[item][2], ring_metals[index]]
+                        globals()['items'][item][3] = ring_metals[index]
                         ring_metals.pop(index)
                 case _:
                     pass
