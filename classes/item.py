@@ -138,8 +138,13 @@ class Item(arcade.Sprite):
         y = randint(0, constants.SCREEN_HEIGHT)
 
         # Get random grid position
-        row = int(x // constants.TILE_WIDTH)
-        col = int(y // constants.TILE_HEIGHT)
+        row = int(y // constants.TILE_HEIGHT)
+        col = int(x // constants.TILE_WIDTH)
+        g = grid
+        r = grid.n_rows
+        c = grid.n_cols
+        s_w = constants.SCREEN_WIDTH
+        s_h = constants.SCREEN_HEIGHT
 
         # Set the temporary grid position
         temp_pos = grid.grid[row][col]
@@ -152,8 +157,8 @@ class Item(arcade.Sprite):
             y = randint(0, constants.SCREEN_HEIGHT)
 
             # Get random grid position
-            row = int(x // constants.TILE_WIDTH)
-            col = int(y // constants.TILE_HEIGHT)
+            row = int(y // constants.TILE_HEIGHT)
+            col = int(x // constants.TILE_WIDTH)
 
             # Set the temporary grid position
             temp_pos = grid.grid[row][col]

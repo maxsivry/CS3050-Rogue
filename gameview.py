@@ -24,11 +24,12 @@ class GameView(arcade.View):
         super().__init__()
 
         # Variables that will hold sprite lists
+        self.shape_list = None
         self.actor_list = None
         self.item_list = None
 
         # Grid
-        self.grid: Grid = Grid(100, 60)
+        self.grid: Grid = Grid(46, 80)
 
         # Set up the actor info
         self.player_sprite = None
@@ -52,6 +53,7 @@ class GameView(arcade.View):
         # Sprite lists
         self.actor_list = arcade.SpriteList()
         self.item_list = arcade.SpriteList()
+        self.shape_list = arcade.ShapeElementList()
 
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
@@ -59,17 +61,17 @@ class GameView(arcade.View):
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
 
+        # This might all need to be in init
+        self.grid.add_room(0, 0, 15, 15)
+
+        self.recreate_grid()
+
         # TEMP item setup
         # TODO: Create all the designated items and put in item_list. This will be it's own function called in setup
         i1 = Item(filename="static/item.png",
                   scale=constants.SPRITE_SCALING)
         i1.rand_pos(self.grid)
         self.item_list.append(i1)
-
-        # This might all need to be in init
-        self.grid.add_room(0, 0, 15, 15)
-
-        self.recreate_grid()
 
     def on_draw(self):
         """ Render the screen. """
@@ -134,14 +136,12 @@ class GameView(arcade.View):
             self.player_sprite.move_dir("Left", self.grid)
 
     def recreate_grid(self):
-
-        self.shape_list = arcade.ShapeElementList()
         x: int = 0
         y: int = 0
         for row in self.grid.grid:
             for t in row:
                 if t.tile_type == TileType.Floor:
-                    color = arcade.color.WHITE
+                    color = arcade.color.GREEN
                 else:
                     color = arcade.color.BLACK
                 current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
