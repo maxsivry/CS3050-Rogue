@@ -11,6 +11,11 @@ class TileType(Enum):
 
 
 class Tile:
+    has_item: bool
+    item: None
+    is_hidden: bool
+    tile_type: TileType
+
     is_hidden: bool
     tile_type: TileType
 
@@ -21,3 +26,12 @@ class Tile:
     def reveal(self):
         if self.tile_type != TileType.Empty:
             self.is_hidden = True
+
+    def setitem(self, item):
+        if not self.has_item:
+            self.item = item
+
+    def getitem(self):
+        if self.has_item:
+            return self.item
+
