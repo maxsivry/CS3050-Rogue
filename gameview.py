@@ -1,3 +1,5 @@
+import arcade
+from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
 
@@ -47,6 +49,7 @@ class GameView(arcade.View):
 
         # Variables that will hold sprite lists
         self.actor_list = None
+        self.item_list = None
 
         # Grid
         self.grid: Grid = Grid(100, 60)
@@ -72,12 +75,20 @@ class GameView(arcade.View):
 
         # Sprite lists
         self.actor_list = arcade.SpriteList()
+        self.item_list = arcade.SpriteList()
 
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
                                     scale=SPRITE_SCALING)
         self.player_sprite.center_x = 50
         self.player_sprite.center_y = 50
+
+        # TEMP item setup
+        # TODO: Create all the designated items and put in item_list. This will be it's own function called in setup
+        i1 = Item(filename="static/item.png",
+                  scale=SPRITE_SCALING)
+        i1.rand_pos(self.grid, SCREEN_WIDTH, SCREEN_HEIGHT, WIDTH, HEIGHT, MARGIN)
+        self.item_list.append(i1)
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
@@ -97,13 +108,14 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
-
+        self.item_list.draw()
         self.player_sprite.draw()
 
     def on_update(self, delta_time):
         """ Movement and game logic """
         self.player_sprite.update()
         self.actor_list.update()
+        self.item_list.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         """

@@ -130,6 +130,8 @@ class Item(arcade.Sprite):
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self, grid: Grid, screen_w: int, screen_h: int, tile_w: int, tile_h: int, margin: int):
+        """ """
+
         # Get random absolute position
         x = randint(0, screen_w)
         y = randint(0, screen_h)
