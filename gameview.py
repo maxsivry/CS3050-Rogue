@@ -68,10 +68,21 @@ class GameView(arcade.View):
 
         # TEMP item setup
         # TODO: Create all the designated items and put in item_list. This will be it's own function called in setup
-        i1 = Item(filename="static/item.png",
-                  scale=constants.SPRITE_SCALING)
-        i1.rand_pos(self.grid)
-        self.item_list.append(i1)
+        a1 = Armor(filename="static/armor.png", scale=constants.SPRITE_SCALING)
+        p1 = Potion(filename="static/potion.png", scale=constants.SPRITE_SCALING)
+        r1 = Ring(filename="static/ring.png", scale=constants.SPRITE_SCALING)
+        s1 = Scroll(filename="static/scroll.png", scale=constants.SPRITE_SCALING)
+        w1 = Wand(filename="static/wand.png", scale=constants.SPRITE_SCALING)
+        a1.rand_pos(self.grid)
+        p1.rand_pos(self.grid)
+        r1.rand_pos(self.grid)
+        s1.rand_pos(self.grid)
+        w1.rand_pos(self.grid)
+        self.item_list.append(a1)
+        self.item_list.append(p1)
+        self.item_list.append(r1)
+        self.item_list.append(s1)
+        self.item_list.append(w1)
 
     def on_draw(self):
         """ Render the screen. """
@@ -141,7 +152,7 @@ class GameView(arcade.View):
         for row in self.grid.grid:
             for t in row:
                 if t.tile_type == TileType.Floor:
-                    color = arcade.color.GREEN
+                    color = arcade.color.DARK_GRAY
                 else:
                     color = arcade.color.BLACK
                 current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
