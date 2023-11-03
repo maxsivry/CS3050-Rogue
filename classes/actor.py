@@ -80,7 +80,6 @@ class Player(Actor):
         self.xp = 0
         self.lvl_xp = XP_LEVELS[self.level + 1]
 
-        # TODO: Decide how to represent items
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
@@ -184,7 +183,4 @@ class Player(Actor):
     # TODO: Test this
     def update_strength(self):
         # Update strength due to active effects
-        pass
-
-    def activate_effects(self):
         pass

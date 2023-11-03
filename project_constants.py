@@ -1,3 +1,5 @@
+from classes.item import *
+
 # Project-Wide Constants
 # Number of rows and columns
 ROW_COUNT = 40
@@ -17,3 +19,14 @@ SPRITE_SCALING = TILE_HEIGHT / 1920
 SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue Testing"
+
+# Project-Wide dictionary
+# To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
+# Format: Class: [Revealed by Player, Description]
+items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [False, ''], ScaleMail: [False, ''],
+              ChainMail: [False, ''], SplintMail: [False, ''], BandedMail: [False, ''], PlateMail: [False, ''],
+              MagicMapping: [False, ''], IdentifyWeapon: [False, ''], IdentifyArmor: [False, ''],
+              RemoveCurse: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
+              RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
+              TeleportTo: [False, ''], TeleportAway: [False, ''], SlowMonster: [False, ''],
+              AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, '']}

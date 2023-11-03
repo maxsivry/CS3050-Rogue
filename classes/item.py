@@ -108,7 +108,6 @@ def create_items(to_create: list) -> list:
 
     # Create area to store created objects
     items_list = []
-
     for item in to_create:
         match item[0]:
             case "Leather":
@@ -128,53 +127,86 @@ def create_items(to_create: list) -> list:
             case "Plate Mail":
                 items_list.append(PlateMail(filename="static/armor.png", scale=constants.SPRITE_SCALING))
             case "Magic Mapping":
+                if constants.items_info[MagicMapping][1] == '':
+                    constants.items_info[MagicMapping][1] = item[1]
                 items_list.append(MagicMapping(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
                                                desc=item[1]))
             case "Identify Weapon":
+                if constants.items_info[IdentifyWeapon][1] == '':
+                    constants.items_info[IdentifyWeapon][1] = item[1]
                 items_list.append(IdentifyWeapon(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                                 desc=item[1]))
+                                                 desc=constants.items_info[IdentifyWeapon][1]))
+
             case "Identify Armor":
+                if constants.items_info[IdentifyArmor][1] == '':
+                    constants.items_info[IdentifyArmor][1] = item[1]
                 items_list.append(IdentifyArmor(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                                desc=item[1]))
+                                                desc=constants.items_info[IdentifyArmor][1]))
             case "Remove Curse":
+                if constants.items_info[RemoveCurse][1] == '':
+                    constants.items_info[RemoveCurse][1] = item[1]
                 items_list.append(RemoveCurse(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                              desc=item[1]))
+                                              desc=constants.items_info[RemoveCurse][1]))
             case "Poison":
+                if constants.items_info[Poison][1] == '':
+                    constants.items_info[Poison][1] = item[1]
                 items_list.append(Poison(filename="static/potion.png", scale=constants.SPRITE_SCALING,
-                                         desc=item[1]))
+                                         desc=constants.items_info[Poison][1]))
             case "Monster Detection":
+                if constants.items_info[MonsterDetection][1] == '':
+                    constants.items_info[MonsterDetection][1] = item[1]
                 items_list.append(MonsterDetection(filename="static/potion.png", scale=constants.SPRITE_SCALING,
-                                                   desc=item[1]))
+                                                   desc=constants.items_info[MonsterDetection][1]))
             case "Restore Strength":
+                if constants.items_info[RestoreStrength][1] == '':
+                    constants.items_info[RestoreStrength][1] = item[1]
                 items_list.append(RestoreStrength(filename="static/potion.png", scale=constants.SPRITE_SCALING,
-                                                  desc=item[1]))
+                                                  desc=constants.items_info[RestoreStrength][1]))
             case "Healing":
+                if constants.items_info[Healing][1] == '':
+                    constants.items_info[Healing][1] = item[1]
                 items_list.append(Healing(filename="static/potion.png", scale=constants.SPRITE_SCALING,
-                                          desc=item[1]))
+                                          desc=constants.items_info[Healing][1]))
             case "Light":
+                if constants.items_info[Light][1] == '':
+                    constants.items_info[Light][1] = item[1]
                 items_list.append(Light(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                        desc=item[1]))
+                                        desc=constants.items_info[Light][1]))
             case "Teleport To":
+                if constants.items_info[TeleportTo][1] == '':
+                    constants.items_info[TeleportTo][1] = item[1]
                 items_list.append(TeleportTo(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                             desc=item[1]))
+                                             desc=constants.items_info[TeleportTo][1]))
             case "Teleport Away":
+                if constants.items_info[TeleportAway][1] == '':
+                    constants.items_info[TeleportAway][1] = item[1]
                 items_list.append(TeleportAway(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                               desc=item[1]))
+                                               desc=constants.items_info[TeleportAway][1]))
             case "Slow Monster":
+                if constants.items_info[SlowMonster][1] == '':
+                    constants.items_info[SlowMonster][1] = item[1]
                 items_list.append(SlowMonster(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                              desc=item[1]))
+                                              desc=constants.items_info[SlowMonster][1]))
             case "Add Strength":
+                if constants.items_info[AddStrength][1] == '':
+                    constants.items_info[AddStrength][1] = item[1]
                 items_list.append(AddStrength(filename="static/ring.png", scale=constants.SPRITE_SCALING,
-                                              desc=item[1]))
+                                              desc=constants.items_info[AddStrength][1]))
             case "Increase Damage":
+                if constants.items_info[IncreaseDamage][1] == '':
+                    constants.items_info[IncreaseDamage][1] = item[1]
                 items_list.append(IncreaseDamage(filename="static/ring.png", scale=constants.SPRITE_SCALING,
-                                                 desc=item[1]))
+                                                 desc=constants.items_info[IncreaseDamage][1]))
             case "Teleportation":
+                if constants.items_info[Teleportation][1] == '':
+                    constants.items_info[Teleportation][1] = item[1]
                 items_list.append(Teleportation(filename="static/ring.png", scale=constants.SPRITE_SCALING,
-                                                desc=item[1]))
+                                                desc=constants.items_info[Teleportation][1]))
             case "Dexterity":
+                if constants.items_info[Dexterity][1] == '':
+                    constants.items_info[Dexterity][1] = item[1]
                 items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING,
-                                            desc=item[1]))
+                                            desc=constants.items_info[Dexterity][1]))
             case _:
                 # Will never get here
                 pass
@@ -208,39 +240,6 @@ class Item(arcade.Sprite):
         self.spawn_chance = spawn_chance
         self.enchantment = enchantment
         self.id = randint(0, sys.maxsize)
-
-    # Method to determine center_x and center_y of an item
-    def rand_pos(self, grid: Grid):
-        """ """
-
-        # Get random absolute position
-        x = randint(0, constants.SCREEN_WIDTH)
-        y = randint(0, constants.SCREEN_HEIGHT)
-
-        # Get random grid position
-        row = int(y // constants.TILE_HEIGHT)
-        col = int(x // constants.TILE_WIDTH)
-
-        # Set the temporary grid position
-        temp_pos = grid.grid[row][col]
-
-        # While TileType != Floor or TileType != Trail
-        while temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail:
-            # Determine random position again
-            # Get random absolute position
-            x = randint(0, constants.SCREEN_WIDTH)
-            y = randint(0, constants.SCREEN_HEIGHT)
-
-            # Get random grid position
-            row = int(y // constants.TILE_HEIGHT)
-            col = int(x // constants.TILE_WIDTH)
-
-            # Set the temporary grid position
-            temp_pos = grid.grid[row][col]
-
-        # Set this Item's position
-        self.set_position(x, y)
-
 
 # ---Armor Classes---
 # Subclass Armor (Super: Item)

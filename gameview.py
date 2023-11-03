@@ -5,6 +5,12 @@ from classes.grid import Grid
 from classes.actor import *
 
 
+# TODO: Make it so that an Item's title is known only when it is revealed (similar to data persistence)
+# TODO: Make it so items can't spawn directly on boundaries
+# TODO: Make it so items can't spawn on top of each other
+# TODO: Make it so items can be picked up by player
+# TODO: Start use methods (each class will have a use method)
+
 class GameView(arcade.View):
     # Global variables
     grid = None
@@ -67,9 +73,7 @@ class GameView(arcade.View):
         self.recreate_grid()
 
         # Create Items and place them in the item_list
-        # KEEP
         temp_list = create_items(determine_items())
-        # TEST
         print(f"Number of classes: {len(temp_list)}")
         for item in temp_list:
             armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
@@ -78,15 +82,11 @@ class GameView(arcade.View):
                 print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
             else:
                 print(f"title: {item.title}, id: {item.id}")
-            # KEEP
-            item.rand_pos(self.grid)
-            # KEEP
             self.item_list.append(item)
+        self.rand_pos()
 
     def on_draw(self):
         """ Render the screen. """
-        # TODO: On creation of new level, grab the descriptions and values of the classes seen so far and put them
-        #  in a list for data persistence
 
         # Reset the screen
         self.clear()
@@ -96,6 +96,9 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
+        # for item in self.item_list:
+        #     if not item.is_hidden:
+        #         item.draw()
         self.item_list.draw()
         self.player_sprite.draw()
 
@@ -114,7 +117,7 @@ class GameView(arcade.View):
         column = int(x // (constants.TILE_WIDTH + constants.MARGIN))
         row = int(y // (constants.TILE_HEIGHT + constants.MARGIN))
 
-        print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column})")
+        print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
 
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
@@ -160,6 +163,53 @@ class GameView(arcade.View):
                 x += 1
             y += 1
             x = 0
+
+    # Method to determine center_x and center_y of an item
+    def rand_pos(self):
+        """ """
+        # Create a list of grid positions already chosen
+        # Each position has the form [row, col]
+        chosen_pos = []
+
+        for item in self.item_list:
+            # Get random absolute position
+            x = randint(0, constants.SCREEN_WIDTH)
+            y = randint(0, constants.SCREEN_HEIGHT)
+
+            # Get random grid position
+            row = int(y // constants.TILE_HEIGHT)
+            col = int(x // constants.TILE_WIDTH)
+
+            # Set the temporary grid position
+            temp_pos = self.grid.grid[row][col]
+
+            # While TileType != Floor or TileType != Trail
+            while (temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail
+                   and [row, col] not in chosen_pos):
+
+                # Determine random position again
+                # Get random absolute position
+                x = randint(0, constants.SCREEN_WIDTH)
+                y = randint(0, constants.SCREEN_HEIGHT)
+
+                # Get random grid position
+                row = int(y // constants.TILE_HEIGHT)
+                col = int(x // constants.TILE_WIDTH)
+
+                # Set the temporary grid position
+                temp_pos = self.grid.grid[row][col]
+
+            # Set this Item's position
+            # if not temp_pos.is_hidden:  # If the tile is not hidden, this item is not hidden too
+            #   item.set_position(x, y)
+            #   item.is_hidden = False
+            #   grid[row][col].item = self
+            # else:  # If a tile is hidden, this item is hidden too
+            #   item.set_position(x, y)
+            #   grid[row][col].item = self
+            item.set_position(x, y)  # Delete when ^ uncommented
+            chosen_pos.append([row, col])
+            print(row, col)
 
     # def on_key_release(self, key, modifiers):
     #     """
