@@ -100,6 +100,7 @@ class Player(Actor):
 
     # TODO: Test this
     def player_inventory(self) -> str:
+        """ Simply returns a formatted string representing the Player's inventory """
         # Create string object representing inventory
         return_str = ''
 

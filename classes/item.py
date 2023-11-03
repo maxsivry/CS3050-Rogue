@@ -35,7 +35,9 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
 
 # Method to determine which items actually spawn
 def determine_items() -> list:
-    """ """
+    """ Determines a list of items to spawn and their corresponding characteristics (to be used if the Item
+    has not been discovered by the player). """
+
     # Create a return list of lists
     # Each sublist has the form [class, characteristic]
     items_list = []
@@ -104,7 +106,7 @@ def determine_items() -> list:
 
 
 def create_items(to_create: list) -> list:
-    """ """
+    """ Creates an instance of a class dependent on whether that class was designated to spawn """
 
     # Create area to store created objects
     items_list = []
@@ -130,7 +132,7 @@ def create_items(to_create: list) -> list:
                 if constants.items_info[MagicMapping][1] == '':
                     constants.items_info[MagicMapping][1] = item[1]
                 items_list.append(MagicMapping(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                               desc=item[1]))
+                                               desc=constants.items_info[MagicMapping][1]))
             case "Identify Weapon":
                 if constants.items_info[IdentifyWeapon][1] == '':
                     constants.items_info[IdentifyWeapon][1] = item[1]
