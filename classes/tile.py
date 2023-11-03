@@ -34,4 +34,3 @@ class Tile:
     def getitem(self):
         if self.has_item:
             return self.item
-
