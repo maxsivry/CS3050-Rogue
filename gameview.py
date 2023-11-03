@@ -165,7 +165,8 @@ class GameView(arcade.View):
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self):
-        """ """
+        """ Determines a randomized position on the grid/screen for each of a set of Items """
+
         # Create a list of grid positions already chosen
         # Each position has the form [row, col]
         chosen_pos = []
