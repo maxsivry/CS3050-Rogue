@@ -5,11 +5,10 @@ from classes.grid import Grid
 from classes.actor import *
 
 
-# TODO: Make it so that an Item's title is known only when it is revealed (similar to data persistence)
-# TODO: Make it so items can't spawn directly on boundaries
-# TODO: Make it so items can't spawn on top of each other
-# TODO: Make it so items can be picked up by player
-# TODO: Start use methods (each class will have a use method)
+# TODO: Make it so items can be picked up by player, can't spawn on boundaries,
+#  when item is used->sets items_info to True
+# TODO: Start use methods (each class will have a use method) -> To start, use methods updates that Item's boolean in
+#  items_info
 
 class GameView(arcade.View):
     # Global variables
@@ -186,7 +185,6 @@ class GameView(arcade.View):
             # While TileType != Floor or TileType != Trail
             while (temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail
                    and [row, col] not in chosen_pos):
-
                 # Determine random position again
                 # Get random absolute position
                 x = randint(0, constants.SCREEN_WIDTH)
@@ -209,7 +207,6 @@ class GameView(arcade.View):
             #   grid[row][col].item = self
             item.set_position(x, y)  # Delete when ^ uncommented
             chosen_pos.append([row, col])
-            print(row, col)
 
     # def on_key_release(self, key, modifiers):
     #     """

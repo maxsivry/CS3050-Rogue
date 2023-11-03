@@ -100,12 +100,15 @@ class Player(Actor):
 
     # TODO: Test this
     def player_inventory(self) -> str:
-        # NOTE: May use this, may not. Idea is that we can just call this to print character inventory
         # Create string object representing inventory
         return_str = ''
-        for item in self.inv:
-            # TODO: Decide how to represent items
-            pass
+
+        # For each item in the Player's inventory
+        for i in range(0, len(self.inv) - 1):
+            if not constants.items_info[self.inv[i]][0]:  # If it hasn't been discovered
+                return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
+            else:
+                return_str += f"{i}. {self.inv[i].title}\n"  # The Player is allowed to see the actual title
 
         # Return the formatted string
         return return_str
