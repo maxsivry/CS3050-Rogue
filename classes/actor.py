@@ -132,11 +132,13 @@ class Player(Actor):
         elif direction == "Left":
             rowindex -= 1
         # if potential move is out of grid
+        print(grid[rowindex, columnindex].tile_type)
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
             validmove = False
             return None  # exits function
         # access tile information at direction moved
+        print(grid[rowindex, columnindex].tile_type)
         if grid[rowindex, columnindex].tile_type == TileType.Wall:
             validmove = False
             return None
@@ -156,6 +158,19 @@ class Player(Actor):
         # item = grid[rowindex][columnindex].get_item
         # call item method
         # perform item action / add item to inventory
+        if (validmove):
+            if direction == 'Up' and self.center_y > 0:
+                self.change_y += constants.TILE_HEIGHT
+                self.change_x = 0
+            elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
+                self.change_y -= constants.TILE_HEIGHT
+                self.change_x = 0
+            elif direction == 'Left' and self.center_x > 0:
+                self.change_x -= constants.TILE_WIDTH
+                self.change_y = 0
+            elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
+                self.change_x += constants.TILE_WIDTH
+                self.change_y = 0
 
     def update_level(self, input_xp: int):
         """ update_level takes an input xp increase and updates the players level
