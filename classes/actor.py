@@ -132,13 +132,11 @@ class Player(Actor):
         elif direction == "Left":
             rowindex -= 1
         # if potential move is out of grid
-        print(grid[rowindex, columnindex].tile_type)
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
             validmove = False
             return None  # exits function
         # access tile information at direction moved
-        print(grid[rowindex, columnindex].tile_type)
         if grid[rowindex, columnindex].tile_type == TileType.Wall:
             validmove = False
             return None
