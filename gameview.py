@@ -171,14 +171,11 @@ class GameView(arcade.View):
         # Each position has the form [row, col]
         chosen_pos = []
 
+        # For each item in item_list
         for item in self.item_list:
-            # Get random absolute position
-            x = randint(0, constants.SCREEN_WIDTH)
-            y = randint(0, constants.SCREEN_HEIGHT)
-
             # Get random grid position
-            row = int(y // constants.TILE_HEIGHT)
-            col = int(x // constants.TILE_WIDTH)
+            row = randint(0, self.grid.n_rows - 1)
+            col = randint(0, self.grid.n_cols - 1)
 
             # Set the temporary grid position
             temp_pos = self.grid.grid[row][col]
@@ -187,13 +184,9 @@ class GameView(arcade.View):
             while (temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail
                    and [row, col] not in chosen_pos):
                 # Determine random position again
-                # Get random absolute position
-                x = randint(0, constants.SCREEN_WIDTH)
-                y = randint(0, constants.SCREEN_HEIGHT)
-
                 # Get random grid position
-                row = int(y // constants.TILE_HEIGHT)
-                col = int(x // constants.TILE_WIDTH)
+                row = randint(0, self.grid.n_rows - 1)
+                col = randint(0, self.grid.n_cols - 1)
 
                 # Set the temporary grid position
                 temp_pos = self.grid.grid[row][col]
@@ -206,7 +199,7 @@ class GameView(arcade.View):
             # else:  # If a tile is hidden, this item is hidden too
             #   item.set_position(x, y)
             #   grid[row][col].item = self
-            item.set_position(x, y)  # Delete when ^ uncommented
+            item.set_position(row * constants.TILE_WIDTH, col * constants.TILE_HEIGHT)  # Delete when ^ uncommented
             chosen_pos.append([row, col])
 
     # def on_key_release(self, key, modifiers):
