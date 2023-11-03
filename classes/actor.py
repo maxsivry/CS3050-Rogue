@@ -13,20 +13,20 @@ XP_LEVELS = {1: 0, 2: 10, 3: 20, 4: 40, 5: 80, 6: 160, 7: 320, 8: 640, 9: 1300, 
 
 class Actor(arcade.Sprite):
 
-    # gets direction
-    def move_dir(self, direction, grid):
-        if direction == 'Up' and self.center_y > 0:
-            self.change_y += constants.TILE_HEIGHT
-            self.change_x = 0
-        elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
-            self.change_y -= constants.TILE_HEIGHT
-            self.change_x = 0
-        elif direction == 'Left' and self.center_x > 0:
-            self.change_x -= constants.TILE_WIDTH
-            self.change_y = 0
-        elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
-            self.change_x += constants.TILE_WIDTH
-            self.change_y = 0
+    # # gets direction
+    # def move_dir(self, direction, grid):
+    #     if direction == 'Up' and self.center_y > 0:
+    #         self.change_y += constants.TILE_HEIGHT
+    #         self.change_x = 0
+    #     elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
+    #         self.change_y -= constants.TILE_HEIGHT
+    #         self.change_x = 0
+    #     elif direction == 'Left' and self.center_x > 0:
+    #         self.change_x -= constants.TILE_WIDTH
+    #         self.change_y = 0
+    #     elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
+    #         self.change_x += constants.TILE_WIDTH
+    #         self.change_y = 0
 
     # Physically moves
     def update(self):
@@ -120,20 +120,21 @@ class Player(Actor):
         # initialize variables
         validmove = True
         # convert location to tile location
-        columnindex = int(self.center_x // (constants.TILE_WIDTH + constants.MARGIN))
-        rowindex = int(self.center_y // (constants.TILE_HEIGHT + constants.MARGIN))
+        columnindex = int(self.center_x / (constants.TILE_WIDTH))
+        rowindex = int(self.center_y / (constants.TILE_HEIGHT))
 
         if direction == "Up":
-            columnindex += 1
-        elif direction == "Down":
-            columnindex -= 1
-        elif direction == "Right":
             rowindex += 1
-        elif direction == "Left":
+        elif direction == "Down":
             rowindex -= 1
+        elif direction == "Right":
+            columnindex += 1
+        elif direction == "Left":
+            columnindex -= 1
         # if potential move is out of grid
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
+            print(rowindex, columnindex, self.center_x, constants.TILE_WIDTH, (self.center_x // (constants.TILE_WIDTH)))
             validmove = False
             return None  # exits function
         # access tile information at direction moved
@@ -141,21 +142,6 @@ class Player(Actor):
             validmove = False
             return None
 
-        # perform some action with t.tile_type (if trap/stairs etc)
-        # ilif t.tile_type == TileType.Stairs
-        # self.level += 1
-        # game_view = GameView() #changing level
-        # game_view.setup()
-        # self.window.show_view(game_view)
-
-        # elif t.tile_type == TileType.Trap
-        # self.hp -= random.randint(1, 4)
-        # . . .
-        # check for items
-        # if (grid[rowindex][columnindex].has_item):
-        # item = grid[rowindex][columnindex].get_item
-        # call item method
-        # perform item action / add item to inventory
         if (validmove):
             if direction == 'Up' and self.center_y > 0:
                 self.change_y += constants.TILE_HEIGHT
@@ -169,6 +155,38 @@ class Player(Actor):
             elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
                 self.change_x += constants.TILE_WIDTH
                 self.change_y = 0
+
+        # print(grid[rowindex, columnindex].has_item)
+        # print(grid[rowindex, columnindex].getitem)
+        print(grid[rowindex, columnindex].getitem())
+        print(grid[rowindex, columnindex].has_item)
+        if (grid[rowindex, columnindex].has_item):
+            print(grid[rowindex, columnindex].getitem())
+            return grid[rowindex, columnindex].getitem()
+
+
+        #if tile type is stairs
+        # elif grid[rowindex, columnindex].tile_type == TileType.Stairs:
+        #     self.level += 1
+        #     #change level
+        #     if (self.level == 2):
+        #         lvl2_view = Game2View() #change level
+        #         lvl2_view.setup()
+        #         self.window.show_view(lvl2_view)
+        #     if (self.level == 3):
+        #         lvl3_view = Game2View() #change level
+        #         lvl3_view.setup()
+        #         self.window.show_view(lvl2_view)
+
+        #elif grid[rowindex, columnindex].tile_type == TileType.Trap:
+
+        # self.hp -= random.randint(1, 4)
+        # . . .
+        # check for items
+        # if (grid[rowindex][columnindex].has_item):
+        # item = grid[rowindex][columnindex].get_item
+        # call item method
+        # perform item action / add item to inventory
 
     def update_level(self, input_xp: int):
         """ update_level takes an input xp increase and updates the players level
