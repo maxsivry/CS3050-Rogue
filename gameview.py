@@ -201,6 +201,12 @@ class GameView(arcade.View):
                     # Grab it's index in item_list
                     index = i
 
+                    if not issubclass(type(self.item_list[i]), Armor):
+                        # Use the item -> Testing
+                        self.item_list[i].use(self.player_sprite)
+                        # Print value of used in constants.items_info
+                        print(constants.items_info[type(self.item_list[i])])
+
                     # Add the item to the Player's inventory
                     self.player_sprite.inv.append(self.item_list[i])
                     print(self.player_sprite.player_inventory())
@@ -241,9 +247,9 @@ class GameView(arcade.View):
             # Set the temporary grid position
             temp_pos = self.grid.grid[row][col]
 
-            # While TileType != Floor or TileType != Trail
-            while (temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail
-                   and not temp_pos.has_item):
+            # While TileType != Floor and TileType != Trail and Tile has an item
+            while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
+                   or temp_pos.has_item):
                 # Determine random position again
                 # Get random grid position
                 row = randint(0, self.grid.n_rows - 1)

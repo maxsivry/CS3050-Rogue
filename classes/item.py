@@ -246,6 +246,7 @@ class Item(arcade.Sprite):
         self.enchantment = enchantment
         self.id = randint(0, sys.maxsize)
 
+
 # ---Armor Classes---
 # Subclass Armor (Super: Item)
 # Fields:
@@ -462,6 +463,13 @@ class MagicMapping(Scroll):
                         spawn_chance=ITEMS["Magic Mapping"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[MagicMapping][0]:
+            # Set used in constants.items_info
+            constants.items_info[MagicMapping][0] = True
+        pass
+
 
 class IdentifyWeapon(Scroll):
     def __init__(
@@ -476,6 +484,13 @@ class IdentifyWeapon(Scroll):
                         hidden_title=f"{desc} scroll", enchantment=enchantment,
                         spawn_chance=ITEMS["Identify Weapon"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[IdentifyWeapon][0]:
+            # Set used in constants.items_info
+            constants.items_info[IdentifyWeapon][0] = True
+        pass
 
 
 class IdentifyArmor(Scroll):
@@ -492,6 +507,13 @@ class IdentifyArmor(Scroll):
                         spawn_chance=ITEMS["Identify Armor"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[IdentifyArmor][0]:
+            # Set used in constants.items_info
+            constants.items_info[IdentifyArmor][0] = True
+        pass
+
 
 class RemoveCurse(Scroll):
     def __init__(
@@ -506,6 +528,13 @@ class RemoveCurse(Scroll):
                         hidden_title=f"{desc} scroll", enchantment=enchantment,
                         spawn_chance=ITEMS["Remove Curse"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[RemoveCurse][0]:
+            # Set used in constants.items_info
+            constants.items_info[RemoveCurse][0] = True
+        pass
 
 
 # ---Potion Classes---
@@ -575,6 +604,13 @@ class Poison(Potion):
                         spawn_chance=ITEMS["Poison"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[Poison][0]:
+            # Set used in constants.items_info
+            constants.items_info[Poison][0] = True
+        pass
+
 
 class MonsterDetection(Potion):
     def __init__(
@@ -589,6 +625,13 @@ class MonsterDetection(Potion):
                         hidden_title=f"{desc} potion", enchantment=enchantment,
                         spawn_chance=ITEMS["Monster Detection"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[MonsterDetection][0]:
+            # Set used in constants.items_info
+            constants.items_info[MonsterDetection][0] = True
+        pass
 
 
 class RestoreStrength(Potion):
@@ -605,6 +648,13 @@ class RestoreStrength(Potion):
                         spawn_chance=ITEMS["Restore Strength"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[RestoreStrength][0]:
+            # Set used in constants.items_info
+            constants.items_info[RestoreStrength][0] = True
+        pass
+
 
 class Healing(Potion):
     def __init__(
@@ -619,6 +669,13 @@ class Healing(Potion):
                         hidden_title=f"{desc} potion", enchantment=enchantment,
                         spawn_chance=ITEMS["Healing"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[Healing][0]:
+            # Set used in constants.items_info
+            constants.items_info[Healing][0] = True
+        pass
 
 
 # ---Wand Classes---
@@ -688,6 +745,13 @@ class Light(Wand):
                       spawn_chance=ITEMS["Light"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[Light][0]:
+            # Set used in constants.items_info
+            constants.items_info[Light][0] = True
+        pass
+
 
 class TeleportTo(Wand):
     def __init__(
@@ -702,6 +766,13 @@ class TeleportTo(Wand):
                       hidden_title=f"{desc} wand", enchantment=enchantment,
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[TeleportTo][0]:
+            # Set used in constants.items_info
+            constants.items_info[TeleportTo][0] = True
+        pass
 
 
 class TeleportAway(Wand):
@@ -718,6 +789,14 @@ class TeleportAway(Wand):
                       spawn_chance=ITEMS["Teleport Away"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[TeleportAway][0]:
+            # Set used in constants.items_info
+            constants.items_info[TeleportAway][0] = True
+        pass
+
+
 
 class SlowMonster(Wand):
     def __init__(
@@ -732,6 +811,13 @@ class SlowMonster(Wand):
                       hidden_title=f"{desc} wand", enchantment=enchantment,
                       spawn_chance=ITEMS["Slow Monster"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[SlowMonster][0]:
+            # Set used in constants.items_info
+            constants.items_info[SlowMonster][0] = True
+        pass
 
 
 # ---Ring Classes---
@@ -801,6 +887,13 @@ class AddStrength(Ring):
                       spawn_chance=ITEMS["Add Strength"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[AddStrength][0]:
+            # Set used in constants.items_info
+            constants.items_info[AddStrength][0] = True
+        pass
+
 
 class IncreaseDamage(Ring):
     def __init__(
@@ -815,6 +908,13 @@ class IncreaseDamage(Ring):
                       hidden_title=f"{desc} ring", enchantment=enchantment,
                       spawn_chance=ITEMS["Increase Damage"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[IncreaseDamage][0]:
+            # Set used in constants.items_info
+            constants.items_info[IncreaseDamage][0] = True
+        pass
 
 
 class Teleportation(Ring):
@@ -831,6 +931,13 @@ class Teleportation(Ring):
                       spawn_chance=ITEMS["Teleportation"][0])
         self.desc = desc
 
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[Teleportation][0]:
+            # Set used in constants.items_info
+            constants.items_info[Teleportation][0] = True
+        pass
+
 
 class Dexterity(Ring):
     def __init__(
@@ -845,3 +952,10 @@ class Dexterity(Ring):
                       hidden_title=f"{desc} ring", enchantment=enchantment,
                       spawn_chance=ITEMS["Dexterity"][0])
         self.desc = desc
+
+    def use(self, player):
+        # Check if the Player has already used the item
+        if not constants.items_info[Dexterity][0]:
+            # Set used in constants.items_info
+            constants.items_info[Dexterity][0] = True
+        pass
