@@ -5,7 +5,6 @@ from random import randint
 import sys
 import project_constants as constants
 
-# TODO: Creat Gold Item subclass
 # TODO: Update with Evan's Weapon classes
 # TODO: Test use methods
 # TODO: Make an unequip method?
