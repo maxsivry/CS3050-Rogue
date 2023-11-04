@@ -6,10 +6,8 @@ from classes.actor import *
 import arcade.gui
 
 
-# TODO: Make it so items can't spawn on boundaries,
-#  when item is used->sets items_info to True
-# TODO: Start use methods (each class will have a use method) -> To start, use methods updates that Item's boolean in
-#  items_info
+# TODO: Make it so items can't spawn on boundaries
+# TODO: Start use methods (each class will have a use method)
 
 class GameView(arcade.View):
     # Global variables
