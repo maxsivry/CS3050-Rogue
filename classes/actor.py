@@ -116,30 +116,30 @@ class Player(Actor):
 
     # overrides super class mov_dir, checking tiles and items before moving player
     # ERROR WITH MOTION IN GRID WITHOUT TILES
-    def move_dir(self, direction, grid):
-        # initialize variables
-        validmove = True
-        # convert location to tile location
-        columnindex = int(self.center_x // (constants.TILE_WIDTH + constants.MARGIN))
-        rowindex = int(self.center_y // (constants.TILE_HEIGHT + constants.MARGIN))
-
-        if direction == "Up":
-            columnindex += 1
-        elif direction == "Down":
-            columnindex -= 1
-        elif direction == "Right":
-            rowindex += 1
-        elif direction == "Left":
-            rowindex -= 1
-        # if potential move is out of grid
-        if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
-                (columnindex < 0)):
-            validmove = False
-            return None  # exits function
-        # access tile information at direction moved
-        if grid[rowindex, columnindex].tile_type == TileType.Wall:
-            validmove = False
-            return None
+    # def move_dir(self, direction, grid):
+    #     # initialize variables
+    #     validmove = True
+    #     # convert location to tile location
+    #     columnindex = int(self.center_x // (constants.TILE_WIDTH + constants.MARGIN))
+    #     rowindex = int(self.center_y // (constants.TILE_HEIGHT + constants.MARGIN))
+    #
+    #     if direction == "Up":
+    #         columnindex += 1
+    #     elif direction == "Down":
+    #         columnindex -= 1
+    #     elif direction == "Right":
+    #         rowindex += 1
+    #     elif direction == "Left":
+    #         rowindex -= 1
+    #     # if potential move is out of grid
+    #     if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
+    #             (columnindex < 0)):
+    #         validmove = False
+    #         return None  # exits function
+    #     # access tile information at direction moved
+    #     if grid[rowindex, columnindex].tile_type == TileType.Wall:
+    #         validmove = False
+    #         return None
 
         # perform some action with t.tile_type (if trap/stairs etc)
         # ilif t.tile_type == TileType.Stairs

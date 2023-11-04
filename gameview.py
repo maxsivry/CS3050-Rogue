@@ -63,8 +63,8 @@ class GameView(arcade.View):
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
                                     scale=constants.SPRITE_SCALING)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
+        self.player_sprite.center_x = 15
+        self.player_sprite.center_y = 15
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
@@ -98,8 +98,25 @@ class GameView(arcade.View):
         # for item in self.item_list:
         #     if not item.is_hidden:
         #         item.draw()
-        self.item_list.draw()
         self.player_sprite.draw()
+
+        # Convert Player's position into grid coordinates
+        row_p = self.player_sprite.center_x // constants.TILE_WIDTH
+        col_p = self.player_sprite.center_x // constants.TILE_HEIGHT
+
+        # For each item in item_list
+        for i in range(len(self.item_list) - 1):
+
+            # Convert Item's position into grid coordinates
+            row_i = self.item_list[i].center_x // constants.TILE_WIDTH
+            col_i = self.item_list[i].center_y // constants.TILE_HEIGHT
+
+            # Check if Player's coordinates overlap with Item's
+            if row_i == row_p and col_i == col_p:
+                # If it does, add item to Player's inventory and remove from item_list
+                self.player_sprite.inv.append(self.item_list.pop(i))
+
+        self.item_list.draw()
 
     def on_update(self, delta_time):
         """ Movement and game logic """
