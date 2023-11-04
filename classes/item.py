@@ -269,11 +269,10 @@ class Gold(Item):
             scale: float = 1,
             is_hidden: bool = True,
             title: str = '',
-            spawn_chance: int = 0,
             gold: int = randint(0, 50)
     ):
         Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
-                      title=title, spawn_chance=spawn_chance)
+                      title=title, spawn_chance=ITEMS["Gold"][0])
         self.gold = gold
 
     def use(self, player):

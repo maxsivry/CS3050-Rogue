@@ -199,12 +199,6 @@ class GameView(arcade.View):
                     # Grab it's index in item_list
                     index = i
 
-                    if not issubclass(type(self.item_list[i]), Armor):
-                        # Use the item -> Testing
-                        self.item_list[i].use(self.player_sprite)
-                        # Print value of used in constants.items_info
-                        print(constants.items_info[type(self.item_list[i])])
-
                     # Add the item to the Player's inventory
                     self.player_sprite.inv.append(self.item_list[i])
                     print(self.player_sprite.player_inventory())
