@@ -257,7 +257,7 @@ class GameView(arcade.View):
                 temp_pos = self.grid.grid[row][col]
 
             # Set this Item's position
-            item.set_position(col * constants.TILE_HEIGHT, row * constants.TILE_WIDTH)
+            item.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
             self.grid[row, col].setitem(item)
 
     # def on_key_release(self, key, modifiers):

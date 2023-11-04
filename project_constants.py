@@ -29,4 +29,5 @@ items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [Fals
               RemoveCurse: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
               RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
               TeleportTo: [False, ''], TeleportAway: [False, ''], SlowMonster: [False, ''],
-              AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, '']}
+              AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
+              Gold: [True, '']}

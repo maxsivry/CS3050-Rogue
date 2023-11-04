@@ -7,6 +7,8 @@ import project_constants as constants
 
 # TODO: Creat Gold Item subclass
 # TODO: Update with Evan's Weapon classes
+# TODO: Test use methods
+# TODO: Make an unequip method?
 
 # Constants
 # Colors of Potions
@@ -33,7 +35,8 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Light": [22, "wand"], "Teleport To": [16, "wand"],
          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
-         "Teleportation": [15, "ring"], "Dexterity": [18, "ring"]}
+         "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
+         "Gold": [25, "gold"]}
 
 
 # Method to determine which items actually spawn
@@ -212,6 +215,8 @@ def create_items(to_create: list) -> list:
                     constants.items_info[Dexterity][1] = item[1]
                 items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING,
                                             desc=constants.items_info[Dexterity][1]))
+            case "Gold":
+                items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING))
             case _:
                 # Will never get here
                 pass
@@ -245,6 +250,31 @@ class Item(arcade.Sprite):
         self.spawn_chance = spawn_chance
         self.enchantment = enchantment
         self.id = randint(0, sys.maxsize)
+
+
+# ---Gold Class---
+# Subclass Gold (Super: Item)
+# Fields:
+# filename: str
+# scale: float
+# enchantment: bool
+# is_hidden: bool
+# title: str
+# spawn_chance: int
+# gold: int
+class Gold(Item):
+    def __init__(
+            self,
+            filename: str = None,
+            scale: float = 1,
+            is_hidden: bool = True,
+            title: str = '',
+            spawn_chance: int = 0,
+            gold: int = randint(0, 50)
+    ):
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
+                      title=title, spawn_chance=spawn_chance)
+        self.gold = gold
 
 
 # ---Armor Classes---
@@ -463,12 +493,16 @@ class MagicMapping(Scroll):
                         spawn_chance=ITEMS["Magic Mapping"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, grid: Grid):
         # Check if the Player has already used the item
         if not constants.items_info[MagicMapping][0]:
             # Set used in constants.items_info
             constants.items_info[MagicMapping][0] = True
-        pass
+
+        # Reveal the map
+        for row in range(grid.n_rows):
+            for col in range(grid.n_cols):
+                grid[row][col].is_hidden = False
 
 
 class IdentifyWeapon(Scroll):
@@ -485,11 +519,14 @@ class IdentifyWeapon(Scroll):
                         spawn_chance=ITEMS["Identify Weapon"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, weapon: Item):
         # Check if the Player has already used the item
         if not constants.items_info[IdentifyWeapon][0]:
             # Set used in constants.items_info
             constants.items_info[IdentifyWeapon][0] = True
+
+        # Identify the Weapon
+        # This will be in constants.items_info
         pass
 
 
@@ -507,12 +544,14 @@ class IdentifyArmor(Scroll):
                         spawn_chance=ITEMS["Identify Armor"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, armor):
         # Check if the Player has already used the item
         if not constants.items_info[IdentifyArmor][0]:
             # Set used in constants.items_info
             constants.items_info[IdentifyArmor][0] = True
-        pass
+
+        # Identify the Armor
+        constants.items_info[type(armor)][0] = True
 
 
 class RemoveCurse(Scroll):
@@ -534,6 +573,8 @@ class RemoveCurse(Scroll):
         if not constants.items_info[RemoveCurse][0]:
             # Set used in constants.items_info
             constants.items_info[RemoveCurse][0] = True
+
+        # Haven't defined what a curse is yet
         pass
 
 
@@ -609,7 +650,9 @@ class Poison(Potion):
         if not constants.items_info[Poison][0]:
             # Set used in constants.items_info
             constants.items_info[Poison][0] = True
-        pass
+
+        # Reduce strength by 1-3 points
+        player.str -= randint(1, 3)
 
 
 class MonsterDetection(Potion):
@@ -626,11 +669,13 @@ class MonsterDetection(Potion):
                         spawn_chance=ITEMS["Monster Detection"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, grid: Grid):
         # Check if the Player has already used the item
         if not constants.items_info[MonsterDetection][0]:
             # Set used in constants.items_info
             constants.items_info[MonsterDetection][0] = True
+
+        # Reveal monsters on grid
         pass
 
 
@@ -653,7 +698,9 @@ class RestoreStrength(Potion):
         if not constants.items_info[RestoreStrength][0]:
             # Set used in constants.items_info
             constants.items_info[RestoreStrength][0] = True
-        pass
+
+        # Restore Player's strength
+        player.str = player.str_max
 
 
 class Healing(Potion):
@@ -675,7 +722,15 @@ class Healing(Potion):
         if not constants.items_info[Healing][0]:
             # Set used in constants.items_info
             constants.items_info[Healing][0] = True
-        pass
+
+        # Heal 1d4 per character level or Increase max hp if at full health
+        if player.hp == player.max_hp:  # Update hp and max hp if already at full health
+            player.max_hp += 1
+            player.hp += 1
+        else:  # Heal 1d4 for every level the Player has
+            for level in range(player.level):
+                heal = randint(1, 4)
+                player.hp += heal
 
 
 # ---Wand Classes---
@@ -744,12 +799,19 @@ class Light(Wand):
                       hidden_title=f"{desc} wand", enchantment=enchantment,
                       spawn_chance=ITEMS["Light"][0])
         self.desc = desc
+        self.charges = randint(10, 19)
 
     def use(self, player):
         # Check if the Player has already used the item
         if not constants.items_info[Light][0]:
             # Set used in constants.items_info
             constants.items_info[Light][0] = True
+
+        # Remove a charge
+        self.charges -= 1
+
+        # Reveal all tiles in a room
+        # Don't know how to do this yet
         pass
 
 
@@ -767,12 +829,25 @@ class TeleportTo(Wand):
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, grid: Grid):
         # Check if the Player has already used the item
         if not constants.items_info[TeleportTo][0]:
             # Set used in constants.items_info
             constants.items_info[TeleportTo][0] = True
-        pass
+
+        # Determine random position
+        row = randint(0, grid.n_rows)
+        col = randint(0, grid.n_cols)
+
+        # If the tile is not a Floor or Trail
+        while grid[row][col].tile_type != TileType.Floor and grid[row][col].tile_type != TileType.Trail:
+            # Determine random position
+            row = randint(0, grid.n_rows)
+            col = randint(0, grid.n_cols)
+
+        # This might not work
+        # Set Player's new position
+        player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
 
 
 class TeleportAway(Wand):
@@ -794,8 +869,10 @@ class TeleportAway(Wand):
         if not constants.items_info[TeleportAway][0]:
             # Set used in constants.items_info
             constants.items_info[TeleportAway][0] = True
-        pass
 
+        # Move monster to a random location
+        # Not sure how to do this
+        pass
 
 
 class SlowMonster(Wand):
@@ -817,6 +894,9 @@ class SlowMonster(Wand):
         if not constants.items_info[SlowMonster][0]:
             # Set used in constants.items_info
             constants.items_info[SlowMonster][0] = True
+
+        # Slow monster
+        # Not sure how to do this
         pass
 
 
@@ -892,7 +972,11 @@ class AddStrength(Ring):
         if not constants.items_info[AddStrength][0]:
             # Set used in constants.items_info
             constants.items_info[AddStrength][0] = True
-        pass
+
+        # Add one to the maximum strength
+        # Might not work
+        player.str_max += 1
+        player.str += 1
 
 
 class IncreaseDamage(Ring):
@@ -914,6 +998,8 @@ class IncreaseDamage(Ring):
         if not constants.items_info[IncreaseDamage][0]:
             # Set used in constants.items_info
             constants.items_info[IncreaseDamage][0] = True
+
+        # Not sure how this will work
         pass
 
 
@@ -931,11 +1017,25 @@ class Teleportation(Ring):
                       spawn_chance=ITEMS["Teleportation"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, grid: Grid):
         # Check if the Player has already used the item
         if not constants.items_info[Teleportation][0]:
             # Set used in constants.items_info
             constants.items_info[Teleportation][0] = True
+
+        # Determine random position
+        row = randint(0, grid.n_rows)
+        col = randint(0, grid.n_cols)
+
+        # If the tile is not a Floor or Trail
+        while grid[row][col].tile_type != TileType.Floor and grid[row][col].tile_type != TileType.Trail:
+            # Determine random position
+            row = randint(0, grid.n_rows)
+            col = randint(0, grid.n_cols)
+
+        # This might not work
+        # Set Player's new position
+        player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
         pass
 
 
@@ -958,4 +1058,6 @@ class Dexterity(Ring):
         if not constants.items_info[Dexterity][0]:
             # Set used in constants.items_info
             constants.items_info[Dexterity][0] = True
+
+        # Not sure how to represent this
         pass
