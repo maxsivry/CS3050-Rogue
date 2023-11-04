@@ -120,8 +120,8 @@ class Player(Actor):
         # initialize variables
         validmove = True
         # convert location to tile location
-        columnindex = int(self.center_x / (constants.TILE_WIDTH))
-        rowindex = int(self.center_y / (constants.TILE_HEIGHT))
+        columnindex = int(self.center_x / constants.TILE_WIDTH)
+        rowindex = int(self.center_y / constants.TILE_HEIGHT)
 
         if direction == "Up":
             rowindex += 1
@@ -134,7 +134,7 @@ class Player(Actor):
         # if potential move is out of grid
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
-            print(rowindex, columnindex, self.center_x, constants.TILE_WIDTH, (self.center_x // (constants.TILE_WIDTH)))
+            print(rowindex, columnindex, self.center_x, constants.TILE_WIDTH, (self.center_x // constants.TILE_WIDTH))
             validmove = False
             return None  # exits function
         # access tile information at direction moved
@@ -142,7 +142,7 @@ class Player(Actor):
             validmove = False
             return None
 
-        if (validmove):
+        if validmove:
             if direction == 'Up' and self.center_y > 0:
                 self.change_y += constants.TILE_HEIGHT
                 self.change_x = 0
@@ -156,16 +156,14 @@ class Player(Actor):
                 self.change_x += constants.TILE_WIDTH
                 self.change_y = 0
 
-        # print(grid[rowindex, columnindex].has_item)
-        # print(grid[rowindex, columnindex].getitem)
-        print(grid[rowindex, columnindex].getitem())
-        print(grid[rowindex, columnindex].has_item)
-        if (grid[rowindex, columnindex].has_item):
-            print(grid[rowindex, columnindex].getitem())
-            return grid[rowindex, columnindex].getitem()
+        # Grab the item at that grid location, reset the grid location
+        if grid[rowindex, columnindex].has_item:
+            item = grid[rowindex, columnindex].getitem()
+            grid[rowindex, columnindex].has_item = False
+            grid[rowindex, columnindex].item = None
+            return item
 
-
-        #if tile type is stairs
+        # if tile type is stairs
         # elif grid[rowindex, columnindex].tile_type == TileType.Stairs:
         #     self.level += 1
         #     #change level
@@ -178,7 +176,7 @@ class Player(Actor):
         #         lvl3_view.setup()
         #         self.window.show_view(lvl2_view)
 
-        #elif grid[rowindex, columnindex].tile_type == TileType.Trap:
+        # elif grid[rowindex, columnindex].tile_type == TileType.Trap:
 
         # self.hp -= random.randint(1, 4)
         # . . .

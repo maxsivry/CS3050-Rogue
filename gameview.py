@@ -179,7 +179,7 @@ class GameView(arcade.View):
         """
         Called whenever a key is pressed
         """
-
+        item = None
         if key == arcade.key.UP:
             item = self.player_sprite.move_dir("Up", self.grid)
         elif key == arcade.key.DOWN:
@@ -189,13 +189,24 @@ class GameView(arcade.View):
         elif key == arcade.key.LEFT:
             item = self.player_sprite.move_dir("Left", self.grid)
 
-        # if item exist
-        if item != None:
-            for i in range(len(self.item_list) - 1):
-                print("tada")
+        # Set index variable -> Will be used to pop item off of list AFTER loop as to not cause off-by-one error
+        index = -1
+
+        # If there is an item
+        if item is not None:
+            # Loop through to find the item in item_list
+            for i in range(len(self.item_list)):
+                # When the item is found
                 if self.item_list[i].id == item.id:
-                    self.player_sprite.inv.append(self.item_list.pop(i))
-                    print("tada")
+                    # Grab it's index in item_list
+                    index = i
+
+                    # Add the item to the Player's inventory
+                    self.player_sprite.inv.append(self.item_list[i])
+                    print(self.player_sprite.inv)
+        # Check if index was changed
+        if index != -1:
+            self.item_list.pop(index)
 
     def recreate_grid(self):
         x: int = 0
@@ -232,7 +243,7 @@ class GameView(arcade.View):
 
             # While TileType != Floor or TileType != Trail
             while (temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail
-                   and [row, col] not in chosen_pos):
+                   and not temp_pos.has_item):
                 # Determine random position again
                 # Get random grid position
                 row = randint(0, self.grid.n_rows - 1)
@@ -242,17 +253,8 @@ class GameView(arcade.View):
                 temp_pos = self.grid.grid[row][col]
 
             # Set this Item's position
-            # if not temp_pos.is_hidden:  # If the tile is not hidden, this item is not hidden too
-            #   item.set_position(x, y)
-            #   item.is_hidden = False
-            #   grid[row][col].item = self
-            # else:  # If a tile is hidden, this item is hidden too
-            #   item.set_position(x, y)
-            #   grid[row][col].item = self
-            item.set_position(row * constants.TILE_WIDTH, col * constants.TILE_HEIGHT)
+            item.set_position(col * constants.TILE_HEIGHT, row * constants.TILE_WIDTH)
             self.grid[row, col].setitem(item)
-            print(self.grid[row, col].has_item)
-            chosen_pos.append([row, col])
 
     # def on_key_release(self, key, modifiers):
     #     """
