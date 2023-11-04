@@ -2,6 +2,7 @@ from typing import Optional
 import arcade
 import random
 from classes.tile import *
+from classes.item import *
 import project_constants as constants
 from arcade import Texture
 
@@ -105,8 +106,9 @@ class Player(Actor):
         return_str = ''
 
         # For each item in the Player's inventory
-        for i in range(0, len(self.inv) - 1):
-            if not constants.items_info[self.inv[i]][0]:  # If it hasn't been discovered
+        for i in range(len(self.inv)):
+            if not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor):
+                # If it hasn't been discovered and is not an Armor class
                 return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
             else:
                 return_str += f"{i}. {self.inv[i].title}\n"  # The Player is allowed to see the actual title

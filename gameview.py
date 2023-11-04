@@ -6,7 +6,7 @@ from classes.actor import *
 import arcade.gui
 
 
-# TODO: Make it so items can be picked up by player, can't spawn on boundaries,
+# TODO: Make it so items can't spawn on boundaries,
 #  when item is used->sets items_info to True
 # TODO: Start use methods (each class will have a use method) -> To start, use methods updates that Item's boolean in
 #  items_info
@@ -203,7 +203,7 @@ class GameView(arcade.View):
 
                     # Add the item to the Player's inventory
                     self.player_sprite.inv.append(self.item_list[i])
-                    print(self.player_sprite.inv)
+                    print(self.player_sprite.player_inventory())
         # Check if index was changed
         if index != -1:
             self.item_list.pop(index)
