@@ -99,7 +99,6 @@ class Player(Actor):
         return f'Level: {self.level}   Gold: Decide how to represent gold   HP: {self.hp}({self.max_hp})\
                Armor: Decide how to represent armor   XP: {str(self.xp)}/{str(self.lvl_xp)}'
 
-    # TODO: Test this
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """
         # Create string object representing inventory
@@ -198,7 +197,7 @@ class Player(Actor):
         # If xp increase is enough to get to multiple levels
         while self.xp >= self.lvl_xp:
             # Check if there is an available next level (not max level)
-            avail_lvl = 1 if self.level + 1 in XP_LEVELS.keys() else 0
+            avail_lvl = True if self.level + 1 in XP_LEVELS.keys() else False
 
             # Update level, xp, and lvl_xp
             # NOTE: At max level, your level will stay the same and xp will equal lvl_xp at 8,000,000
