@@ -7,7 +7,7 @@ import arcade.gui
 
 
 # TODO: Make it so items can't spawn on boundaries
-# TODO: Start use methods (each class will have a use method)
+# TODO: Make a use function that gives the class use methods their correct parameters
 
 class GameView(arcade.View):
     # Global variables
