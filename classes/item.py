@@ -5,6 +5,9 @@ from random import randint
 import sys
 import project_constants as constants
 
+# TODO: Creat Gold Item subclass
+# TODO: Update with Evan's Weapon classes
+
 # Constants
 # Colors of Potions
 POTION_COLORS = ["blue", "red", "green", "black", "grey", "yellow", "orange", "purple"]

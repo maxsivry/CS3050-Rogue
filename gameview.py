@@ -3,6 +3,7 @@ import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
+import arcade.gui
 
 
 # TODO: Make it so items can be picked up by player, can't spawn on boundaries,
@@ -52,6 +53,28 @@ class GameView(arcade.View):
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
 
+        # #
+        # self.manager = arcade.gui.UIManager()
+        # self.manager.enable()
+
+        # # Create a box group to align the 'open' button in the center
+        # self.v_box = arcade.gui.UIBoxLayout()
+
+        # # Create a button. We'll click on this to open our window.
+        # # Add it v_box for positioning.
+        # inventory_box = arcade.gui.UIFlatButton(text="Inventory", width=200)
+        # self.v_box.add(inventory_box)
+
+        # # Add a hook to run when we click on the button.
+        # inventory_box.on_click = self.on_click_open
+        # # Create a widget to hold the v_box widget, that will center the buttons
+        # self.manager.add(
+        #     arcade.gui.UIAnchorWidget(
+        #         anchor_x="100",
+        #         anchor_y="10",
+        #         child=self.v_box)
+        # )
+
     def setup(self):
         """ Set up the game and initialize the variables. """
 
@@ -63,8 +86,8 @@ class GameView(arcade.View):
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
                                     scale=constants.SPRITE_SCALING)
-        self.player_sprite.center_x = 15
-        self.player_sprite.center_y = 15
+        self.player_sprite.center_x = 7.5
+        self.player_sprite.center_y = 7.5
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
@@ -98,23 +121,25 @@ class GameView(arcade.View):
         # for item in self.item_list:
         #     if not item.is_hidden:
         #         item.draw()
+        self.item_list.draw()
         self.player_sprite.draw()
+        # self.manager.draw()
 
         # Convert Player's position into grid coordinates
-        row_p = self.player_sprite.center_x // constants.TILE_WIDTH
-        col_p = self.player_sprite.center_x // constants.TILE_HEIGHT
-
-        # For each item in item_list
-        for i in range(len(self.item_list) - 1):
-
-            # Convert Item's position into grid coordinates
-            row_i = self.item_list[i].center_x // constants.TILE_WIDTH
-            col_i = self.item_list[i].center_y // constants.TILE_HEIGHT
-
-            # Check if Player's coordinates overlap with Item's
-            if row_i == row_p and col_i == col_p:
-                # If it does, add item to Player's inventory and remove from item_list
-                self.player_sprite.inv.append(self.item_list.pop(i))
+        # row_p = self.player_sprite.center_x // constants.TILE_WIDTH
+        # col_p = self.player_sprite.center_x // constants.TILE_HEIGHT
+        #
+        # # For each item in item_list
+        # for i in range(len(self.item_list) - 1):
+        #
+        #     # Convert Item's position into grid coordinates
+        #     row_i = self.item_list[i].center_x // constants.TILE_WIDTH
+        #     col_i = self.item_list[i].center_y // constants.TILE_HEIGHT
+        #
+        #     # Check if Player's coordinates overlap with Item's
+        #     if row_i == row_p and col_i == col_p:
+        #         # If it does, add item to Player's inventory and remove from item_list
+        #         self.player_sprite.inv.append(self.item_list.pop(i))
 
         self.item_list.draw()
 
@@ -130,8 +155,8 @@ class GameView(arcade.View):
         """
 
         # Convert the clicked mouse position into grid coordinates
-        column = int(x // (constants.TILE_WIDTH + constants.MARGIN))
-        row = int(y // (constants.TILE_HEIGHT + constants.MARGIN))
+        column = int(x / constants.TILE_WIDTH)
+        row = int(y / constants.TILE_HEIGHT)
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
 
@@ -156,13 +181,21 @@ class GameView(arcade.View):
         """
 
         if key == arcade.key.UP:
-            self.player_sprite.move_dir("Up", self.grid)
+            item = self.player_sprite.move_dir("Up", self.grid)
         elif key == arcade.key.DOWN:
-            self.player_sprite.move_dir("Down", self.grid)
+            item = self.player_sprite.move_dir("Down", self.grid)
         elif key == arcade.key.RIGHT:
-            self.player_sprite.move_dir("Right", self.grid)
+            item = self.player_sprite.move_dir("Right", self.grid)
         elif key == arcade.key.LEFT:
-            self.player_sprite.move_dir("Left", self.grid)
+            item = self.player_sprite.move_dir("Left", self.grid)
+
+        # if item exist
+        if item != None:
+            for i in range(len(self.item_list) - 1):
+                print("tada")
+                if self.item_list[i].id == item.id:
+                    self.player_sprite.inv.append(self.item_list.pop(i))
+                    print("tada")
 
     def recreate_grid(self):
         x: int = 0
@@ -216,7 +249,9 @@ class GameView(arcade.View):
             # else:  # If a tile is hidden, this item is hidden too
             #   item.set_position(x, y)
             #   grid[row][col].item = self
-            item.set_position(row * constants.TILE_WIDTH, col * constants.TILE_HEIGHT)  # Delete when ^ uncommented
+            item.set_position(row * constants.TILE_WIDTH, col * constants.TILE_HEIGHT)
+            self.grid[row, col].setitem(item)
+            print(self.grid[row, col].has_item)
             chosen_pos.append([row, col])
 
     # def on_key_release(self, key, modifiers):
@@ -231,3 +266,18 @@ class GameView(arcade.View):
     #         self.right_pressed = False
     #     if key == arcade.key.LEFT:
     #         self.left_pressed = False
+
+    # #textbox
+    # def on_click_open(self, event):
+    #     # The code in this function is run when we click the ok button.
+    #     # The code below opens the message box and auto-dismisses it when done.
+    #     message_box = arcade.gui.UIMessageBox(
+    #         width=300,
+    #         height=200,
+    #         message_text=(
+    #             self.player_sprite.player_inventory
+    #         ),
+    #         callback=self.on_message_box_close,buttons=["Ok", "Cancel"]
+    #     )
+
+    #     self.manager.add(message_box)
