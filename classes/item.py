@@ -36,7 +36,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [25, "gold"]}
+         "Gold": [35, "gold"]}
 
 
 # Method to determine which items actually spawn
@@ -216,7 +216,7 @@ def create_items(to_create: list) -> list:
                 items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING,
                                             desc=constants.items_info[Dexterity][1]))
             case "Gold":
-                items_list.append(Dexterity(filename="static/gold.png", scale=constants.SPRITE_SCALING))
+                items_list.append(Gold(filename="static/gold.png", scale=constants.SPRITE_SCALING))
             case _:
                 # Will never get here
                 pass
@@ -267,13 +267,11 @@ class Gold(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            title: str = '',
-            gold: int = randint(0, 50)
+            is_hidden: bool = True
     ):
+        self.gold = randint(0, 50)
         Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
-                      title=title, spawn_chance=ITEMS["Gold"][0])
-        self.gold = gold
+                      title=f"{self.gold} gold", spawn_chance=ITEMS["Gold"][0])
 
     def use(self, player):
         # Update player with additional gold

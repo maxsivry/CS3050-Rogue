@@ -98,7 +98,7 @@ class GameView(arcade.View):
         for item in temp_list:
             armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
                       PlateMail]
-            if type(item) not in armors:
+            if type(item) not in armors and type(item) is not Gold:
                 print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
             else:
                 print(f"title: {item.title}, id: {item.id}")
