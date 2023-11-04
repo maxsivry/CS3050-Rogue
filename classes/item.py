@@ -216,7 +216,7 @@ def create_items(to_create: list) -> list:
                 items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING,
                                             desc=constants.items_info[Dexterity][1]))
             case "Gold":
-                items_list.append(Dexterity(filename="static/ring.png", scale=constants.SPRITE_SCALING))
+                items_list.append(Dexterity(filename="static/gold.png", scale=constants.SPRITE_SCALING))
             case _:
                 # Will never get here
                 pass
@@ -276,6 +276,15 @@ class Gold(Item):
                       title=title, spawn_chance=spawn_chance)
         self.gold = gold
 
+    def use(self, player):
+        # Update player with additional gold
+        for item in player.inv:
+            # Find the gold in the player's inventory
+            if type(item) == Gold:
+                # Update the gold with this gold
+                item.gold += self.gold
+
+        # Still need to remove this instance of the gold from their inventory
 
 # ---Armor Classes---
 # Subclass Armor (Super: Item)
