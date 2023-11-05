@@ -35,7 +35,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [35, "gold"]}
+         "Gold": [85, "gold"]}
 
 
 # Method to determine which items actually spawn
@@ -266,9 +266,10 @@ class Gold(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True
+            is_hidden: bool = True,
+            gold: int = -1
     ):
-        self.gold = randint(0, 50)
+        self.gold = randint(1, 50) if gold == -1 else gold
         Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
                       title=f"{self.gold} gold", spawn_chance=ITEMS["Gold"][0])
 
@@ -279,6 +280,7 @@ class Gold(Item):
             if type(item) == Gold:
                 # Update the gold with this gold
                 item.gold += self.gold
+                item.title = f"{item.gold} gold"
 
         # Still need to remove this instance of the gold from their inventory
 

@@ -86,6 +86,7 @@ class GameView(arcade.View):
                                     scale=constants.SPRITE_SCALING)
         self.player_sprite.center_x = 7.5
         self.player_sprite.center_y = 7.5
+        self.player_sprite.inv.append(Gold(gold=0))
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
@@ -200,7 +201,12 @@ class GameView(arcade.View):
                     index = i
 
                     # Add the item to the Player's inventory
-                    self.player_sprite.inv.append(self.item_list[i])
+                    if type(self.item_list[i]) == Gold:
+                        # Add the new gold value to the Player's gold value
+                        self.item_list[i].use(self.player_sprite)
+                    else:
+                        # Otherwise, add the instance of the Item to the Player's inventory
+                        self.player_sprite.inv.append(self.item_list[i])
                     print(self.player_sprite.player_inventory())
         # Check if index was changed
         if index != -1:
@@ -253,6 +259,11 @@ class GameView(arcade.View):
             # Set this Item's position
             item.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
             self.grid[row, col].setitem(item)
+
+    # TODO: Finish this
+    # def use(self, item: Item):
+    #     match item:
+    #         case
 
     # def on_key_release(self, key, modifiers):
     #     """

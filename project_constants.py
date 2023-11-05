@@ -20,6 +20,9 @@ SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue Testing"
 
+# Create a constant for what index gold is stored at in the Player's inventory
+GOLD_IND = 0
+
 # Project-Wide dictionary
 # To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
 # Format: Class: [Revealed by Player, Description]
