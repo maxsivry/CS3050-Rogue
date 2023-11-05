@@ -7,7 +7,6 @@ import arcade.gui
 
 
 # TODO: Make it so items can't spawn on boundaries
-# TODO: Make a use function that gives the class use methods their correct parameters
 
 class GameView(arcade.View):
     # Global variables
@@ -203,7 +202,7 @@ class GameView(arcade.View):
                     # Add the item to the Player's inventory
                     if type(self.item_list[i]) == Gold:
                         # Add the new gold value to the Player's gold value
-                        self.item_list[i].use(self.player_sprite)
+                        self.use(self.item_list[i])
                     else:
                         # Otherwise, add the instance of the Item to the Player's inventory
                         self.player_sprite.inv.append(self.item_list[i])
@@ -232,10 +231,6 @@ class GameView(arcade.View):
     def rand_pos(self):
         """ Determines a randomized position on the grid/screen for each of a set of Items """
 
-        # Create a list of grid positions already chosen
-        # Each position has the form [row, col]
-        chosen_pos = []
-
         # For each item in item_list
         for item in self.item_list:
             # Get random grid position
@@ -260,10 +255,49 @@ class GameView(arcade.View):
             item.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
             self.grid[row, col].setitem(item)
 
-    # TODO: Finish this
-    # def use(self, item: Item):
-    #     match item:
-    #         case
+    def use(self, item, weapon=None, armor=None, monster=None):
+        """ use function used to call an Item's use method with the correct parameters. """
+
+        # Match the item's class
+        # Use methods have different parameters dependent on the class
+        # Call the corresponding use method with the correct parameters
+        # NOTE: Cannot use a match statement here since each item has unique values for it's fields
+        if isinstance(item, Gold):
+            item.use(self.player_sprite)
+        elif isinstance(item, MagicMapping):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, IdentifyWeapon):
+            item.use(self.player_sprite, weapon)
+        elif isinstance(item, IdentifyArmor):
+            item.use(self.player_sprite, armor)
+        elif isinstance(item, RemoveCurse):
+            item.use(self.player_sprite)
+        elif isinstance(item, Poison):
+            item.use(self.player_sprite)
+        elif isinstance(item, MonsterDetection):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, RestoreStrength):
+            item.use(self.player_sprite)
+        elif isinstance(item, Healing):
+            item.use(self.player_sprite)
+        elif isinstance(item, Light):
+            item.use(self.player_sprite)
+        elif isinstance(item, TeleportTo):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, TeleportAway):
+            item.use(self.player_sprite, monster, self.grid)
+        elif isinstance(item, SlowMonster):
+            item.use(self.player_sprite, monster)
+        elif isinstance(item, AddStrength):
+            item.use(self.player_sprite)
+        elif isinstance(item, IncreaseDamage):
+            item.use(self.player_sprite)
+        elif isinstance(item, Teleportation):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, Dexterity):
+            item.use(self.player_sprite)
+        else:  # Items that reach here do not have a use method. They should not be passed into this function
+            pass
 
     # def on_key_release(self, key, modifiers):
     #     """

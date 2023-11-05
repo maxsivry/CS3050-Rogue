@@ -275,14 +275,10 @@ class Gold(Item):
 
     def use(self, player):
         # Update player with additional gold
-        for item in player.inv:
-            # Find the gold in the player's inventory
-            if type(item) == Gold:
-                # Update the gold with this gold
-                item.gold += self.gold
-                item.title = f"{item.gold} gold"
+        player.inv[constants.GOLD_IND].gold += self.gold
 
-        # Still need to remove this instance of the gold from their inventory
+        # Update the title
+        player.inv[constants.GOLD_IND].title = f"{player.inv[constants.GOLD_IND].gold} gold"
 
 # ---Armor Classes---
 # Subclass Armor (Super: Item)
@@ -526,7 +522,7 @@ class IdentifyWeapon(Scroll):
                         spawn_chance=ITEMS["Identify Weapon"][0])
         self.desc = desc
 
-    def use(self, player, weapon: Item):
+    def use(self, player, weapon):
         # Check if the Player has already used the item
         if not constants.items_info[IdentifyWeapon][0]:
             # Set used in constants.items_info
@@ -871,7 +867,7 @@ class TeleportAway(Wand):
                       spawn_chance=ITEMS["Teleport Away"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, monster, grid: Grid):
         # Check if the Player has already used the item
         if not constants.items_info[TeleportAway][0]:
             # Set used in constants.items_info
@@ -896,7 +892,7 @@ class SlowMonster(Wand):
                       spawn_chance=ITEMS["Slow Monster"][0])
         self.desc = desc
 
-    def use(self, player):
+    def use(self, player, monster):
         # Check if the Player has already used the item
         if not constants.items_info[SlowMonster][0]:
             # Set used in constants.items_info
