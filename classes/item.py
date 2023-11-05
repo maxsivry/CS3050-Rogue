@@ -35,7 +35,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [85, "gold"]}
+         "Gold": [35, "gold"]}
 
 
 # Method to determine which items actually spawn

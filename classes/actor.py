@@ -206,6 +206,8 @@ class Player(Actor):
             self.level += 1 if avail_lvl else 21
             self.lvl_xp = XP_LEVELS[self.level + 1] if avail_lvl else XP_LEVELS[21]
 
+        # Call update_health
+
     # TODO: Test this
     def update_health(self, level_increase: bool):
         # If increase in level, increase health by adding a random number 1-10

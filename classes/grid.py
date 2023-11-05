@@ -33,10 +33,10 @@ class Grid:
         self.n_cols = n_cols
 
         self.grid = []
-        for x in range(n_cols):
+        for x in range(n_rows):
             new_col: list[Tile] = []
 
-            for y in range(n_rows):
+            for y in range(n_cols):
                 new_col.append(Tile())
 
             self.grid.append(new_col)
