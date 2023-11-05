@@ -1064,3 +1064,47 @@ class Dexterity(Ring):
 
         # Not sure how to represent this
         pass
+
+
+# ---Weapon Classes---
+class Weapon(Item):
+    def __init__(self,
+                 spawn_chance: int,
+                 enchantment: bool):
+        Item().__init__(spawn_chance=spawn_chance, enchantment=enchantment)
+        self.power = 2
+        self.accuracy = 2
+        self.title = "Mace"
+
+    # Returns 0 if misses and a damage value if it hits, uses the players stats for damage calculation
+    def get_damage(self, player):
+        hit = randint(1, 100)
+        hit += player.dex + 2 * self.accuracy
+        if hit > 50:
+            # mace damage is 2d4 according to the wiki
+            damage = randint(1, 4) + randint(1, 4)
+            return damage
+        else:
+            return 0
+
+    # Changes title to reflect if the weapon has been buffed or debuffed in any way
+    def update(self):
+        str_mod = self.power - Weapon.power
+        dex_mod = self.power - Weapon.power
+        change = ""
+        if str_mod > 0:
+            change += "+" + str(str_mod)
+        elif str_mod < 0:
+            change += str(str_mod)
+
+        if dex_mod > 0:
+            change += "+" + str(dex_mod)
+        elif dex_mod < 0:
+            change += str(dex_mod)
+
+        change += Weapon.name
+        self.title = change
+
+    power = 2
+    accuracy = 2
+    name = "Mace"

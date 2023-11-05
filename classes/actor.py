@@ -84,19 +84,32 @@ class Player(Actor):
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
+        self.inv.append(Weapon())
+        self.inv.append(RingMail())
 
         # Initialize hp to default starting hp (12) & max hp (initially the same)
         self.max_hp = 12
-        self.hp = 12
+        self.health = 12
 
         # Initialize str to default starting str (16) & max str (initially the same)
         self.str_max = 16
         self.str = 16
 
+        # Set Player's base defense and armor
+        self.base_defense = 0
+        self.armor = 0
+
+        # main use is to calculate accuracy
+        # can be used for other things if we want
+        self.dex = 10
+
+        # Is the Player alive?
+        self.is_alive = True
+
     # TODO: Test this
     def display_player_info(self) -> str:
         # NOTE: May use this, may not. Idea is that we can just call this to print character info at bottom of screen
-        return f'Level: {self.level}   Gold: Decide how to represent gold   HP: {self.hp}({self.max_hp})\
+        return f'Level: {self.level}   Gold: Decide how to represent gold   HP: {self.health}({self.max_hp})\
                Armor: Decide how to represent armor   XP: {str(self.xp)}/{str(self.lvl_xp)}'
 
     def player_inventory(self) -> str:
@@ -212,7 +225,7 @@ class Player(Actor):
     def update_health(self, level_increase: bool):
         # If increase in level, increase health by adding a random number 1-10
         if level_increase:
-            self.hp += random.randint(1, 10)
+            self.health += random.randint(1, 10)
 
         # Update health due to active effects
         pass
@@ -221,3 +234,33 @@ class Player(Actor):
     def update_strength(self):
         # Update strength due to active effects
         pass
+
+    # Damages the player, returns true if the damage kills the player
+    def take_damage(self, damage):
+        self.health -= damage
+        print("You lost", damage, "health")
+        if self.health <= 0:
+            self.die()
+            return True
+        return False
+
+    # Kills the player
+    def die(self):
+        # Filler at the moment should trigger the proper game over things when fully implemented
+        self.is_alive = False
+
+    def attack(self, enemy):
+        # Damage should be calculated this way through the players weapon's damage function,
+        # Which takes in a player and returns a damage amount based on the weapon and the players stats
+        damage = self.weapon.get_damage(self)
+
+        # right now it just returns 5 or 0 where 0 is a miss
+        # damage = random.randint(0, 1)*5
+
+        if damage > 0:
+            enemy.take_damage(damage)
+        else:
+            print("You miss the " + enemy.name + "...", )
+
+    def get_defense(self):
+        return self.base_defense + self.armor
