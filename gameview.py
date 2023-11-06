@@ -86,6 +86,8 @@ class GameView(arcade.View):
         self.player_sprite.center_x = 7.5
         self.player_sprite.center_y = 7.5
         self.player_sprite.inv.append(Gold(gold=0))
+        self.player_sprite.inv.append(Weapon())
+        self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)

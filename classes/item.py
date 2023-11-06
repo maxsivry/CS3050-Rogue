@@ -34,7 +34,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [35, "gold"]}
+         "Gold": [35, "gold"], "Weapon": [5, "weapon"]}
 
 
 # Method to determine which items actually spawn
@@ -278,6 +278,7 @@ class Gold(Item):
 
         # Update the title
         player.inv[constants.GOLD_IND].title = f"{player.inv[constants.GOLD_IND].gold} gold"
+
 
 # ---Armor Classes---
 # Subclass Armor (Super: Item)
@@ -1069,8 +1070,12 @@ class Dexterity(Ring):
 # ---Weapon Classes---
 class Weapon(Item):
     def __init__(self,
+                 filename: str = None,
+                 scale: float = 1,
+                 is_hidden: bool = True,
                  enchantment: bool = False):
-        Item().__init__(spawn_chance=5, enchantment=enchantment, title="Mace")
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
+                        enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
         self.power = 2
         self.accuracy = 2
 
