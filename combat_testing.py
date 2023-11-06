@@ -1,3 +1,4 @@
+import project_constants as constants
 from classes.actor import Player
 from classes.enemy import Enemy
 
@@ -10,10 +11,11 @@ enemies.append(Enemy())
 while (hero.is_alive and len(enemies) > 0):
     works = False
     target = -1
+    print("The number of enemies is currently",len(enemies))
     while not works:
         works = True
         try:
-            target = int(input("Attack who? "))
+            target = int(input("Attack enemy number: "))
             target -= 1
         except ValueError:
             print("doesn't work")
@@ -35,3 +37,4 @@ while (hero.is_alive and len(enemies) > 0):
                 enemy.take_turn(hero, 0)
             new_enemies.append(enemy)
     enemies = new_enemies
+    print("")
