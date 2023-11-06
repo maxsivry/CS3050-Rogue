@@ -84,6 +84,11 @@ class Player(Actor):
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
+        self.inv.append(Weapon())
+        self.inv.append(RingMail())
+
+        self.weapon = self.inv[0]
+        self.armor = self.inv[1]
 
         # Initialize hp to default starting hp (12) & max hp (initially the same)
         self.max_hp = 12
