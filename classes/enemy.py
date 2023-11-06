@@ -21,7 +21,7 @@ def create_monsters(to_create: list) -> list:
 class Enemy(Actor):
     def __init__(self):
         Actor.__init__(self)
-        self.health = 10
+        self.health = 7
         self.name = "Slime"
         self.is_alive = True
 
