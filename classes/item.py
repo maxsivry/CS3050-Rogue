@@ -5,7 +5,6 @@ from random import randint
 import sys
 import project_constants as constants
 
-# TODO: Update with Evan's Weapon classes
 # TODO: Test use methods
 # TODO: Make an unequip method?
 
@@ -1002,7 +1001,8 @@ class IncreaseDamage(Ring):
             # Set used in constants.items_info
             constants.items_info[IncreaseDamage][0] = True
 
-        # Not sure how this will work
+        # Update the weapon's power += 1
+        # Call weapon.update
         pass
 
 
@@ -1069,12 +1069,10 @@ class Dexterity(Ring):
 # ---Weapon Classes---
 class Weapon(Item):
     def __init__(self,
-                 spawn_chance: int,
-                 enchantment: bool):
-        Item().__init__(spawn_chance=spawn_chance, enchantment=enchantment)
+                 enchantment: bool = False):
+        Item().__init__(spawn_chance=5, enchantment=enchantment, title="Mace")
         self.power = 2
         self.accuracy = 2
-        self.title = "Mace"
 
     # Returns 0 if misses and a damage value if it hits, uses the players stats for damage calculation
     def get_damage(self, player):

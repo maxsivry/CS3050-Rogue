@@ -120,7 +120,7 @@ class Player(Actor):
         # For each item in the Player's inventory
         for i in range(len(self.inv)):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
-                    and type(self.inv[i]) is not Gold):
+                    and type(self.inv[i]) is not Gold and type(self.inv[i] is not Weapon)):
                 # If it hasn't been discovered and is not an Armor class
                 return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
             else:
@@ -218,22 +218,6 @@ class Player(Actor):
             self.xp = self.xp - self.lvl_xp if avail_lvl else XP_LEVELS[21]
             self.level += 1 if avail_lvl else 21
             self.lvl_xp = XP_LEVELS[self.level + 1] if avail_lvl else XP_LEVELS[21]
-
-        # Call update_health
-
-    # TODO: Test this
-    def update_health(self, level_increase: bool):
-        # If increase in level, increase health by adding a random number 1-10
-        if level_increase:
-            self.health += random.randint(1, 10)
-
-        # Update health due to active effects
-        pass
-
-    # TODO: Test this
-    def update_strength(self):
-        # Update strength due to active effects
-        pass
 
     # Damages the player, returns true if the damage kills the player
     def take_damage(self, damage):
