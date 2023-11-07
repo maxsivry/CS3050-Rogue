@@ -111,9 +111,8 @@ class Player(Actor):
 
     # TODO: Test this
     def display_player_info(self) -> str:
-        # NOTE: May use this, may not. Idea is that we can just call this to print character info at bottom of screen
-        return f'Level: {self.level}   Gold: Decide how to represent gold   HP: {self.health}({self.max_hp})\
-               Armor: Decide how to represent armor   XP: {str(self.xp)}/{str(self.lvl_xp)}'
+
+        return f'Level: {self.level}\nGold: Decide how to represent gold\nHP: {self.health}({self.max_hp})\\nArmor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}'
 
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """

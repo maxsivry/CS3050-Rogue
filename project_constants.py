@@ -16,6 +16,8 @@ MARGIN = 2
 SPRITE_SCALING = TILE_HEIGHT / 1920
 
 # Do the math to figure out our screen dimensions
+
+#15 * 70 + x = 17 * 72
 SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue Testing"

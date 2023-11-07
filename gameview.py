@@ -107,6 +107,12 @@ class GameView(arcade.View):
             self.item_list.append(item)
         self.rand_pos()
 
+        #player stats
+        current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
+        self.shape_list.append(current_rect)
+
+
+
     def on_draw(self):
         """ Render the screen. """
 
@@ -118,11 +124,14 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
+        
+
         # for item in self.item_list:
         #     if not item.is_hidden:
         #         item.draw()
         self.item_list.draw()
         self.player_sprite.draw()
+
         # self.manager.draw()
 
         # Convert Player's position into grid coordinates
@@ -142,6 +151,26 @@ class GameView(arcade.View):
         #         self.player_sprite.inv.append(self.item_list.pop(i))
 
         self.item_list.draw()
+
+        arcade.draw_text("STATS", 1062, 
+                        constants.SCREEN_HEIGHT - 50,
+                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                        width=150)
+
+        arcade.draw_text(self.player_sprite.display_player_info(), 1062, 
+                        constants.SCREEN_HEIGHT - 70,
+                        arcade.color.BLACK, font_size=10, multiline=True, 
+                        width=150)
+
+        arcade.draw_text("INVENTORY", 1062, 
+                        constants.SCREEN_HEIGHT - 200,
+                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                        width=150)
+
+        arcade.draw_text(self.player_sprite.player_inventory(), 1062, 
+                        constants.SCREEN_HEIGHT - 220,
+                        arcade.color.BLACK, font_size=10, multiline=True, 
+                        width=150)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
@@ -222,7 +251,7 @@ class GameView(arcade.View):
                     color = arcade.color.DARK_GRAY
                 else:
                     color = arcade.color.BLACK
-                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH+7.5, y * constants.TILE_HEIGHT+7.5,
                                                               constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
                 x += 1
@@ -254,7 +283,7 @@ class GameView(arcade.View):
                 temp_pos = self.grid.grid[row][col]
 
             # Set this Item's position
-            item.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
+            item.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT)+7.5)
             self.grid[row, col].setitem(item)
 
     def use(self, item, weapon=None, armor=None, monster=None):
@@ -328,3 +357,19 @@ class GameView(arcade.View):
     #     )
 
     #     self.manager.add(message_box)
+
+    # def display_stats(self):
+    #     current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
+    #     self.shape_list.append(current_rect)
+    #     arcade.draw_text(self.player_sprite.display_player_info(), 1137, 
+    #                     constants.SCREEN_HEIGHT - 100,
+    #                     arcade.color.BLACK, font_size=10, multiline=True, 
+    #                     width=300)
+
+    
+
+    def display_inventory(self):
+        pass
+
+    def display_title(self):
+        pass
