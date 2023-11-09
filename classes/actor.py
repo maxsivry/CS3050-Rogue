@@ -81,14 +81,21 @@ class Player(Actor):
         self.xp = 0
         self.lvl_xp = XP_LEVELS[self.level + 1]
 
+        # Initialize starting gold
+        self.gold = 0
+
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
         self.inv.append(Weapon())
         self.inv.append(RingMail())
 
+        # Initialize weapon and armor
         self.weapon = self.inv[0]
         self.armor = self.inv[1]
+
+        # Initialize active ring
+        self.ring = None
 
         # Initialize hp to default starting hp (12) & max hp (initially the same)
         self.max_hp = 12
@@ -109,10 +116,10 @@ class Player(Actor):
         # Is the Player alive?
         self.is_alive = True
 
-    # TODO: Test this
     def display_player_info(self) -> str:
-
-        return f'Level: {self.level}\nGold: Decide how to represent gold\nHP: {self.health}({self.max_hp})\\nArmor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}'
+        """ Simply returns a string representing the most important stats. """
+        return (f'Level: {self.level}\nGold: {self.gold}\nHP: {self.health}({self.max_hp})\n'
+                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}')
 
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """

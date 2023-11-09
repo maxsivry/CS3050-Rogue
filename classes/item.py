@@ -5,8 +5,7 @@ from random import randint
 import sys
 import project_constants as constants
 
-# TODO: Test use methods
-# TODO: Make an unequip method?
+# TODO: Create charges, use methods, and unequip methods for remaining items
 
 # Constants
 # Colors of Potions
@@ -22,19 +21,32 @@ WAND_WOODS = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "c
 SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper"]
 
 # key: [spawn_chance, class type, discovered, description]
-ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
-         "Studded Leather": [15, "armor"], "Scale Mail": [13, "armor"],
-         "Chain Mail": [12, "armor"], "Splint Mail": [10, "armor"],
-         "Banded Mail": [10, "armor"], "Plate Mail": [5, "armor"],
-         "Magic Mapping": [14, "scroll"], "Identify Weapon": [16, "scroll"],
-         "Identify Armor": [17, "scroll"], "Remove Curse": [17, "scroll"],
-         "Poison": [18, "potion"], "Monster Detection": [16, "potion"],
-         "Restore Strength": [23, "potion"], "Healing": [23, "potion"],
-         "Light": [22, "wand"], "Teleport To": [16, "wand"],
-         "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
-         "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
-         "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [35, "gold"], "Weapon": [5, "weapon"]}
+# ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
+#          "Studded Leather": [15, "armor"], "Scale Mail": [13, "armor"],
+#          "Chain Mail": [12, "armor"], "Splint Mail": [10, "armor"],
+#          "Banded Mail": [10, "armor"], "Plate Mail": [5, "armor"],
+#          "Magic Mapping": [14, "scroll"], "Identify Weapon": [16, "scroll"],
+#          "Identify Armor": [17, "scroll"], "Remove Curse": [17, "scroll"],
+#          "Poison": [18, "potion"], "Monster Detection": [16, "potion"],
+#          "Restore Strength": [23, "potion"], "Healing": [23, "potion"],
+#          "Light": [22, "wand"], "Teleport To": [16, "wand"],
+#          "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
+#          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
+#          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
+#          "Gold": [35, "gold"], "Weapon": [5, "weapon"]}
+ITEMS = {"Leather": [0, "armor"], "Ring Mail": [0, "armor"],
+         "Studded Leather": [0, "armor"], "Scale Mail": [0, "armor"],
+         "Chain Mail": [0, "armor"], "Splint Mail": [0, "armor"],
+         "Banded Mail": [0, "armor"], "Plate Mail": [0, "armor"],
+         "Magic Mapping": [0, "scroll"], "Identify Weapon": [0, "scroll"],
+         "Identify Armor": [0, "scroll"], "Remove Curse": [0, "scroll"],
+         "Poison": [0, "potion"], "Monster Detection": [0, "potion"],
+         "Restore Strength": [0, "potion"], "Healing": [0, "potion"],
+         "Light": [0, "wand"], "Teleport To": [0, "wand"],
+         "Teleport Away": [0, "wand"], "Slow Monster": [0, "wand"],
+         "Add Strength": [75, "ring"], "Increase Damage": [0, "ring"],
+         "Teleportation": [0, "ring"], "Dexterity": [0, "ring"],
+         "Gold": [0, "gold"], "Weapon": [0, "weapon"]}
 
 
 # Method to determine which items actually spawn
@@ -274,10 +286,7 @@ class Gold(Item):
 
     def use(self, player):
         # Update player with additional gold
-        player.inv[constants.GOLD_IND].gold += self.gold
-
-        # Update the title
-        player.inv[constants.GOLD_IND].title = f"{player.inv[constants.GOLD_IND].gold} gold"
+        player.gold += self.gold
 
 
 # ---Armor Classes---
@@ -913,6 +922,7 @@ class SlowMonster(Wand):
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
+# -charges: int
 # -------------------------------
 # Ring types (Super: Ring)
 # -Add Strength
@@ -948,11 +958,13 @@ class Ring(Item):
             is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
-            spawn_chance: int = 0
+            spawn_chance: int = 0,
+            charges: int = 1
     ):
         Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
+        self.charges = charges
 
 
 # Subclasses ring types (Super: Ring)
@@ -970,16 +982,30 @@ class AddStrength(Ring):
                       spawn_chance=ITEMS["Add Strength"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[AddStrength][0]:
-            # Set used in constants.items_info
-            constants.items_info[AddStrength][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Adds plus one to current and max strength. """
 
-        # Add one to the maximum strength
-        # Might not work
-        player.str_max += 1
-        player.str += 1
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+
+            # Check if the Player has already used the item
+            if not constants.items_info[AddStrength][0]:
+                # Set used in constants.items_info
+                constants.items_info[AddStrength][0] = True
+
+            # Add one to current and maximum strength
+            player.str_max += 1
+            player.str += 1
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from strength and max strength. """
+        # Undo changes
+        player.str -= 1
+        player.str_max -= 1
 
 
 class IncreaseDamage(Ring):
@@ -996,15 +1022,32 @@ class IncreaseDamage(Ring):
                       spawn_chance=ITEMS["Increase Damage"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[IncreaseDamage][0]:
-            # Set used in constants.items_info
-            constants.items_info[IncreaseDamage][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Increases the Player's equipped weapon's power by 1. """
 
-        # Update the weapon's power += 1
-        # Call weapon.update
-        pass
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[IncreaseDamage][0]:
+                # Set used in constants.items_info
+                constants.items_info[IncreaseDamage][0] = True
+
+            # Update the weapon's power += 1
+            player.weapon.power += 1
+
+            # Call weapon.update
+            player.weapon.update()
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from weapon's power. """
+
+        # Undo changes
+        player.weapon.power -= 1
+        player.weapon.update()
 
 
 class Teleportation(Ring):
@@ -1022,24 +1065,43 @@ class Teleportation(Ring):
         self.desc = desc
 
     def use(self, player, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[Teleportation][0]:
-            # Set used in constants.items_info
-            constants.items_info[Teleportation][0] = True
+        """ Once initially put on, the Player is teleported to a random floor or trail. """
 
-        # Determine random position
-        row = randint(0, grid.n_rows)
-        col = randint(0, grid.n_cols)
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Teleportation][0]:
+                # Set used in constants.items_info
+                constants.items_info[Teleportation][0] = True
 
-        # If the tile is not a Floor or Trail
-        while grid[row][col].tile_type != TileType.Floor and grid[row][col].tile_type != TileType.Trail:
-            # Determine random position
-            row = randint(0, grid.n_rows)
-            col = randint(0, grid.n_cols)
+            # Get random grid position
+            row = randint(0, grid.n_rows - 1)
+            col = randint(0, grid.n_cols - 1)
 
-        # This might not work
-        # Set Player's new position
-        player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
+            # Set the temporary grid position
+            temp_pos = grid.grid[row][col]
+
+            # While TileType != Floor and TileType != Trail and Tile has an item
+            while temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail:
+                # Determine random position again
+                # Get random grid position
+                row = randint(0, grid.n_rows - 1)
+                col = randint(0, grid.n_cols - 1)
+
+                # Set the temporary grid position
+                temp_pos = grid.grid[row][col]
+
+            # Set the Player's position
+            player.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+
+            # Update charges
+            self.charges -= 1
+
+            # Set title to reflect used charges
+            self.title = "(DEPLETED) Ring of Teleportation"
+
+    def unequip(self, player=None, grid: Grid = None):
+        """ Nothing happens when you unequip this ring. Must have an unequip method though. """
         pass
 
 
@@ -1057,14 +1119,28 @@ class Dexterity(Ring):
                       spawn_chance=ITEMS["Dexterity"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[Dexterity][0]:
-            # Set used in constants.items_info
-            constants.items_info[Dexterity][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Increases the Player's dex score by 1. """
 
-        # Not sure how to represent this
-        pass
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Dexterity][0]:
+                # Set used in constants.items_info
+                constants.items_info[Dexterity][0] = True
+
+            # Add one to Player's dex score
+            player.dex += 1
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from Player's dex. """
+
+        # Update dex score
+        player.dex -= 1
 
 
 # ---Weapon Classes---
@@ -1075,7 +1151,7 @@ class Weapon(Item):
                  is_hidden: bool = True,
                  enchantment: bool = False):
         Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
-                        enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
         self.power = 2
         self.accuracy = 2
 

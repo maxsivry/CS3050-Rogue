@@ -85,9 +85,6 @@ class GameView(arcade.View):
                                     scale=constants.SPRITE_SCALING)
         self.player_sprite.center_x = 7.5
         self.player_sprite.center_y = 7.5
-        self.player_sprite.inv.append(Gold(gold=0))
-        self.player_sprite.inv.append(Weapon())
-        self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
@@ -96,22 +93,16 @@ class GameView(arcade.View):
 
         # Create Items and place them in the item_list
         temp_list = create_items(determine_items())
-        print(f"Number of classes: {len(temp_list)}")
         for item in temp_list:
-            armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
-                      PlateMail]
-            if type(item) not in armors and type(item) is not Gold:
-                print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
-            else:
-                print(f"title: {item.title}, id: {item.id}")
             self.item_list.append(item)
+
+        # Determine the Items' positions
         self.rand_pos()
 
-        #player stats
-        current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
+        # player stats
+        current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT,
+                                                      arcade.color.ICEBERG)
         self.shape_list.append(current_rect)
-
-
 
     def on_draw(self):
         """ Render the screen. """
@@ -124,7 +115,6 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
-        
 
         # for item in self.item_list:
         #     if not item.is_hidden:
@@ -152,25 +142,25 @@ class GameView(arcade.View):
 
         self.item_list.draw()
 
-        arcade.draw_text("STATS", 1062, 
-                        constants.SCREEN_HEIGHT - 50,
-                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
-                        width=150)
+        arcade.draw_text("STATS", 1062,
+                         constants.SCREEN_HEIGHT - 50,
+                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                         width=150)
 
-        arcade.draw_text(self.player_sprite.display_player_info(), 1062, 
-                        constants.SCREEN_HEIGHT - 70,
-                        arcade.color.BLACK, font_size=10, multiline=True, 
-                        width=150)
+        arcade.draw_text(self.player_sprite.display_player_info(), 1062,
+                         constants.SCREEN_HEIGHT - 70,
+                         arcade.color.BLACK, font_size=10, multiline=True,
+                         width=150)
 
-        arcade.draw_text("INVENTORY", 1062, 
-                        constants.SCREEN_HEIGHT - 200,
-                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
-                        width=150)
+        arcade.draw_text("INVENTORY", 1062,
+                         constants.SCREEN_HEIGHT - 200,
+                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                         width=150)
 
-        arcade.draw_text(self.player_sprite.player_inventory(), 1062, 
-                        constants.SCREEN_HEIGHT - 220,
-                        arcade.color.BLACK, font_size=10, multiline=True, 
-                        width=150)
+        arcade.draw_text(self.player_sprite.player_inventory(), 1062,
+                         constants.SCREEN_HEIGHT - 220,
+                         arcade.color.BLACK, font_size=10, multiline=True,
+                         width=150)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
@@ -195,15 +185,6 @@ class GameView(arcade.View):
             # Simply return from this method since nothing needs updating
             return
 
-        # Flip the location between 1 and 0.
-        # if self.grid[row][column] == 0:
-        #     self.grid[row][column] = 1
-        # else:
-        #     self.grid[row][column] = 0
-
-        # Rebuild the shapes
-        self.recreate_grid()
-
     def on_key_press(self, key, modifiers):
         """
         Called whenever a key is pressed
@@ -217,6 +198,26 @@ class GameView(arcade.View):
             item = self.player_sprite.move_dir("Right", self.grid)
         elif key == arcade.key.LEFT:
             item = self.player_sprite.move_dir("Left", self.grid)
+        elif key == arcade.key.KEY_0:
+            self.use(self.player_sprite.inv[0], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_1:
+            self.use(self.player_sprite.inv[1], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_2:
+            self.use(self.player_sprite.inv[2], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_3:
+            self.use(self.player_sprite.inv[3], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_4:
+            self.use(self.player_sprite.inv[4], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_5:
+            self.use(self.player_sprite.inv[5], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_6:
+            self.use(self.player_sprite.inv[6], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_7:
+            self.use(self.player_sprite.inv[7], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_8:
+            self.use(self.player_sprite.inv[8], self.player_sprite.inv[0], self.player_sprite.inv[1])
+        elif key == arcade.key.KEY_9:
+            self.use(self.player_sprite.inv[9], self.player_sprite.inv[0], self.player_sprite.inv[1])
 
         # Set index variable -> Will be used to pop item off of list AFTER loop as to not cause off-by-one error
         index = -1
@@ -237,7 +238,6 @@ class GameView(arcade.View):
                     else:
                         # Otherwise, add the instance of the Item to the Player's inventory
                         self.player_sprite.inv.append(self.item_list[i])
-                    print(self.player_sprite.player_inventory())
         # Check if index was changed
         if index != -1:
             self.item_list.pop(index)
@@ -251,7 +251,8 @@ class GameView(arcade.View):
                     color = arcade.color.DARK_GRAY
                 else:
                     color = arcade.color.BLACK
-                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH+7.5, y * constants.TILE_HEIGHT+7.5,
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH + 7.5,
+                                                              y * constants.TILE_HEIGHT + 7.5,
                                                               constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
                 x += 1
@@ -283,7 +284,7 @@ class GameView(arcade.View):
                 temp_pos = self.grid.grid[row][col]
 
             # Set this Item's position
-            item.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT)+7.5)
+            item.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
             self.grid[row, col].setitem(item)
 
     def use(self, item, weapon=None, armor=None, monster=None):
@@ -319,14 +320,12 @@ class GameView(arcade.View):
             item.use(self.player_sprite, monster, self.grid)
         elif isinstance(item, SlowMonster):
             item.use(self.player_sprite, monster)
-        elif isinstance(item, AddStrength):
-            item.use(self.player_sprite)
-        elif isinstance(item, IncreaseDamage):
-            item.use(self.player_sprite)
-        elif isinstance(item, Teleportation):
+        elif issubclass(type(item), Ring):
+            if self.player_sprite.ring:
+                self.player_sprite.ring.unequip(self.player_sprite, self.grid)
             item.use(self.player_sprite, self.grid)
-        elif isinstance(item, Dexterity):
-            item.use(self.player_sprite)
+            self.player_sprite.ring = item
+
         else:  # Items that reach here do not have a use method. They should not be passed into this function
             pass
 
@@ -365,11 +364,3 @@ class GameView(arcade.View):
     #                     constants.SCREEN_HEIGHT - 100,
     #                     arcade.color.BLACK, font_size=10, multiline=True, 
     #                     width=300)
-
-    
-
-    def display_inventory(self):
-        pass
-
-    def display_title(self):
-        pass

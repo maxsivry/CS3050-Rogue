@@ -17,13 +17,10 @@ SPRITE_SCALING = TILE_HEIGHT / 1920
 
 # Do the math to figure out our screen dimensions
 
-#15 * 70 + x = 17 * 72
+# 15 * 70 + x = 17 * 72
 SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue Testing"
-
-# Create a constant for what index gold is stored at in the Player's inventory
-GOLD_IND = 0
 
 # Project-Wide dictionary
 # To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
