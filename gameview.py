@@ -298,11 +298,11 @@ class GameView(arcade.View):
             item.use(self.player_sprite)
         elif isinstance(item, MagicMapping):
             item.use(self.player_sprite, self.grid)
-        elif isinstance(item, IdentifyWeapon):
-            item.use(self.player_sprite, weapon)
-        elif isinstance(item, IdentifyArmor):
-            item.use(self.player_sprite, armor)
-        elif isinstance(item, RemoveCurse):
+        elif isinstance(item, IncreaseMaxHealth):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyRing):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyPotion):
             item.use(self.player_sprite)
         elif isinstance(item, Poison):
             item.use(self.player_sprite)

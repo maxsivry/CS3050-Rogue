@@ -27,8 +27,8 @@ SCREEN_TITLE = "Rogue Testing"
 # Format: Class: [Revealed by Player, Description]
 items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [False, ''], ScaleMail: [False, ''],
               ChainMail: [False, ''], SplintMail: [False, ''], BandedMail: [False, ''], PlateMail: [False, ''],
-              MagicMapping: [False, ''], IdentifyWeapon: [False, ''], IdentifyArmor: [False, ''],
-              RemoveCurse: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
+              MagicMapping: [False, ''], IdentifyRing: [False, ''], IncreaseMaxHealth: [False, ''],
+              IdentifyPotion: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
               RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
               TeleportTo: [False, ''], TeleportAway: [False, ''], SlowMonster: [False, ''],
               AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
