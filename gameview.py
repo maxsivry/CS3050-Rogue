@@ -2,6 +2,7 @@ import arcade
 import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
+from binarytree import *
 from classes.actor import *
 import arcade.gui
 
@@ -33,6 +34,8 @@ class GameView(arcade.View):
 
         # Grid
         self.grid: Grid = Grid(46, 80)
+
+        self.tree: Tree = Tree(0, 0, 46, 80)
 
         # Set up the actor info
         self.player_sprite = None
@@ -90,7 +93,17 @@ class GameView(arcade.View):
         self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
-        self.grid.add_room(0, 0, 15, 15)
+
+        # self.grid.add_room(0, 0, 15, 15)
+
+        populate_tree(self.tree.root, 4)
+        tile_positions = get_floor_positions(self.tree.root)
+        #
+        for pos in tile_positions:
+            (x, y) = pos
+            print(f"tile x: {x}, tile y: {y}")
+        #     (x, y) = pos
+        #     self.grid.grid[x][y].tile_type = TileType.Floor
 
         self.recreate_grid()
 

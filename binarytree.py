@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 from typing import Tuple
 from random import randint
@@ -33,8 +34,8 @@ class Node:
 class Tree:
     root: Optional[Node]
 
-    def __init__(self):
-        self.root = None
+    def __init__(self, x: int, y: int, w: int, h: int):
+        self.root = Node(RoomContainer(x, y, w, h))
 
     def get_root(self):
         return self.root
@@ -101,3 +102,21 @@ def tree_to_list(node: Optional[Node]) -> list[RoomContainer]:
     walk_and_add(node)
     return rooms
 
+
+def get_floor_positions(node: Optional[Node]) -> list[Tuple[int, int]]:
+    positions: list[Tuple[int, int]] = []
+
+    def walk_and_add_tiles(n: Optional[Node]):
+        if n is not None:
+            if n.lhs is None and n.rhs is None:
+                if random.random() < 0.80:
+                    for x in range(n.val.x + 1, n.val.x + n.val.w - 3):
+                        for y in range(n.val.y + 1, n.val.y + n.val.h - 3):
+                            positions.append((x, y))
+                    print("added room's tiles")
+            walk_and_add_tiles(n.lhs)
+            walk_and_add_tiles(n.rhs)
+
+    walk_and_add_tiles(node)
+
+    return positions
