@@ -102,15 +102,8 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
-        
-
-        # for item in self.item_list:
-        #     if not item.is_hidden:
-        #         item.draw()
         self.item_list.draw()
         self.player_sprite.draw()
-
-        self.item_list.draw()
 
         #display player stats:
         arcade.draw_text("STATS", 1062, 
@@ -127,9 +120,11 @@ class GameView(arcade.View):
         #if inventory is displayed
         inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300, 400, arcade.color.ICEBERG)
         if not self.Inventory_open:
-            self.hide_inventory(inventory_rect)             
+            self.hide_inventory()             
         else:
-            self.display_inventory(inventory_rect)
+            inventory_rect.draw()
+            self.display_inventory()
+
 
 
     def on_update(self, delta_time):
@@ -163,7 +158,14 @@ class GameView(arcade.View):
         if key == arcade.key.E:
             self.Inventory_open = not self.Inventory_open
             self.highlighted_item = 0
-
+        
+        #display help message
+        if key == arcade.key.H:
+            self.help_message()
+        
+        if key == arcade.key.ESCAPE:
+            self.quit_game()
+        
         if not self.Inventory_open:
             #player movement, each movement potentially picks up item
             item = None
@@ -187,11 +189,21 @@ class GameView(arcade.View):
             elif key == arcade.key.DOWN and self.highlighted_item < len(self.player_sprite.inv) - 1:
                 self.highlighted_item += 1
 
-            #Dropping Item with D
+            #Dropping Item with D (cant drop if there is already an item at location)
             elif key == arcade.key.D:
-                if 0 <= self.highlighted_item < len(self.player_sprite.inv)-1:
-                    # Remove the highlighted item from the inventory
-                    del self.player_sprite.inv[self.highlighted_item]
+                if 0 <= self.highlighted_item < len(self.player_sprite.inv):
+    
+                    #if there is no item at location already:
+                    col = int(self.player_sprite.center_x / constants.TILE_WIDTH)
+                    row = int(self.player_sprite.center_y / constants.TILE_HEIGHT)
+                    if not self.grid[row, col].has_item:
+
+                        # drop item on correct tile, set tile to have item
+                        self.player_sprite.inv[self.highlighted_item].set_position(self.player_sprite.center_x, self.player_sprite.center_y)
+                        self.item_list.append(self.player_sprite.inv[self.highlighted_item])
+                        self.grid[row, col].setitem(self.player_sprite.inv[self.highlighted_item])
+                        # Remove the highlighted item from the inventory
+                        del self.player_sprite.inv[self.highlighted_item]
 
             #using item with U
             elif key == arcade.key.U:
@@ -314,10 +326,10 @@ class GameView(arcade.View):
             self.item_list.pop(index)
 
 
-    def display_inventory(self, rect):
+    def display_inventory(self):
         #draw box to contain inventory, title underline. draw another rectange to help with directons
-        self.shape_list.append(rect)
-        self.appended = True
+        # self.shape_list.append(rect)
+        # self.appended = True
         arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175, arcade.color.BLACK, font_size=20, width=280, align="center", font_name="Kenney Rocket")
         arcade.draw_line(constants.SCREEN_WIDTH / 2 - 150, constants.SCREEN_HEIGHT / 2 + 165, constants.SCREEN_WIDTH / 2 + 150, constants.SCREEN_HEIGHT / 2 + 165, arcade.color.DARK_RED, line_width=2)
         arcade.draw_line(627, 487, 727, 487, arcade.color.DARK_RED, line_width=2)
@@ -348,11 +360,7 @@ class GameView(arcade.View):
                 arcade.draw_text(item.title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
         
     
-    def hide_inventory(self, rect):
-        #how to remove inventory_rect ???
-        if self.appended:
-            self.shape_list.remove(rect)
-        #self.shape_list.remove(inventory_rect)
+    def hide_inventory(self):
         arcade.draw_text("INVENTORY", 1062, 
                         constants.SCREEN_HEIGHT - 200,
                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
@@ -361,7 +369,12 @@ class GameView(arcade.View):
                     constants.SCREEN_HEIGHT - 220,
                     arcade.color.BLACK, font_size=10, multiline=True, 
                     width=150) 
+    
+    def help_message(self):
+        pass
 
+    def quit_game(self):
+        pass
 
         # def on_key_release(self, key, modifiers):
     #     """
