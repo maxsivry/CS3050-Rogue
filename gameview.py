@@ -17,6 +17,7 @@ class GameView(arcade.View):
     right_pressed = False
     up_pressed = False
     down_pressed = False
+    recent_coords = []
 
     def __init__(self):
         """
@@ -46,6 +47,9 @@ class GameView(arcade.View):
         self.up_pressed = False
 
         self.down_pressed = False
+
+        # Track the most recent set of grid coordinates given by a click (to be used with wands)
+        self.recent_coords = [0, 0]
 
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
@@ -179,6 +183,8 @@ class GameView(arcade.View):
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
 
+        self.recent_coords = [row, column]
+
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
         if row >= constants.ROW_COUNT or column >= constants.COLUMN_COUNT:
@@ -289,7 +295,6 @@ class GameView(arcade.View):
 
     def use(self, item, weapon=None, armor=None, monster=None):
         """ use function used to call an Item's use method with the correct parameters. """
-
         # Match the item's class
         # Use methods have different parameters dependent on the class
         # Call the corresponding use method with the correct parameters
@@ -315,13 +320,13 @@ class GameView(arcade.View):
         elif isinstance(item, Light):
             item.use(self.player_sprite)
         elif isinstance(item, TeleportTo):
-            item.use(self.player_sprite, self.grid)
+            item.use(self.player_sprite, self.grid, self.recent_coords)
         elif isinstance(item, TeleportAway):
             item.use(self.player_sprite, monster, self.grid)
-        elif isinstance(item, SlowMonster):
+        elif isinstance(item, DrainLife):
             item.use(self.player_sprite, monster)
         elif issubclass(type(item), Ring):
-            if self.player_sprite.ring:
+            if self.player_sprite.ring and item.charges > 0:
                 self.player_sprite.ring.unequip(self.player_sprite, self.grid)
             item.use(self.player_sprite, self.grid)
             self.player_sprite.ring = item

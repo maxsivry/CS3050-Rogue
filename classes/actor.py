@@ -119,7 +119,7 @@ class Player(Actor):
     def display_player_info(self) -> str:
         """ Simply returns a string representing the most important stats. """
         return (f'Level: {self.level}\nGold: {self.gold}\nHP: {self.health}({self.max_hp})\n'
-                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}')
+                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}\n{self.str}')
 
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """
