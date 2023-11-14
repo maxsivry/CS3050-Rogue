@@ -7,20 +7,22 @@ import project_constants as constants
 from classes.actor import Actor
 
 
-def create_monsters(to_create: list) -> list:
-    """ Creates an instance of a class dependent on whether that class was designated to spawn """
-
+def create_monsters():
     # Create area to store created objects
     monster_list = []
-    # for monster in to_create:
-    #     monster_list.append(Enemy(filename="static/armor.png", scale=constants.SPRITE_SCALING))
+    
+    monster_list.append(Enemy(filename="static/enemy.png", scale=constants.SPRITE_SCALING))
 
     return monster_list
 
 
 class Enemy(Actor):
-    def __init__(self):
-        Actor.__init__(self)
+    def __init__(
+            self,
+            filename: str = None,
+            scale: float = 1
+    ):
+        super().__init__(filename=filename, scale=scale)
         self.health = 7
         self.name = "Slime"
         self.is_alive = True
