@@ -3,6 +3,7 @@ import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
+from classes.enemy import *
 import arcade.gui
 
 
@@ -82,6 +83,7 @@ class GameView(arcade.View):
         # Sprite lists
         self.actor_list = arcade.SpriteList()
         self.item_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
         self.shape_list = arcade.ShapeElementList()
 
         # Set up the player
@@ -94,6 +96,10 @@ class GameView(arcade.View):
         self.grid.add_room(0, 0, 15, 15)
 
         self.recreate_grid()
+
+        monsters = create_monsters()
+        for monster in monsters:
+            self.enemy_list.append(monster)
 
         # Create Items and place them in the item_list
         temp_list = create_items(determine_items())
@@ -120,11 +126,13 @@ class GameView(arcade.View):
         # Draw all the sprites.
         self.actor_list.draw()
 
+        self.enemy_list.draw()
+
         # for item in self.item_list:
         #     if not item.is_hidden:
         #         item.draw()
         self.item_list.draw()
-        self.player_sprite.draw()
+        self.player_sprite.draw()        
 
         # self.manager.draw()
 
@@ -171,6 +179,7 @@ class GameView(arcade.View):
         self.player_sprite.update()
         self.actor_list.update()
         self.item_list.update()
+        self.enemy_list.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -230,20 +239,24 @@ class GameView(arcade.View):
 
         # If there is an item
         if item is not None:
-            # Loop through to find the item in item_list
-            for i in range(len(self.item_list)):
-                # When the item is found
-                if self.item_list[i].id == item.id:
-                    # Grab it's index in item_list
-                    index = i
+            try:
+                # Loop through to find the item in item_list
+                for i in range(len(self.item_list)):
+                    # When the item is found
+                    if self.item_list[i].id == item.id:
+                        # Grab it's index in item_list
+                        index = i
 
-                    # Add the item to the Player's inventory
-                    if type(self.item_list[i]) == Gold:
-                        # Add the new gold value to the Player's gold value
-                        self.use(self.item_list[i])
-                    else:
-                        # Otherwise, add the instance of the Item to the Player's inventory
-                        self.player_sprite.inv.append(self.item_list[i])
+                        # Add the item to the Player's inventory
+                        if type(self.item_list[i]) == Gold:
+                            # Add the new gold value to the Player's gold value
+                            self.use(self.item_list[i])
+                        else:
+                            # Otherwise, add the instance of the Item to the Player's inventory
+                            self.player_sprite.inv.append(self.item_list[i])
+            except AttributeError:
+                self.player_sprite.attack(item)
+                
         # Check if index was changed
         if index != -1:
             self.item_list.pop(index)
@@ -270,18 +283,8 @@ class GameView(arcade.View):
         """ Determines a randomized position on the grid/screen for each of a set of Items """
 
         # For each item in item_list
-        for item in self.item_list:
-            # Get random grid position
-            row = randint(0, self.grid.n_rows - 1)
-            col = randint(0, self.grid.n_cols - 1)
-
-            # Set the temporary grid position
-            temp_pos = self.grid.grid[row][col]
-
-            # While TileType != Floor and TileType != Trail and Tile has an item
-            while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
-                   or temp_pos.has_item):
-                # Determine random position again
+        def rand_thing(obj_list):
+            for obj in obj_list:
                 # Get random grid position
                 row = randint(0, self.grid.n_rows - 1)
                 col = randint(0, self.grid.n_cols - 1)
@@ -289,9 +292,23 @@ class GameView(arcade.View):
                 # Set the temporary grid position
                 temp_pos = self.grid.grid[row][col]
 
-            # Set this Item's position
-            item.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
-            self.grid[row, col].setitem(item)
+                # While TileType != Floor and TileType != Trail and Tile has an item
+                while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
+                    or temp_pos.has_item):
+                    # Determine random position again
+                    # Get random grid position
+                    row = randint(0, self.grid.n_rows - 1)
+                    col = randint(0, self.grid.n_cols - 1)
+
+                    # Set the temporary grid position
+                    temp_pos = self.grid.grid[row][col]
+
+                # Set this Item's position
+                obj.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+                self.grid[row, col].setitem(obj)
+        
+        rand_thing(self.item_list)
+        rand_thing(self.enemy_list)
 
     def use(self, item, weapon=None, armor=None, monster=None):
         """ use function used to call an Item's use method with the correct parameters. """
