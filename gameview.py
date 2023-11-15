@@ -180,6 +180,16 @@ class GameView(arcade.View):
         self.actor_list.update()
         self.item_list.update()
         self.enemy_list.update()
+        if not self.player_sprite.has_turn:
+            new_enemies = arcade.SpriteList()
+            for enemy in self.enemy_list:
+                if enemy.is_alive:
+                    if self.player_sprite.is_alive:
+                        enemy.take_turn(self.player_sprite, self.grid)
+                    new_enemies.append(enemy)
+            self.player_sprite.has_turn = True
+            self.enemy_list = new_enemies
+        
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -239,7 +249,7 @@ class GameView(arcade.View):
 
         # If there is an item
         if item is not None:
-            try:
+            if isinstance(item, Item):
                 # Loop through to find the item in item_list
                 for i in range(len(self.item_list)):
                     # When the item is found
@@ -254,8 +264,7 @@ class GameView(arcade.View):
                         else:
                             # Otherwise, add the instance of the Item to the Player's inventory
                             self.player_sprite.inv.append(self.item_list[i])
-            except AttributeError:
-                self.player_sprite.attack(item)
+            
                 
         # Check if index was changed
         if index != -1:
