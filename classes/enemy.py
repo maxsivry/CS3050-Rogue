@@ -52,8 +52,10 @@ class Enemy(Actor):
         print("You defeated the " + self.name)
         self.is_alive = False
 
+    # Returns true if the enemy is one tile away from the player
+    # Currently always returns false 
     def is_near(self, player, game):
-        return True
+        return False
 
     def take_turn(self, player, game):
         if self.is_near(player, game):
