@@ -271,6 +271,8 @@ class Player(Actor):
         else:
             print("You miss the " + enemy.name + "...", )
         
+        if not enemy.is_alive:
+            self.update_level(enemy.reward)
         self.end_turn()
 
     def get_defense(self):
