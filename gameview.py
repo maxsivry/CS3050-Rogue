@@ -97,7 +97,7 @@ class GameView(arcade.View):
 
         self.recreate_grid()
 
-        monsters = create_monsters()
+        monsters = create_monsters(self.player_sprite.level)
         for monster in monsters:
             self.enemy_list.append(monster)
 
