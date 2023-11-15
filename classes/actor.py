@@ -113,6 +113,9 @@ class Player(Actor):
         # can be used for other things if we want
         self.dex = 10
 
+        # Indicates when the player has their turn
+        self.has_turn = True
+
         # Is the Player alive?
         self.is_alive = True
 
@@ -166,6 +169,22 @@ class Player(Actor):
             validmove = False
             return None
 
+        item = None
+        # Grab the item at that grid location, reset the grid location
+        if grid[rowindex, columnindex].has_item:
+            item = grid[rowindex, columnindex].getitem()
+            if(isinstance(item, Item)):
+                grid[rowindex, columnindex].has_item = False
+                grid[rowindex, columnindex].item = None
+                
+            elif(isinstance(item, Actor)):
+                self.attack(item)
+                validmove = False # Prevents the player from moving after attacking
+                if not item.is_alive:
+                    grid[rowindex, columnindex].has_item = False
+                    grid[rowindex, columnindex].item = None
+                self.end_turn() # Ends turn as the player attacked
+        
         if validmove:
             if direction == 'Up' and self.center_y > 0:
                 self.change_y += constants.TILE_HEIGHT
@@ -179,12 +198,9 @@ class Player(Actor):
             elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
                 self.change_x += constants.TILE_WIDTH
                 self.change_y = 0
-
-        # Grab the item at that grid location, reset the grid location
-        if grid[rowindex, columnindex].has_item:
-            item = grid[rowindex, columnindex].getitem()
-            grid[rowindex, columnindex].has_item = False
-            grid[rowindex, columnindex].item = None
+            self.end_turn() # Ends turn as the player moved to a valid location
+        
+        if isinstance(item, Item):
             return item
 
         # if tile type is stairs
@@ -254,6 +270,11 @@ class Player(Actor):
             enemy.take_damage(damage)
         else:
             print("You miss the " + enemy.name + "...", )
+        
+        self.end_turn()
 
     def get_defense(self):
         return self.base_defense + self.armor
+    
+    def end_turn(self):
+        self.has_turn = False
