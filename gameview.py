@@ -4,6 +4,7 @@ from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
 import arcade.gui
+from endview import EndView
 
 
 # TODO: Make it so items can't spawn on boundaries
@@ -92,6 +93,10 @@ class GameView(arcade.View):
         stats_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
         self.shape_list.append(stats_rect)
 
+        #title rect
+        title = arcade.create_rectangle_filled(525, constants.SCREEN_HEIGHT -41, 1050, 82, arcade.color.ICEBERG)
+        self.shape_list.append(title)
+
 
     def on_draw(self):
         """ Render the screen. """
@@ -115,7 +120,11 @@ class GameView(arcade.View):
                         constants.SCREEN_HEIGHT - 70,
                         arcade.color.BLACK, font_size=10, multiline=True, 
                         width=150)
-
+        
+        arcade.draw_text("TO WIN OR TO ROGUE", 525, 
+                        constants.SCREEN_HEIGHT - 41,
+                        arcade.color.BLACK, font_size=20,  
+                        width=150, anchor_x="center", font_name="Kenney Rocket" )
 
         #if inventory is displayed
         inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300, 400, arcade.color.ICEBERG)
@@ -170,14 +179,22 @@ class GameView(arcade.View):
             #player movement, each movement potentially picks up item
             item = None
             if key == arcade.key.UP:
+                direction = 'Up'
                 item = self.player_sprite.move_dir("Up", self.grid)
             elif key == arcade.key.DOWN:
+                direction = 'Down'
                 item = self.player_sprite.move_dir("Down", self.grid)
             elif key == arcade.key.RIGHT:
+                direction = 'Right'
                 item = self.player_sprite.move_dir("Right", self.grid)
             elif key == arcade.key.LEFT:
+                direction = 'Left'
                 item = self.player_sprite.move_dir("Left", self.grid)
             self.pick_up_item(item)
+
+            #monster movement
+            for monster in self.actor_list:
+                monster.chase(self.player_sprite, self.grid, direction)
 
 
         #if inventory is open
@@ -371,10 +388,32 @@ class GameView(arcade.View):
                     width=150) 
     
     def help_message(self):
-        pass
+        arcade.draw_
+
+    def battlemessage(self, message):
+        box_width = 200
+        box_height = 100
+        box_x = constants.SCREEN_WIDTH / 2 
+        box_y = constants.SCREEN_HEIGHT / 2
+        box_color = arcade.color.ICEBERG
+        border_color = arcade.color.DARK_RED
+        rotation_angle = 0
+
+        # Draw box
+        arcade.draw_rectangle_filled(box_x, box_y, box_width, box_height, box_color)
+        arcade.draw_rectangle_outline(box_x, box_y, box_width, box_height, border_color, 4)
+
+        # Draw text
+        arcade.draw_text("BATTLE!", box_x - box_width / 2, box_y + (box_height / 4) * 3,
+                         arcade.color.BLACK, font_size=20, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
+
+        arcade.draw_text(message, box_x - box_width / 2, box_y + box_height / 2,
+                         arcade.color.BLACK, font_size=10, anchor_x="left", )                 
 
     def quit_game(self):
-        pass
+        end_view = EndView()
+        self.window.show_view(end_view)
+
 
         # def on_key_release(self, key, modifiers):
     #     """
