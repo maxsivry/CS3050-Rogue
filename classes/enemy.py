@@ -16,7 +16,7 @@ def create_monsters(level):
 
     num_monsters = (int) (random.randint(2,5) + level*.8)
 
-    for _ in range(num_monsters+5):
+    for _ in range(num_monsters):
         monster_type = random.randint(0, 100-level)
         if monster_type < DRAGON_CHANCE and level > 3:
             monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
