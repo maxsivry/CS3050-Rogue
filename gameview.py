@@ -32,6 +32,7 @@ class GameView(arcade.View):
         self.shape_list = None
         self.actor_list = None
         self.item_list = None
+        self.enemy_list = None
 
         # Grid
         self.grid: Grid = Grid(46, 80)
@@ -132,7 +133,7 @@ class GameView(arcade.View):
         #     if not item.is_hidden:
         #         item.draw()
         self.item_list.draw()
-        self.player_sprite.draw()        
+        self.player_sprite.draw()
 
         # self.manager.draw()
 
@@ -189,7 +190,6 @@ class GameView(arcade.View):
                     new_enemies.append(enemy)
             self.player_sprite.has_turn = True
             self.enemy_list = new_enemies
-        
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -264,8 +264,7 @@ class GameView(arcade.View):
                         else:
                             # Otherwise, add the instance of the Item to the Player's inventory
                             self.player_sprite.inv.append(self.item_list[i])
-            
-                
+
         # Check if index was changed
         if index != -1:
             self.item_list.pop(index)
@@ -303,7 +302,7 @@ class GameView(arcade.View):
 
                 # While TileType != Floor and TileType != Trail and Tile has an item
                 while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
-                    or temp_pos.has_item):
+                       or temp_pos.has_item):
                     # Determine random position again
                     # Get random grid position
                     row = randint(0, self.grid.n_rows - 1)
@@ -315,7 +314,7 @@ class GameView(arcade.View):
                 # Set this Item's position
                 obj.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
                 self.grid[row, col].setitem(obj)
-        
+
         rand_thing(self.item_list)
         rand_thing(self.enemy_list)
 
