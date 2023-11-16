@@ -5,8 +5,6 @@ from random import randint
 import sys
 import project_constants as constants
 
-# TODO: Create charges, use methods, and unequip methods for remaining items
-
 # Constants
 # Colors of Potions
 POTION_COLORS = ["blue", "red", "green", "black", "grey", "yellow", "orange", "purple"]
@@ -20,20 +18,18 @@ WAND_WOODS = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "c
 # Paper of Scrolls
 SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper"]
 
-# key: [spawn_chance, class type, discovered, description]
+# key: [spawn_chance, class type]
 ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Studded Leather": [15, "armor"], "Scale Mail": [13, "armor"],
          "Chain Mail": [12, "armor"], "Splint Mail": [10, "armor"],
          "Banded Mail": [10, "armor"], "Plate Mail": [5, "armor"],
-         "Magic Mapping": [14, "scroll"], "Identify Ring": [16, "scroll"],
-         "Increase Max Health": [17, "scroll"], "Identify Potion": [17, "scroll"],
-         "Poison": [18, "potion"], "Monster Detection": [16, "potion"],
+         "Identify Ring": [16, "scroll"], "Increase Max Health": [17, "scroll"],
+         "Identify Potion": [17, "scroll"], "Poison": [18, "potion"],
          "Restore Strength": [23, "potion"], "Healing": [23, "potion"],
-         "Light": [22, "wand"], "Teleport To": [16, "wand"],
-         "Teleport Away": [16, "wand"], "Drain Life": [21, "wand"],
-         "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
-         "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [35, "gold"], "Weapon": [0, "weapon"], "Mace": [5, "weapon"],
+         "Teleport To": [16, "wand"], "Teleport Away": [16, "wand"],
+         "Drain Life": [21, "wand"], "Add Strength": [19, "ring"],
+         "Increase Damage": [18, "ring"], "Teleportation": [15, "ring"],
+         "Dexterity": [18, "ring"], "Gold": [35, "gold"], "Mace": [5, "weapon"],
          "Longsword": [5, "weapon"], "Club": [5, "weapon"], "Scimitar": [5, "weapon"]}
 
 
@@ -132,11 +128,6 @@ def create_items(to_create: list) -> list:
                 items_list.append(BandedMail(filename="static/armor.png", scale=constants.SPRITE_SCALING))
             case "Plate Mail":
                 items_list.append(PlateMail(filename="static/armor.png", scale=constants.SPRITE_SCALING))
-            case "Magic Mapping":
-                if constants.items_info[MagicMapping][1] == '':
-                    constants.items_info[MagicMapping][1] = item[1]
-                items_list.append(MagicMapping(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                               desc=constants.items_info[MagicMapping][1]))
             case "Increase Max Health":
                 if constants.items_info[IncreaseMaxHealth][1] == '':
                     constants.items_info[IncreaseMaxHealth][1] = item[1]
@@ -158,11 +149,6 @@ def create_items(to_create: list) -> list:
                     constants.items_info[Poison][1] = item[1]
                 items_list.append(Poison(filename="static/potion.png", scale=constants.SPRITE_SCALING,
                                          desc=constants.items_info[Poison][1]))
-            case "Monster Detection":
-                if constants.items_info[MonsterDetection][1] == '':
-                    constants.items_info[MonsterDetection][1] = item[1]
-                items_list.append(MonsterDetection(filename="static/potion.png", scale=constants.SPRITE_SCALING,
-                                                   desc=constants.items_info[MonsterDetection][1]))
             case "Restore Strength":
                 if constants.items_info[RestoreStrength][1] == '':
                     constants.items_info[RestoreStrength][1] = item[1]
@@ -173,11 +159,6 @@ def create_items(to_create: list) -> list:
                     constants.items_info[Healing][1] = item[1]
                 items_list.append(Healing(filename="static/potion.png", scale=constants.SPRITE_SCALING,
                                           desc=constants.items_info[Healing][1]))
-            case "Light":
-                if constants.items_info[Light][1] == '':
-                    constants.items_info[Light][1] = item[1]
-                items_list.append(Light(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                        desc=constants.items_info[Light][1]))
             case "Teleport To":
                 if constants.items_info[TeleportTo][1] == '':
                     constants.items_info[TeleportTo][1] = item[1]
@@ -227,8 +208,6 @@ def create_items(to_create: list) -> list:
 # Fields:
 # -filename
 # -scale
-# -enchantment
-# -is_hidden
 # -title
 # -hidden_title
 # -spawn_chance
@@ -237,16 +216,12 @@ class Item(arcade.Sprite):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             spawn_chance: int = 0
     ):
         super().__init__(filename=filename, scale=scale)
-        self.is_hidden = is_hidden
         self.title = title
         self.spawn_chance = spawn_chance
-        self.enchantment = enchantment
         self.id = randint(0, sys.maxsize)
 
 
@@ -255,8 +230,6 @@ class Item(arcade.Sprite):
 # Fields:
 # filename: str
 # scale: float
-# enchantment: bool
-# is_hidden: bool
 # title: str
 # spawn_chance: int
 # gold: int
@@ -265,12 +238,10 @@ class Gold(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
             gold: int = -1
     ):
         self.gold = randint(1, 50) if gold == -1 else gold
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
-                      title=f"{self.gold} gold", spawn_chance=ITEMS["Gold"][0])
+        Item.__init__(self, filename=filename, scale=scale, title=f"{self.gold} gold", spawn_chance=ITEMS["Gold"][0])
 
     def use(self, player):
         # Update player with additional gold
@@ -282,8 +253,6 @@ class Gold(Item):
 # Fields:
 # filename: str
 # scale: float
-# enchantment: bool
-# is_hidden: bool
 # title: str
 # ac: int
 # spawn_chance: int
@@ -318,14 +287,11 @@ class Armor(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             ac: int = 0,
             spawn_chance: int = 0
     ):
-        Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden,
-                      title=title, spawn_chance=spawn_chance)
+        Item.__init__(self, filename=filename, scale=scale, title=title, spawn_chance=spawn_chance)
         self.ac = ac
 
 
@@ -334,11 +300,9 @@ class Leather(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Leather Armor",
-                       enchantment=enchantment, ac=2, spawn_chance=ITEMS["Leather"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Leather Armor",
+                       ac=2, spawn_chance=ITEMS["Leather"][0])
 
 
 class RingMail(Armor):
@@ -346,11 +310,9 @@ class RingMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Ring Mail Armor",
-                       enchantment=enchantment, ac=3, spawn_chance=ITEMS["Ring Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Ring Mail Armor",
+                       ac=3, spawn_chance=ITEMS["Ring Mail"][0])
 
 
 class StuddedLeather(Armor):
@@ -358,11 +320,9 @@ class StuddedLeather(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Studded Leather Armor",
-                       enchantment=enchantment, ac=3, spawn_chance=ITEMS["Studded Leather"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Studded Leather Armor",
+                       ac=3, spawn_chance=ITEMS["Studded Leather"][0])
 
 
 class ScaleMail(Armor):
@@ -370,11 +330,9 @@ class ScaleMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scale Mail Armor",
-                       enchantment=enchantment, ac=4, spawn_chance=ITEMS["Scale Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Scale Mail Armor",
+                       ac=4, spawn_chance=ITEMS["Scale Mail"][0])
 
 
 class ChainMail(Armor):
@@ -382,11 +340,9 @@ class ChainMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Chain Mail Armor",
-                       enchantment=enchantment, ac=5, spawn_chance=ITEMS["Chain Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Chain Mail Armor",
+                       ac=5, spawn_chance=ITEMS["Chain Mail"][0])
 
 
 class SplintMail(Armor):
@@ -394,11 +350,9 @@ class SplintMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Splint Mail Armor",
-                       enchantment=enchantment, ac=6, spawn_chance=ITEMS["Splint Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Splint Mail Armor",
+                       ac=6, spawn_chance=ITEMS["Splint Mail"][0])
 
 
 class BandedMail(Armor):
@@ -406,11 +360,9 @@ class BandedMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Banded Mail Armor",
-                       enchantment=enchantment, ac=6, spawn_chance=ITEMS["Banded Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Banded Mail Armor",
+                       ac=6, spawn_chance=ITEMS["Banded Mail"][0])
 
 
 class PlateMail(Armor):
@@ -418,11 +370,9 @@ class PlateMail(Armor):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True
     ):
-        Armor.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Plate Mail Armor",
-                       enchantment=enchantment, ac=7, spawn_chance=ITEMS["Plate Mail"][0])
+        Armor.__init__(self, filename=filename, scale=scale, title="Plate Mail Armor",
+                       ac=7, spawn_chance=ITEMS["Plate Mail"][0])
 
 
 # NOTE: For simplicity, will limit types of Potions, Rings, Rods, and Scrolls to Four
@@ -431,19 +381,11 @@ class PlateMail(Armor):
 # Fields:
 # -filename: str
 # -scale: float
-# -enchantment: bool
-# -is_hidden: bool
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
 # -------------------------------
 # Scroll types (Super: Scroll)
-# -Magic Mapping
-# Reveals the entire map
-# --desc: str = *Random Description*
-# --spawn chance: int = 4
-# --title: str = Scroll of Magic Mapping
-# --hidden_title: str = *desc* scroll
 # -Increase Max Health
 # Increase Player's max hp by 5
 # --desc: str = *Random Description*
@@ -467,68 +409,27 @@ class Scroll(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
             spawn_chance: int = 0,
             charges: int = 1
     ):
-        Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
+        Item.__init__(self, filename=filename, scale=scale, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
         self.charges = charges
 
 
 # Subclasses scrolls (Super: Scroll)
-class MagicMapping(Scroll):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
-            desc: str = ''
-    ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Magic Mapping",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Magic Mapping"][0])
-        self.desc = desc
-
-    # TODO: Test this, probably done
-    def use(self, player, grid: Grid):
-        """ This reveals the entire level. """
-        # Make sure this hasn't already been used
-        if self.charges != 0:
-            # Check if the Player has already used the item
-            if not constants.items_info[MagicMapping][0]:
-                # Set used in constants.items_info
-                constants.items_info[MagicMapping][0] = True
-
-            # Reveal the map
-            for row in range(grid.n_rows):
-                for col in range(grid.n_cols):
-                    grid.grid[row][col].is_hidden = False
-
-            # Set charges
-            self.charges -= 1
-
-            # Set title
-            self.title = "USED Scroll of Magic Mapping"
-
-
 class IncreaseMaxHealth(Scroll):
     def __init__(
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
-                        title="Scroll of Increase Max Health", hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Increase Max Health"][0])
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Increase Max Health",
+                        hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Increase Max Health"][0])
         self.desc = desc
 
     def use(self, player):
@@ -555,13 +456,10 @@ class IdentifyRing(Scroll):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Ring",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Identify Ring"][0])
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Identify Ring",
+                        hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Identify Ring"][0])
         self.desc = desc
 
     def use(self, player):
@@ -599,13 +497,10 @@ class IdentifyPotion(Scroll):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Potion",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Identify Potion"][0])
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Identify Potion",
+                        hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Identify Potion"][0])
         self.desc = desc
 
     def use(self, player):
@@ -643,8 +538,6 @@ class IdentifyPotion(Scroll):
 # Fields:
 # -filename: str
 # -scale: float
-# -enchantment: bool
-# -is_hidden: bool
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
@@ -655,12 +548,6 @@ class IdentifyPotion(Scroll):
 # --desc: str = *Random Description*
 # --spawn chance: int = 8
 # --title: str = Poison Potion
-# --hidden_title: str = *desc* potion
-# -Monster Detection
-# Reveals ONLY monsters
-# --desc: str = *Random Description*
-# --spawn chance: int = 6
-# --title: str = Monster Detection Potion
 # --hidden_title: str = *desc* potion
 # -Restore Strength
 # Restores strength to max
@@ -679,15 +566,12 @@ class Potion(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
             spawn_chance: int = 0,
             charges: int = 1
     ):
-        Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
-                      spawn_chance=spawn_chance)
+        Item.__init__(self, filename=filename, scale=scale, title=title, spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
         self.charges = charges
 
@@ -698,12 +582,9 @@ class Poison(Potion):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Potion.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Poison Potion",
-                        hidden_title=f"{desc} potion", enchantment=enchantment,
+        Potion.__init__(self, filename=filename, scale=scale, title="Poison Potion", hidden_title=f"{desc} potion",
                         spawn_chance=ITEMS["Poison"][0])
         self.desc = desc
 
@@ -733,49 +614,15 @@ class Poison(Potion):
             self.title = "EMPTY Poison Potion"
 
 
-class MonsterDetection(Potion):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
-            desc: str = ''
-    ):
-        Potion.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Monster Detection Potion",
-                        hidden_title=f"{desc} potion", enchantment=enchantment,
-                        spawn_chance=ITEMS["Monster Detection"][0])
-        self.desc = desc
-
-    # TODO: Write this when Evan implements monsters
-    def use(self, player, grid: Grid):
-        # Check if Player has already used item
-        if self.charges != 0:
-            # Check if the Player has already used the item
-            if not constants.items_info[MonsterDetection][0]:
-                # Set used in constants.items_info
-                constants.items_info[MonsterDetection][0] = True
-
-            # Reveal monsters on grid
-            # Update charges
-            self.charges -= 1
-
-            # Update title
-            self.title = "EMPTY Monster Detection Potion"
-
-
 class RestoreStrength(Potion):
     def __init__(
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Potion.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Restore Strength Potion",
-                        hidden_title=f"{desc} potion", enchantment=enchantment,
-                        spawn_chance=ITEMS["Restore Strength"][0])
+        Potion.__init__(self, filename=filename, scale=scale, title="Restore Strength Potion",
+                        hidden_title=f"{desc} potion", spawn_chance=ITEMS["Restore Strength"][0])
         self.desc = desc
 
     def use(self, player):
@@ -797,12 +644,9 @@ class Healing(Potion):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Potion.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Healing Potion",
-                        hidden_title=f"{desc} potion", enchantment=enchantment,
+        Potion.__init__(self, filename=filename, scale=scale, title="Healing Potion", hidden_title=f"{desc} potion",
                         spawn_chance=ITEMS["Healing"][0])
         self.desc = desc
 
@@ -840,19 +684,11 @@ class Healing(Potion):
 # Fields:
 # -filename: str
 # -scale: float
-# -enchantment: bool
-# -is_hidden: bool
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
 # -------------------------------
 # Wand types (Super: Wand)
-# -Light
-# Has 1-3 charges, reveals map per charge
-# --desc: str = *Random Description*
-# --spawn chance: int = 12
-# --title: str = Wand of Light
-# --hidden_title: str = *desc* wand
 # -Teleport To
 # Teleports player to selected floor tile/hallway on map
 # --desc: str = *Random Description*
@@ -876,63 +712,26 @@ class Wand(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
             spawn_chance: int = 0,
             charges: int = -1
     ):
-        Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
+        Item.__init__(self, filename=filename, scale=scale, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
         self.charges = charges if charges > -1 else randint(1, 5)
 
 
 # Subclasses wand types (Super: Wand)class
-class Light(Wand):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
-            desc: str = ''
-    ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Light",
-                      hidden_title=f"{desc} wand", enchantment=enchantment,
-                      spawn_chance=ITEMS["Light"][0])
-        self.desc = desc
-
-    # TODO: Write this when Noah updates grid with visible/invisible tiles
-    def use(self, player):
-        # Check if enough charges to use again
-        if self.charges != 0:
-            if not constants.items_info[Light][0]:
-                # Set used in constants.items_info
-                constants.items_info[Light][0] = True
-
-            # Reveal all tiles in a room
-
-            # Remove a charge
-            self.charges -= 1
-
-            # Update title
-            self.title = f"Wand of Light\nCharges: {self.charges}"
-
-
 class TeleportTo(Wand):
     def __init__(
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
-                      title=f"Wand of Teleport To",
-                      hidden_title=f"{desc} wand", enchantment=enchantment,
+        Wand.__init__(self, filename=filename, scale=scale, title=f"Wand of Teleport To", hidden_title=f"{desc} wand",
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
 
@@ -967,12 +766,9 @@ class TeleportAway(Wand):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Teleport Away",
-                      hidden_title=f"{desc} wand", enchantment=enchantment,
+        Wand.__init__(self, filename=filename, scale=scale, title="Wand of Teleport Away", hidden_title=f"{desc} wand",
                       spawn_chance=ITEMS["Teleport Away"][0])
         self.desc = desc
 
@@ -1001,12 +797,9 @@ class DrainLife(Wand):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Drain Life",
-                      hidden_title=f"{desc} wand", enchantment=enchantment,
+        Wand.__init__(self, filename=filename, scale=scale, title="Wand of Drain Life", hidden_title=f"{desc} wand",
                       spawn_chance=ITEMS["Drain Life"][0])
         self.desc = desc
 
@@ -1033,8 +826,6 @@ class DrainLife(Wand):
 # Fields:
 # -filename: str
 # -scale: float
-# -enchantment: bool
-# -is_hidden: bool
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
@@ -1070,15 +861,12 @@ class Ring(Item):
             self,
             filename: str = None,
             scale: float = 1,
-            enchantment: bool = False,
-            is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
             spawn_chance: int = 0,
             charges: int = 1
     ):
-        Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
-                      spawn_chance=spawn_chance)
+        Item.__init__(self, filename=filename, scale=scale, title=title, spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
         self.charges = charges
 
@@ -1089,13 +877,10 @@ class AddStrength(Ring):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Ring of Add Strength",
-                      hidden_title=f"{desc} ring", enchantment=enchantment,
-                      spawn_chance=ITEMS["Add Strength"][0])
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Add Strength",
+                      hidden_title=f"{desc} ring", spawn_chance=ITEMS["Add Strength"][0])
         self.desc = desc
 
     def use(self, player, grid: Grid = None):
@@ -1128,13 +913,10 @@ class IncreaseDamage(Ring):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Ring of Increase Damage",
-                      hidden_title=f"{desc} ring", enchantment=enchantment,
-                      spawn_chance=ITEMS["Increase Damage"][0])
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Increase Damage",
+                      hidden_title=f"{desc} ring", spawn_chance=ITEMS["Increase Damage"][0])
         self.desc = desc
 
     def use(self, player, grid: Grid = None):
@@ -1168,13 +950,10 @@ class Teleportation(Ring):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Ring of Teleportation",
-                      hidden_title=f"{desc} ring", enchantment=enchantment,
-                      spawn_chance=ITEMS["Teleportation"][0])
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Teleportation",
+                      hidden_title=f"{desc} ring", spawn_chance=ITEMS["Teleportation"][0])
         self.desc = desc
 
     def use(self, player, grid: Grid):
@@ -1222,13 +1001,10 @@ class Dexterity(Ring):
             self,
             filename: str = None,
             scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Ring of Dexterity",
-                      hidden_title=f"{desc} ring", enchantment=enchantment,
-                      spawn_chance=ITEMS["Dexterity"][0])
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Dexterity",
+                      hidden_title=f"{desc} ring", spawn_chance=ITEMS["Dexterity"][0])
         self.desc = desc
 
     def use(self, player, grid: Grid = None):
@@ -1257,11 +1033,8 @@ class Dexterity(Ring):
 class Weapon(Item):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1,
-                 is_hidden: bool = True,
-                 enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Weapon",
-                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1):
+        Item.__init__(self, filename=filename, scale=scale, title="Weapon", spawn_chance=ITEMS["Weapon"][0])
         self.power = 2
         self.accuracy = 2
 
@@ -1298,15 +1071,13 @@ class Weapon(Item):
     accuracy = 2
     name = "Weapon"
 
+
 # Starting weapon
 class Mace(Weapon):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1,
-                 is_hidden: bool = True,
-                 enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
-                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1):
+        Item.__init__(self, filename=filename, scale=scale, title="Mace", spawn_chance=ITEMS["Mace"][0])
         self.power = 2
         self.accuracy = 2
 
@@ -1315,24 +1086,22 @@ class Mace(Weapon):
         hit += player.dex + 2 * self.accuracy
         if hit > 50:
             # mace damage is 2d4 according to the wiki
-            damage = randint(1, 2*self.power) + randint(1, 2*self.power) + player.str//16
+            damage = randint(1, 2 * self.power) + randint(1, 2 * self.power) + player.str // 16
             return damage
         else:
             return 0
-    
+
     power = 2
     accuracy = 2
     name = "Mace"
+
 
 # Good at everything
 class Longsword(Weapon):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1,
-                 is_hidden: bool = True,
-                 enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Longsword",
-                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1):
+        Item.__init__(self, filename=filename, scale=scale, title="Longsword", spawn_chance=ITEMS["Longsword"][0])
         self.power = 3
         self.accuracy = 2
 
@@ -1340,24 +1109,22 @@ class Longsword(Weapon):
         hit = randint(1, 100)
         hit += player.dex + 2 * self.accuracy
         if hit > 50:
-            damage = randint(self.power, self.power*2) + randint(self.power, self.power*2) + player.str//10
+            damage = randint(self.power, self.power * 2) + randint(self.power, self.power * 2) + player.str // 10
             return damage
         else:
             return 0
-    
+
     power = 3
     accuracy = 2
     name = "Longsword"
+
 
 # low accuracy high damage better str scaling
 class Club(Weapon):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1,
-                 is_hidden: bool = True,
-                 enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Club",
-                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1):
+        Item.__init__(self, filename=filename, scale=scale, title="Club", spawn_chance=ITEMS["Club"][0])
         self.power = 4
         self.accuracy = 1
 
@@ -1365,24 +1132,23 @@ class Club(Weapon):
         hit = randint(1, 100)
         hit += player.dex + 2 * self.accuracy
         if hit > 50:
-            damage = randint(0, self.power) + randint(0, self.power) + player.str//4
+            damage = randint(0, self.power) + randint(0, self.power) + player.str // 4
             return damage
         else:
             return 0
-    
+
     power = 4
     accuracy = 1
     name = "Club"
+
 
 # Accurate and has dex scaling
 class Scimitar(Weapon):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1,
-                 is_hidden: bool = True,
-                 enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scimitar",
-                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1):
+        Item.__init__(self, filename=filename, scale=scale, title="Scimitar",
+                      spawn_chance=ITEMS["Scimitar"][0])
         self.power = 1
         self.accuracy = 4
 
@@ -1390,11 +1156,11 @@ class Scimitar(Weapon):
         hit = randint(1, 100)
         hit += player.dex + 2 * self.accuracy
         if hit > 50:
-            damage = randint(1, 2*self.power) + player.str//16 + player.dex//6
+            damage = randint(1, 2 * self.power) + player.str // 16 + player.dex // 6
             return damage
         else:
             return 0
-    
+
     power = 1
     accuracy = 4
     name = "Scimitar"

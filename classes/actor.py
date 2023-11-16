@@ -38,26 +38,9 @@ class Player(Actor):
     def __init__(
             self,
             filename: str = None,
-            scale: float = 1,
-            image_x: float = 0,
-            image_y: float = 0,
-            image_width: float = 0,
-            image_height: float = 0,
-            center_x: float = 0,
-            center_y: float = 0,
-            repeat_count_x: int = 1,  # Unused
-            repeat_count_y: int = 1,  # Unused
-            flipped_horizontally: bool = False,
-            flipped_vertically: bool = False,
-            flipped_diagonally: bool = False,
-            hit_box_algorithm: Optional[str] = "Simple",
-            hit_box_detail: float = 4.5,
-            texture: Texture = None,
-            angle: float = 0
+            scale: float = 1
     ):
-        super().__init__(filename, scale, image_x, image_y, image_width, image_height, center_x, center_y,
-                         repeat_count_x, repeat_count_y, flipped_horizontally, flipped_vertically, flipped_diagonally,
-                         hit_box_algorithm, hit_box_detail, texture, angle)
+        super().__init__(filename, scale)
 
         # Start at default level (1)
         self.level = 1
@@ -113,7 +96,7 @@ class Player(Actor):
         """ Simply returns a formatted string representing the Player's inventory """
         # Create string object representing inventory
         return_str = ''
-        
+
         # For each item in the Player's inventory
         for i in range(len(self.inv)):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
@@ -125,10 +108,8 @@ class Player(Actor):
 
         # Return the formatted string
         return return_str
-    
 
     # overrides super class mov_dir, checking tiles and items before moving player
-    # ERROR WITH MOTION IN GRID WITHOUT TILES
     def move_dir(self, direction, grid):
         # initialize variables
         validmove = True
@@ -150,7 +131,8 @@ class Player(Actor):
             validmove = False
             return None  # exits function
         # access tile information at direction moved
-        if grid[rowindex, columnindex].tile_type == TileType.Wall or grid[rowindex, columnindex].tile_type == TileType.Empty:
+        if grid[rowindex, columnindex].tile_type == TileType.Wall or grid[
+            rowindex, columnindex].tile_type == TileType.Empty:
             validmove = False
             return None
 
@@ -158,18 +140,18 @@ class Player(Actor):
         # Grab the item at that grid location, reset the grid location
         if grid[rowindex, columnindex].has_item:
             item = grid[rowindex, columnindex].getitem()
-            if(isinstance(item, Item)):
+            if (isinstance(item, Item)):
                 grid[rowindex, columnindex].has_item = False
                 grid[rowindex, columnindex].item = None
-                
-            elif(isinstance(item, Actor)):
+
+            elif (isinstance(item, Actor)):
                 self.attack(item)
-                validmove = False # Prevents the player from moving after attacking
+                validmove = False  # Prevents the player from moving after attacking
                 if not item.is_alive:
                     grid[rowindex, columnindex].has_item = False
                     grid[rowindex, columnindex].item = None
-                self.end_turn() # Ends turn as the player attacked
-        
+                self.end_turn()  # Ends turn as the player attacked
+
         if validmove:
             if direction == 'Up' and self.center_y > 0:
                 self.change_y += constants.TILE_HEIGHT
@@ -183,8 +165,8 @@ class Player(Actor):
             elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
                 self.change_x += constants.TILE_WIDTH
                 self.change_y = 0
-            self.end_turn() # Ends turn as the player moved to a valid location
-        
+            self.end_turn()  # Ends turn as the player moved to a valid location
+
         if isinstance(item, Item):
             return item
 
@@ -255,13 +237,13 @@ class Player(Actor):
             enemy.take_damage(damage)
         else:
             print("You miss the " + enemy.name + "...", )
-        
+
         if not enemy.is_alive:
             self.update_level(enemy.reward)
         self.end_turn()
 
     def get_defense(self):
         return self.base_defense + self.armor
-    
+
     def end_turn(self):
         self.has_turn = False

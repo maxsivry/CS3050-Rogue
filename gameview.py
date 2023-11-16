@@ -290,8 +290,6 @@ class GameView(arcade.View):
         # NOTE: Cannot use a match statement here since each item has unique values for it's fields
         if isinstance(item, Gold):
             item.use(self.player_sprite)
-        elif isinstance(item, MagicMapping):
-            item.use(self.player_sprite, self.grid)
         elif isinstance(item, IncreaseMaxHealth):
             item.use(self.player_sprite)
         elif isinstance(item, IdentifyRing):
@@ -300,13 +298,9 @@ class GameView(arcade.View):
             item.use(self.player_sprite)
         elif isinstance(item, Poison):
             item.use(self.player_sprite)
-        elif isinstance(item, MonsterDetection):
-            item.use(self.player_sprite, self.grid)
         elif isinstance(item, RestoreStrength):
             item.use(self.player_sprite)
         elif isinstance(item, Healing):
-            item.use(self.player_sprite)
-        elif isinstance(item, Light):
             item.use(self.player_sprite)
         elif isinstance(item, TeleportTo):
             item.use(self.player_sprite, self.grid, self.recent_coords)
@@ -399,7 +393,9 @@ class GameView(arcade.View):
             y = constants.SCREEN_HEIGHT / 2 + 150 - i * 15
             color = arcade.color.RED if i == self.highlighted_item else arcade.color.BLACK
             if (not constants.items_info[type(item)][0] and not issubclass(type(item), Armor)
-                    and type(item) is not Gold and type(item) is not issubclass(type(self.inv[i]), Weapon)):
+                    and not issubclass(type(item), Weapon)
+                    and type(item) is not Gold
+                    and type(item) is not issubclass(type(self.player_sprite.inv[i]), Weapon)):
                 arcade.draw_text(item.hidden_title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10,
                                  multiline=True, width=280)
             else:

@@ -27,9 +27,9 @@ SCREEN_TITLE = "Rogue"
 # Format: Class: [Revealed by Player, Description]
 items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [False, ''], ScaleMail: [False, ''],
               ChainMail: [False, ''], SplintMail: [False, ''], BandedMail: [False, ''], PlateMail: [False, ''],
-              MagicMapping: [False, ''], IdentifyRing: [False, ''], IncreaseMaxHealth: [False, ''],
-              IdentifyPotion: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
-              RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
+              IdentifyRing: [False, ''], IncreaseMaxHealth: [False, ''], IdentifyPotion: [False, ''],
+              Poison: [False, ''], RestoreStrength: [False, ''], Healing: [False, ''],
               TeleportTo: [False, ''], TeleportAway: [False, ''], DrainLife: [False, ''],
               AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
-              Gold: [True, ''], Weapon: [False, ''], Mace: [False, ''], Longsword: [False, ''], Club: [False, ''], Scimitar: [False, '']}
+              Gold: [True, ''], Weapon: [False, ''], Mace: [False, ''], Longsword: [False, ''], Club: [False, ''],
+              Scimitar: [False, '']}
