@@ -196,6 +196,14 @@ def create_items(to_create: list) -> list:
                                             desc=constants.items_info[Dexterity][1]))
             case "Gold":
                 items_list.append(Gold(filename="static/gold.png", scale=constants.SPRITE_SCALING))
+            case "Scimitar":
+                items_list.append(Scimitar(filename="static/scimitar.png", scale=constants.SPRITE_SCALING))
+            case "Club":
+                items_list.append(Club(filename="static/club.png", scale=constants.SPRITE_SCALING))
+            case "Longsword":
+                items_list.append(Longsword(filename="static/longsword.png", scale=constants.SPRITE_SCALING))
+            case "Mace":
+                items_list.append(Mace(filename="static/mace.png", scale=constants.SPRITE_SCALING))
             case _:
                 # Will never get here
                 pass
