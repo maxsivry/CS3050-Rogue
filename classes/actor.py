@@ -81,14 +81,21 @@ class Player(Actor):
         self.xp = 0
         self.lvl_xp = XP_LEVELS[self.level + 1]
 
+        # Initialize starting gold
+        self.gold = 0
+
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
         self.inv.append(Weapon())
         self.inv.append(RingMail())
 
+        # Initialize weapon and armor
         self.weapon = self.inv[0]
         self.armor = self.inv[1]
+
+        # Initialize active ring
+        self.ring = None
 
         # Initialize hp to default starting hp (12) & max hp (initially the same)
         self.max_hp = 12
@@ -106,13 +113,16 @@ class Player(Actor):
         # can be used for other things if we want
         self.dex = 10
 
+        # Indicates when the player has their turn
+        self.has_turn = True
+
         # Is the Player alive?
         self.is_alive = True
 
-    # TODO: Test this
     def display_player_info(self) -> str:
-
-        return f'Level: {self.level}\nGold: Decide how to represent gold\nHP: {self.health}({self.max_hp})\\nArmor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}'
+        """ Simply returns a string representing the most important stats. """
+        return (f'Level: {self.level}\nGold: {self.gold}\nHP: {self.health}({self.max_hp})\n'
+                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}\n{self.str}')
 
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """
@@ -160,6 +170,22 @@ class Player(Actor):
             validmove = False
             return None
 
+        item = None
+        # Grab the item at that grid location, reset the grid location
+        if grid[rowindex, columnindex].has_item:
+            item = grid[rowindex, columnindex].getitem()
+            if(isinstance(item, Item)):
+                grid[rowindex, columnindex].has_item = False
+                grid[rowindex, columnindex].item = None
+                
+            elif(isinstance(item, Actor)):
+                self.attack(item)
+                validmove = False # Prevents the player from moving after attacking
+                if not item.is_alive:
+                    grid[rowindex, columnindex].has_item = False
+                    grid[rowindex, columnindex].item = None
+                self.end_turn() # Ends turn as the player attacked
+        
         if validmove:
             if direction == 'Up' and self.center_y > 0:
                 self.change_y += constants.TILE_HEIGHT
@@ -173,12 +199,9 @@ class Player(Actor):
             elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
                 self.change_x += constants.TILE_WIDTH
                 self.change_y = 0
-
-        # Grab the item at that grid location, reset the grid location
-        if grid[rowindex, columnindex].has_item:
-            item = grid[rowindex, columnindex].getitem()
-            grid[rowindex, columnindex].has_item = False
-            grid[rowindex, columnindex].item = None
+            self.end_turn() # Ends turn as the player moved to a valid location
+        
+        if isinstance(item, Item):
             return item
 
         # if tile type is stairs
@@ -248,6 +271,13 @@ class Player(Actor):
             enemy.take_damage(damage)
         else:
             print("You miss the " + enemy.name + "...", )
+        
+        if not enemy.is_alive:
+            self.update_level(enemy.reward)
+        self.end_turn()
 
     def get_defense(self):
         return self.base_defense + self.armor
+    
+    def end_turn(self):
+        self.has_turn = False

@@ -3,6 +3,7 @@ import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
 from classes.actor import *
+from classes.enemy import *
 import arcade.gui
 from endview import EndView
 
@@ -21,6 +22,7 @@ class GameView(arcade.View):
     Inventory_open = False
     highlighted_item = 0
     appended = False
+    recent_coords = []
 
     def __init__(self):
         """
@@ -51,6 +53,9 @@ class GameView(arcade.View):
 
         self.down_pressed = False
 
+        # Track the most recent set of grid coordinates given by a click (to be used with wands)
+        self.recent_coords = [0, 0]
+
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -60,6 +65,7 @@ class GameView(arcade.View):
         # Sprite lists
         self.actor_list = arcade.SpriteList()
         self.item_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
         self.shape_list = arcade.ShapeElementList()
 
         # Set up the player
@@ -67,26 +73,22 @@ class GameView(arcade.View):
                                     scale=constants.SPRITE_SCALING)
         self.player_sprite.center_x = 7.5
         self.player_sprite.center_y = 7.5
-        self.player_sprite.inv.append(Gold(gold=0))
-        self.player_sprite.inv.append(Weapon())
-        self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
         self.grid.add_room(0, 0, 15, 15)
 
         self.recreate_grid()
 
+        monsters = create_monsters(self.player_sprite.level)
+        for monster in monsters:
+            self.enemy_list.append(monster)
+
         # Create Items and place them in the item_list
         temp_list = create_items(determine_items())
-        print(f"Number of classes: {len(temp_list)}")
         for item in temp_list:
-            armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
-                      PlateMail]
-            if type(item) not in armors and type(item) is not Gold:
-                print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
-            else:
-                print(f"title: {item.title}, id: {item.id}")
             self.item_list.append(item)
+
+        # Determine the Items' positions
         self.rand_pos()
 
         #player stats
@@ -96,6 +98,11 @@ class GameView(arcade.View):
         #title rect
         title = arcade.create_rectangle_filled(525, constants.SCREEN_HEIGHT -41, 1050, 82, arcade.color.ICEBERG)
         self.shape_list.append(title)
+
+        # player stats
+        current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT,
+                                                      arcade.color.ICEBERG)
+        self.shape_list.append(current_rect)
 
 
     def on_draw(self):
@@ -107,8 +114,9 @@ class GameView(arcade.View):
 
         # Draw all the sprites.
         self.actor_list.draw()
+        self.enemy_list.draw()
         self.item_list.draw()
-        self.player_sprite.draw()
+        self.player_sprite.draw()        
 
         #display player stats:
         arcade.draw_text("STATS", 1062, 
@@ -134,6 +142,7 @@ class GameView(arcade.View):
             inventory_rect.draw()
             self.display_inventory()
 
+        self.item_list.draw()
 
 
     def on_update(self, delta_time):
@@ -141,6 +150,17 @@ class GameView(arcade.View):
         self.player_sprite.update()
         self.actor_list.update()
         self.item_list.update()
+        self.enemy_list.update()
+        if not self.player_sprite.has_turn:
+            new_enemies = arcade.SpriteList()
+            for enemy in self.enemy_list:
+                if enemy.is_alive:
+                    if self.player_sprite.is_alive:
+                        enemy.take_turn(self.player_sprite, self.grid)
+                    new_enemies.append(enemy)
+            self.player_sprite.has_turn = True
+            self.enemy_list = new_enemies
+        
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -152,6 +172,8 @@ class GameView(arcade.View):
         row = int(y / constants.TILE_HEIGHT)
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
+
+        self.recent_coords = [row, column]
 
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
@@ -191,10 +213,6 @@ class GameView(arcade.View):
                 direction = 'Left'
                 item = self.player_sprite.move_dir("Left", self.grid)
             self.pick_up_item(item)
-
-            #monster movement
-            for monster in self.actor_list:
-                monster.chase(self.player_sprite, self.grid, direction)
 
 
         #if inventory is open
@@ -237,7 +255,8 @@ class GameView(arcade.View):
                     color = arcade.color.DARK_GRAY
                 else:
                     color = arcade.color.BLACK
-                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH+7.5, y * constants.TILE_HEIGHT+7.5,
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH + 7.5,
+                                                              y * constants.TILE_HEIGHT + 7.5,
                                                               constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
                 x += 1
@@ -249,18 +268,8 @@ class GameView(arcade.View):
         """ Determines a randomized position on the grid/screen for each of a set of Items """
 
         # For each item in item_list
-        for item in self.item_list:
-            # Get random grid position
-            row = randint(0, self.grid.n_rows - 1)
-            col = randint(0, self.grid.n_cols - 1)
-
-            # Set the temporary grid position
-            temp_pos = self.grid.grid[row][col]
-
-            # While TileType != Floor and TileType != Trail and Tile has an item
-            while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
-                   or temp_pos.has_item):
-                # Determine random position again
+        def rand_thing(obj_list):
+            for obj in obj_list:
                 # Get random grid position
                 row = randint(0, self.grid.n_rows - 1)
                 col = randint(0, self.grid.n_cols - 1)
@@ -268,13 +277,26 @@ class GameView(arcade.View):
                 # Set the temporary grid position
                 temp_pos = self.grid.grid[row][col]
 
-            # Set this Item's position
-            item.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT)+7.5)
-            self.grid[row, col].setitem(item)
+                # While TileType != Floor and TileType != Trail and Tile has an item
+                while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
+                    or temp_pos.has_item):
+                    # Determine random position again
+                    # Get random grid position
+                    row = randint(0, self.grid.n_rows - 1)
+                    col = randint(0, self.grid.n_cols - 1)
+
+                    # Set the temporary grid position
+                    temp_pos = self.grid.grid[row][col]
+
+                # Set this Item's position
+                obj.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+                self.grid[row, col].setitem(obj)
+        
+        rand_thing(self.item_list)
+        rand_thing(self.enemy_list)
 
     def use(self, item, weapon=None, armor=None, monster=None):
         """ use function used to call an Item's use method with the correct parameters. """
-
         # Match the item's class
         # Use methods have different parameters dependent on the class
         # Call the corresponding use method with the correct parameters
@@ -283,11 +305,11 @@ class GameView(arcade.View):
             item.use(self.player_sprite)
         elif isinstance(item, MagicMapping):
             item.use(self.player_sprite, self.grid)
-        elif isinstance(item, IdentifyWeapon):
-            item.use(self.player_sprite, weapon)
-        elif isinstance(item, IdentifyArmor):
-            item.use(self.player_sprite, armor)
-        elif isinstance(item, RemoveCurse):
+        elif isinstance(item, IncreaseMaxHealth):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyRing):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyPotion):
             item.use(self.player_sprite)
         elif isinstance(item, Poison):
             item.use(self.player_sprite)
@@ -300,19 +322,17 @@ class GameView(arcade.View):
         elif isinstance(item, Light):
             item.use(self.player_sprite)
         elif isinstance(item, TeleportTo):
-            item.use(self.player_sprite, self.grid)
+            item.use(self.player_sprite, self.grid, self.recent_coords)
         elif isinstance(item, TeleportAway):
             item.use(self.player_sprite, monster, self.grid)
-        elif isinstance(item, SlowMonster):
+        elif isinstance(item, DrainLife):
             item.use(self.player_sprite, monster)
-        elif isinstance(item, AddStrength):
-            item.use(self.player_sprite)
-        elif isinstance(item, IncreaseDamage):
-            item.use(self.player_sprite)
-        elif isinstance(item, Teleportation):
+        elif issubclass(type(item), Ring):
+            if self.player_sprite.ring and item.charges > 0:
+                self.player_sprite.ring.unequip(self.player_sprite, self.grid)
             item.use(self.player_sprite, self.grid)
-        elif isinstance(item, Dexterity):
-            item.use(self.player_sprite)
+            self.player_sprite.ring = item
+
         else:  # Items that reach here do not have a use method. They should not be passed into this function
             pass
 
@@ -388,7 +408,7 @@ class GameView(arcade.View):
                     width=150) 
     
     def help_message(self):
-        arcade.draw_
+        pass
 
     def battlemessage(self, message):
         box_width = 200
@@ -408,24 +428,9 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=20, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
 
         arcade.draw_text(message, box_x - box_width / 2, box_y + box_height / 2,
-                         arcade.color.BLACK, font_size=10, anchor_x="left", )                 
+                         arcade.color.BLACK, font_size=10, width = 150, multiline = True, anchor_x="left", )                 
 
     def quit_game(self):
         end_view = EndView()
         self.window.show_view(end_view)
 
-
-        # def on_key_release(self, key, modifiers):
-    #     """
-    #     Called when the user releases a key
-    #     """
-    #     if key == arcade.key.UP:
-    #         self.up_pressed = False
-    #     if key == arcade.key.DOWN:
-    #         self.down_pressed = False
-    #     if key == arcade.key.RIGHT:
-    #         self.right_pressed = False
-    #     if key == arcade.key.LEFT:
-    #         self.left_pressed = False
-
-    
