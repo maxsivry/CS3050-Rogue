@@ -87,7 +87,7 @@ class Player(Actor):
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
-        self.inv.append(Weapon())
+        self.inv.append(Mace())
         self.inv.append(RingMail())
 
         # Initialize weapon and armor
@@ -132,7 +132,7 @@ class Player(Actor):
         # For each item in the Player's inventory
         for i in range(len(self.inv)):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
-                    and type(self.inv[i]) is not Gold and type(self.inv[i]) is not Weapon):
+                    and type(self.inv[i]) is not Gold and not issubclass(type(self.inv[i]), Weapon)):
                 # If it hasn't been discovered and is not an Armor class
                 return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
             else:
