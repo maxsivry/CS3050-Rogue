@@ -14,21 +14,6 @@ XP_LEVELS = {1: 0, 2: 10, 3: 20, 4: 40, 5: 80, 6: 160, 7: 320, 8: 640, 9: 1300, 
 
 class Actor(arcade.Sprite):
 
-    # # gets direction
-    # def move_dir(self, direction, grid):
-    #     if direction == 'Up' and self.center_y > 0:
-    #         self.change_y += constants.TILE_HEIGHT
-    #         self.change_x = 0
-    #     elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
-    #         self.change_y -= constants.TILE_HEIGHT
-    #         self.change_x = 0
-    #     elif direction == 'Left' and self.center_x > 0:
-    #         self.change_x -= constants.TILE_WIDTH
-    #         self.change_y = 0
-    #     elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
-    #         self.change_x += constants.TILE_WIDTH
-    #         self.change_y = 0
-
     # Physically moves
     def update(self):
         self.center_x += self.change_x
@@ -87,7 +72,7 @@ class Player(Actor):
         # Initialize starting inventory.
         # Should start with 'some food', ring mail, short bow, 38 arrows
         self.inv = []
-        self.inv.append(Weapon())
+        self.inv.append(Mace())
         self.inv.append(RingMail())
 
         # Initialize weapon and armor
@@ -128,11 +113,11 @@ class Player(Actor):
         """ Simply returns a formatted string representing the Player's inventory """
         # Create string object representing inventory
         return_str = ''
-
+        
         # For each item in the Player's inventory
         for i in range(len(self.inv)):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
-                    and type(self.inv[i]) is not Gold and type(self.inv[i]) is not Weapon):
+                    and type(self.inv[i]) is not Gold and not issubclass(type(self.inv[i]), Weapon)):
                 # If it hasn't been discovered and is not an Armor class
                 return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
             else:
@@ -140,6 +125,7 @@ class Player(Actor):
 
         # Return the formatted string
         return return_str
+    
 
     # overrides super class mov_dir, checking tiles and items before moving player
     # ERROR WITH MOTION IN GRID WITHOUT TILES
@@ -161,11 +147,10 @@ class Player(Actor):
         # if potential move is out of grid
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
-            print(rowindex, columnindex, self.center_x, constants.TILE_WIDTH, (self.center_x // constants.TILE_WIDTH))
             validmove = False
             return None  # exits function
         # access tile information at direction moved
-        if grid[rowindex, columnindex].tile_type == TileType.Wall:
+        if grid[rowindex, columnindex].tile_type == TileType.Wall or grid[rowindex, columnindex].tile_type == TileType.Empty:
             validmove = False
             return None
 

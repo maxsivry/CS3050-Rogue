@@ -76,7 +76,21 @@ class Enemy(Actor):
     # Returns true if the enemy is one tile away from the player
     # Currently always returns false 
     def is_near(self, player, game):
-        return False
+
+        # #convert location to tile location player
+        player_col = int(player.center_x / constants.TILE_WIDTH)
+        player_row = int(player.center_y / constants.TILE_HEIGHT)
+
+        #convert location to tile location monster
+        monster_col = int(self.center_x / constants.TILE_WIDTH)
+        monster_row = int(self.center_y / constants.TILE_HEIGHT)
+        row_diff = player_row - monster_row
+        col_diff = player_col - monster_col
+
+        if (abs(row_diff) <= 1) and (abs(col_diff) <= 1):
+            return True
+        else:
+            return False
 
     def take_turn(self, player, game):
         if self.is_near(player, game):
@@ -88,9 +102,61 @@ class Enemy(Actor):
     # Takes in the player and the games state
     # to calculate where the monster should move
     # Default monster doesn't do anything
-    def chase(self, player, game):
-        pass
+    def chase(self, player, grid):
+        # function that takes in grid and returns true if move is valid
+        def checkvalid(grid, rM, cM):
+            return (
+            (grid[rM, cM].tile_type != TileType.Wall)
+            and (grid[rM, cM].tile_type != TileType.Empty)
+            and (rM < constants.ROW_COUNT)
+            and (cM < constants.COLUMN_COUNT)
+            and (rM >= 0)
+            and (cM >= 0)
+        )
 
+        # #convert location to tile location player
+        player_col = int(player.center_x / constants.TILE_WIDTH)
+        player_row = int(player.center_y / constants.TILE_HEIGHT)
+
+        #convert location to tile location monster
+        monster_col = int(self.center_x / constants.TILE_WIDTH)
+        monster_row = int(self.center_y / constants.TILE_HEIGHT)
+        row_diff = player_row - monster_row
+        col_diff = player_col - monster_col
+
+        # #if monster is close enough to "see" (if monster row or col is within 10)
+        if (abs(row_diff) < 15) and (abs(col_diff) < 15):
+
+            #check if either potential move is invalid
+            # If the player is above or below the monster
+            new_monster_row = monster_row + (1 if row_diff > 0 else -1)
+            new_monster_col = monster_col
+            valid1 = checkvalid(grid, new_monster_row, new_monster_col)
+            # If the player is to the left or right of the monster
+            new_monster_row2 = monster_row
+            new_monster_col2 = monster_col + (1 if col_diff > 0 else -1)
+            valid2 = checkvalid(grid, new_monster_row2, new_monster_col2)
+            
+            #if only one move is invalid, do the other
+            if not valid1 and valid2:
+                self.center_x = (new_monster_col2) * constants.TILE_WIDTH
+                self.center_y = (new_monster_row2) * constants.TILE_HEIGHT
+            
+            elif not valid2 and valid1:
+                self.center_x = (new_monster_col) * constants.TILE_WIDTH
+                self.center_y = (new_monster_row ) * constants.TILE_HEIGHT
+            
+            #if both moves are valid
+            elif valid1 and valid2:
+                if random.choice([True, False]):
+                    self.center_x = (new_monster_col) * constants.TILE_WIDTH
+                    self.center_y = (new_monster_row) * constants.TILE_HEIGHT
+                else:
+                    self.center_x = (new_monster_col2) * constants.TILE_WIDTH
+                    self.center_y = (new_monster_row2) * constants.TILE_HEIGHT
+
+        else:
+            return
 
 # Basic
 class Slime(Enemy):

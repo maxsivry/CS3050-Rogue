@@ -20,7 +20,7 @@ SPRITE_SCALING = TILE_HEIGHT / 1920
 # 15 * 70 + x = 17 * 72
 SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
-SCREEN_TITLE = "Rogue Testing"
+SCREEN_TITLE = "Rogue"
 
 # Project-Wide dictionary
 # To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
@@ -32,4 +32,4 @@ items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [Fals
               RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
               TeleportTo: [False, ''], TeleportAway: [False, ''], DrainLife: [False, ''],
               AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
-              Gold: [True, ''], Weapon: [False, '']}
+              Gold: [True, ''], Weapon: [False, ''], Mace: [False, ''], Longsword: [False, ''], Club: [False, ''], Scimitar: [False, '']}

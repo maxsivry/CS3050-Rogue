@@ -33,7 +33,8 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Teleport Away": [16, "wand"], "Drain Life": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
-         "Gold": [35, "gold"], "Weapon": [5, "weapon"]}
+         "Gold": [35, "gold"], "Weapon": [0, "weapon"], "Mace": [5, "weapon"],
+         "Longsword": [5, "weapon"], "Club": [5, "weapon"], "Scimitar": [5, "weapon"]}
 
 
 # Method to determine which items actually spawn
@@ -1259,7 +1260,7 @@ class Weapon(Item):
                  scale: float = 1,
                  is_hidden: bool = True,
                  enchantment: bool = False):
-        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Weapon",
                       enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
         self.power = 2
         self.accuracy = 2
@@ -1295,4 +1296,105 @@ class Weapon(Item):
 
     power = 2
     accuracy = 2
+    name = "Weapon"
+
+# Starting weapon
+class Mace(Weapon):
+    def __init__(self,
+                 filename: str = None,
+                 scale: float = 1,
+                 is_hidden: bool = True,
+                 enchantment: bool = False):
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+        self.power = 2
+        self.accuracy = 2
+
+    def get_damage(self, player):
+        hit = randint(1, 100)
+        hit += player.dex + 2 * self.accuracy
+        if hit > 50:
+            # mace damage is 2d4 according to the wiki
+            damage = randint(1, 2*self.power) + randint(1, 2*self.power) + player.str//16
+            return damage
+        else:
+            return 0
+    
+    power = 2
+    accuracy = 2
     name = "Mace"
+
+# Good at everything
+class Longsword(Weapon):
+    def __init__(self,
+                 filename: str = None,
+                 scale: float = 1,
+                 is_hidden: bool = True,
+                 enchantment: bool = False):
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Longsword",
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+        self.power = 3
+        self.accuracy = 2
+
+    def get_damage(self, player):
+        hit = randint(1, 100)
+        hit += player.dex + 2 * self.accuracy
+        if hit > 50:
+            damage = randint(self.power, self.power*2) + randint(self.power, self.power*2) + player.str//10
+            return damage
+        else:
+            return 0
+    
+    power = 3
+    accuracy = 2
+    name = "Longsword"
+
+# low accuracy high damage better str scaling
+class Club(Weapon):
+    def __init__(self,
+                 filename: str = None,
+                 scale: float = 1,
+                 is_hidden: bool = True,
+                 enchantment: bool = False):
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Club",
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+        self.power = 4
+        self.accuracy = 1
+
+    def get_damage(self, player):
+        hit = randint(1, 100)
+        hit += player.dex + 2 * self.accuracy
+        if hit > 50:
+            damage = randint(0, self.power) + randint(0, self.power) + player.str//4
+            return damage
+        else:
+            return 0
+    
+    power = 4
+    accuracy = 1
+    name = "Club"
+
+# Accurate and has dex scaling
+class Scimitar(Weapon):
+    def __init__(self,
+                 filename: str = None,
+                 scale: float = 1,
+                 is_hidden: bool = True,
+                 enchantment: bool = False):
+        Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scimitar",
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+        self.power = 1
+        self.accuracy = 4
+
+    def get_damage(self, player):
+        hit = randint(1, 100)
+        hit += player.dex + 2 * self.accuracy
+        if hit > 50:
+            damage = randint(1, 2*self.power) + player.str//16 + player.dex//6
+            return damage
+        else:
+            return 0
+    
+    power = 1
+    accuracy = 4
+    name = "Scimitar"
