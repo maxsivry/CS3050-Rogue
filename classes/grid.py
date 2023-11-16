@@ -1,32 +1,11 @@
 from classes.tile import *
-from random import randint
-
-
-class Rect:
-    x: int
-    y: int
-    w: int
-    h: int
-
-    def __init__(self, x: int, y: int, w: int, h: int):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-
-
-def rects_overlapping(r1: Rect, r2: Rect) -> bool:
-    return r1.x < r2.x + r2.w and \
-        r1.x + r1.w > r2.x and \
-        r1.y < r2.y + r2.h and \
-        r1.y + r1.h > r2.y
+from binarytree import Room
 
 
 class Grid:
     grid: list[list[Tile]]
     n_rows: int
     n_cols: int
-    n_rooms: int = 20
 
     def __init__(self, n_rows: int = 80, n_cols: int = 24):
         self.n_rows = n_rows
@@ -53,49 +32,43 @@ class Grid:
         row, col = index
         self.grid[row][col] = value
 
-    def populate_floor(self):
-        max_room_size = 14
-        min_room_size = 7
+    def add_room(self, room: Room):
+        border_x: int = room.x - 1
+        border_y: int = room.y - 1
+        border_w: int = room.w + 1
+        border_h: int = room.h + 1
 
-        for _ in range(self.n_rooms):
-            room_width = randint(min_room_size, max_room_size)
-            room_height = randint(min_room_size, max_room_size)
+        if border_x <= 0:
+            room.x += 1
+            border_x += 1
+        elif border_x > self.n_rows:
+            room.x -= 1
+            border_x -= 1
 
-            room_x = randint(0, self.n_cols - room_width - 1)
-            room_y = randint(0, self.n_rows - room_height - 1)
+        if border_y <= 0:
+            room.y += 1
+            border_y += 1
+        elif border_y > self.n_cols:
+            room.y -= 1
+            border_y -= 1
 
-            for row in range(room_x, room_x + room_width):
-                for col in range(room_y, room_y + room_height):
-                    try:
-                        if self.grid[row][col].tile_type == TileType.Floor:
-                            return
-                    except IndexError:
-                        pass
-
-            self.add_room(room_x, room_y, room_width, room_height)
-
-    def add_room(self, x: int, y: int, w: int, h: int):
-        for row in range(x, x + w):
-            for col in range(y, y + h):
-                try:
-                    self.grid[row][col].tile_type = TileType.Floor
-                except IndexError:
-                    pass
-
-    def print_grid(self):
-        for row in self.grid:
-            for tile in row:
-                if tile.tile_type == TileType.Floor:
-                    print('.', end='')
-                elif tile.tile_type == TileType.Wall:
-                    print('#', end='')
-                elif tile.tile_type == TileType.Empty:
-                    print('-', end='')
-
-            print()
+        try:
+            for x in range(border_x, border_x + border_w + 1):
+                if self.grid[x][border_y].tile_type != TileType.Trail:
+                    self.grid[x][border_y].tile_type = TileType.Wall
+                if self.grid[x][border_y + border_h].tile_type != TileType.Trail:
+                    self.grid[x][border_y + border_h].tile_type = TileType.Wall
+            for y in range(border_y, border_y + border_h):
+                if self.grid[border_x][y].tile_type != TileType.Trail:
+                    self.grid[border_x][y].tile_type = TileType.Wall
+                if self.grid[border_x + border_w][y].tile_type != TileType.Trail:
+                    self.grid[border_x + border_w][y].tile_type = TileType.Wall
+            for x in range(room.x, room.x + room.w):
+                for y in range(room.y, room.y + room.h):
+                    self.grid[x][y].tile_type = TileType.Floor
+        except IndexError:
+            pass
 
 
 if __name__ == "__main__":
     grid = Grid(n_rows=120, n_cols=48)
-    grid.populate_floor()
-    grid.print_grid()

@@ -2,6 +2,7 @@ import arcade
 import project_constants as constants
 from classes.item import *
 from classes.grid import Grid
+from binarytree import *
 from classes.actor import *
 from classes.enemy import *
 import arcade.gui
@@ -38,7 +39,9 @@ class GameView(arcade.View):
         self.item_list = None
 
         # Grid
-        self.grid: Grid = Grid(46, 80)
+        self.grid: Grid = Grid(40, 70)
+
+        self.tree: Tree = Tree(0, 0, 40, 70)
 
         # Set up the actor info
         self.player_sprite = None
@@ -75,7 +78,15 @@ class GameView(arcade.View):
         self.player_sprite.center_y = 7.5
 
         # This might all need to be in init
-        self.grid.add_room(0, 0, 15, 15)
+        populate_tree(self.tree.root, 4)
+
+        rooms = get_rooms(self.tree.root)
+        trails = create_trails(self.tree.root)
+        for trail in trails:
+            x, y = trail
+            self.grid.grid[x][y].tile_type = TileType.Trail
+        for room in rooms:
+            self.grid.add_room(room)
 
         self.recreate_grid()
 
@@ -362,6 +373,28 @@ class GameView(arcade.View):
         if index != -1:
             self.item_list.pop(index)
 
+    def recreate_grid(self):
+        x: int = 0
+        y: int = 0
+        for row in self.grid.grid:
+            for t in row:
+                color: Tuple[int, int, int] = None
+                match t.tile_type:
+                    case TileType.Floor:
+                        color = arcade.color.DARK_GRAY
+                    case TileType.Wall:
+                        color = arcade.color.WHITE
+                    case TileType.Trail:
+                        color = arcade.color.RED
+                    case _:
+                        color = arcade.color.BLACK
+
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
+                                                              constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
+                self.shape_list.append(current_rect)
+                x += 1
+            y += 1
+            x = 0
 
     def display_inventory(self):
         #draw box to contain inventory, title underline. draw another rectange to help with directons
