@@ -424,7 +424,7 @@ class GameView(arcade.View):
             y = constants.SCREEN_HEIGHT / 2 + 150 - i * 15
             color = arcade.color.RED if i == self.highlighted_item else arcade.color.BLACK
             if (not constants.items_info[type(item)][0] and not issubclass(type(item), Armor)
-                    and type(item) is not Gold and type(item) is not Weapon):
+                    and type(item) is not Gold and type(item) is not issubclass(type(self.inv[i]), Weapon)):
                 arcade.draw_text(item.hidden_title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
             else:
                 arcade.draw_text(item.title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
