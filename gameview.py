@@ -74,8 +74,8 @@ class GameView(arcade.View):
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
                                     scale=constants.SPRITE_SCALING)
-        self.player_sprite.center_x = 7.5
-        self.player_sprite.center_y = 7.5
+        self.player_sprite.center_x = 30
+        self.player_sprite.center_y = 30
 
         # This might all need to be in init
         populate_tree(self.tree.root, 4)
