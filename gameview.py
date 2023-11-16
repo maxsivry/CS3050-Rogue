@@ -172,6 +172,8 @@ class GameView(arcade.View):
             self.player_sprite.has_turn = True
             self.enemy_list = new_enemies
         
+        if not self.player_sprite.is_alive:
+            self.quit_game()
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -397,9 +399,6 @@ class GameView(arcade.View):
             x = 0
 
     def display_inventory(self):
-        #draw box to contain inventory, title underline. draw another rectange to help with directons
-        # self.shape_list.append(rect)
-        # self.appended = True
         arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175, arcade.color.BLACK, font_size=20, width=280, align="center", font_name="Kenney Rocket")
         arcade.draw_line(constants.SCREEN_WIDTH / 2 - 150, constants.SCREEN_HEIGHT / 2 + 165, constants.SCREEN_WIDTH / 2 + 150, constants.SCREEN_HEIGHT / 2 + 165, arcade.color.DARK_RED, line_width=2)
         arcade.draw_line(627, 487, 727, 487, arcade.color.DARK_RED, line_width=2)
@@ -464,6 +463,6 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=10, width = 150, multiline = True, anchor_x="left", )                 
 
     def quit_game(self):
-        end_view = EndView()
+        end_view = EndView(self.player_sprite)
         self.window.show_view(end_view)
 

@@ -14,21 +14,6 @@ XP_LEVELS = {1: 0, 2: 10, 3: 20, 4: 40, 5: 80, 6: 160, 7: 320, 8: 640, 9: 1300, 
 
 class Actor(arcade.Sprite):
 
-    # # gets direction
-    # def move_dir(self, direction, grid):
-    #     if direction == 'Up' and self.center_y > 0:
-    #         self.change_y += constants.TILE_HEIGHT
-    #         self.change_x = 0
-    #     elif direction == 'Down' and self.center_y < constants.SCREEN_HEIGHT:
-    #         self.change_y -= constants.TILE_HEIGHT
-    #         self.change_x = 0
-    #     elif direction == 'Left' and self.center_x > 0:
-    #         self.change_x -= constants.TILE_WIDTH
-    #         self.change_y = 0
-    #     elif direction == 'Right' and self.center_x < constants.SCREEN_WIDTH:
-    #         self.change_x += constants.TILE_WIDTH
-    #         self.change_y = 0
-
     # Physically moves
     def update(self):
         self.center_x += self.change_x
@@ -162,11 +147,10 @@ class Player(Actor):
         # if potential move is out of grid
         if ((rowindex >= constants.ROW_COUNT) | (columnindex >= constants.COLUMN_COUNT) | (rowindex < 0) |
                 (columnindex < 0)):
-            print(rowindex, columnindex, self.center_x, constants.TILE_WIDTH, (self.center_x // constants.TILE_WIDTH))
             validmove = False
             return None  # exits function
         # access tile information at direction moved
-        if grid[rowindex, columnindex].tile_type == TileType.Wall:
+        if grid[rowindex, columnindex].tile_type == TileType.Wall or grid[rowindex, columnindex].tile_type == TileType.Empty:
             validmove = False
             return None
 
