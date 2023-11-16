@@ -128,7 +128,7 @@ class Player(Actor):
         """ Simply returns a formatted string representing the Player's inventory """
         # Create string object representing inventory
         return_str = ''
-
+        
         # For each item in the Player's inventory
         for i in range(len(self.inv)):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
@@ -140,6 +140,7 @@ class Player(Actor):
 
         # Return the formatted string
         return return_str
+    
 
     # overrides super class mov_dir, checking tiles and items before moving player
     # ERROR WITH MOTION IN GRID WITHOUT TILES
