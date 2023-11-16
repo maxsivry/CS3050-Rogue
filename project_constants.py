@@ -32,4 +32,4 @@ items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [Fals
               RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
               TeleportTo: [False, ''], TeleportAway: [False, ''], DrainLife: [False, ''],
               AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
-              Gold: [True, ''], Weapon: [False, '']}
+              Gold: [True, ''], Weapon: [False, ''], Mace: [False, ''], Longsword: [False, ''], Club: [False, ''], Scimitar: [False, '']}
