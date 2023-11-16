@@ -4,7 +4,9 @@ from classes.item import *
 from classes.grid import Grid
 from binarytree import *
 from classes.actor import *
+from classes.enemy import *
 import arcade.gui
+from endview import EndView
 
 
 # TODO: Make it so items can't spawn on boundaries
@@ -18,6 +20,10 @@ class GameView(arcade.View):
     right_pressed = False
     up_pressed = False
     down_pressed = False
+    Inventory_open = False
+    highlighted_item = 0
+    appended = False
+    recent_coords = []
 
     def __init__(self):
         """
@@ -50,30 +56,11 @@ class GameView(arcade.View):
 
         self.down_pressed = False
 
+        # Track the most recent set of grid coordinates given by a click (to be used with wands)
+        self.recent_coords = [0, 0]
+
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
-
-        # #
-        # self.manager = arcade.gui.UIManager()
-        # self.manager.enable()
-
-        # # Create a box group to align the 'open' button in the center
-        # self.v_box = arcade.gui.UIBoxLayout()
-
-        # # Create a button. We'll click on this to open our window.
-        # # Add it v_box for positioning.
-        # inventory_box = arcade.gui.UIFlatButton(text="Inventory", width=200)
-        # self.v_box.add(inventory_box)
-
-        # # Add a hook to run when we click on the button.
-        # inventory_box.on_click = self.on_click_open
-        # # Create a widget to hold the v_box widget, that will center the buttons
-        # self.manager.add(
-        #     arcade.gui.UIAnchorWidget(
-        #         anchor_x="100",
-        #         anchor_y="10",
-        #         child=self.v_box)
-        # )
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -81,6 +68,7 @@ class GameView(arcade.View):
         # Sprite lists
         self.actor_list = arcade.SpriteList()
         self.item_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
         self.shape_list = arcade.ShapeElementList()
 
         # Set up the player
@@ -88,9 +76,6 @@ class GameView(arcade.View):
                                     scale=constants.SPRITE_SCALING)
         self.player_sprite.center_x = 7.5
         self.player_sprite.center_y = 7.5
-        self.player_sprite.inv.append(Gold(gold=0))
-        self.player_sprite.inv.append(Weapon())
-        self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
         populate_tree(self.tree.root, 4)
@@ -105,60 +90,88 @@ class GameView(arcade.View):
 
         self.recreate_grid()
 
+        monsters = create_monsters(self.player_sprite.level)
+        for monster in monsters:
+            self.enemy_list.append(monster)
+
         # Create Items and place them in the item_list
-        # temp_list = create_items(determine_items())
-        # print(f"Number of classes: {len(temp_list)}")
-        # for item in temp_list:
-        #     armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
-        #               PlateMail]
-        #     if type(item) not in armors and type(item) is not Gold:
-        #         print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
-        #     else:
-        #         print(f"title: {item.title}, id: {item.id}")
-        #     self.item_list.append(item)
-        # self.rand_pos()
+        temp_list = create_items(determine_items())
+        for item in temp_list:
+            self.item_list.append(item)
+
+        # Determine the Items' positions
+        self.rand_pos()
+
+        #player stats
+        stats_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
+        self.shape_list.append(stats_rect)
+
+        #title rect
+        title = arcade.create_rectangle_filled(525, constants.SCREEN_HEIGHT -41, 1050, 82, arcade.color.ICEBERG)
+        self.shape_list.append(title)
+
+        # player stats
+        current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT,
+                                                      arcade.color.ICEBERG)
+        self.shape_list.append(current_rect)
+
 
     def on_draw(self):
         """ Render the screen. """
-
         # Reset the screen
         self.clear()
-
         # Draw the shapes representing our current grid
         self.shape_list.draw()
 
         # Draw all the sprites.
         self.actor_list.draw()
-        # for item in self.item_list:
-        #     if not item.is_hidden:
-        #         item.draw()
+        self.enemy_list.draw()
         self.item_list.draw()
-        self.player_sprite.draw()
-        # self.manager.draw()
+        self.player_sprite.draw()        
 
-        # Convert Player's position into grid coordinates
-        # row_p = self.player_sprite.center_x // constants.TILE_WIDTH
-        # col_p = self.player_sprite.center_x // constants.TILE_HEIGHT
-        #
-        # # For each item in item_list
-        # for i in range(len(self.item_list) - 1):
-        #
-        #     # Convert Item's position into grid coordinates
-        #     row_i = self.item_list[i].center_x // constants.TILE_WIDTH
-        #     col_i = self.item_list[i].center_y // constants.TILE_HEIGHT
-        #
-        #     # Check if Player's coordinates overlap with Item's
-        #     if row_i == row_p and col_i == col_p:
-        #         # If it does, add item to Player's inventory and remove from item_list
-        #         self.player_sprite.inv.append(self.item_list.pop(i))
+        #display player stats:
+        arcade.draw_text("STATS", 1062, 
+                        constants.SCREEN_HEIGHT - 50,
+                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                        width=150)
+
+        arcade.draw_text(self.player_sprite.display_player_info(), 1062, 
+                        constants.SCREEN_HEIGHT - 70,
+                        arcade.color.BLACK, font_size=10, multiline=True, 
+                        width=150)
+        
+        arcade.draw_text("TO WIN OR TO ROGUE", 525, 
+                        constants.SCREEN_HEIGHT - 41,
+                        arcade.color.BLACK, font_size=20,  
+                        width=150, anchor_x="center", font_name="Kenney Rocket" )
+
+        #if inventory is displayed
+        inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300, 400, arcade.color.ICEBERG)
+        if not self.Inventory_open:
+            self.hide_inventory()             
+        else:
+            inventory_rect.draw()
+            self.display_inventory()
 
         self.item_list.draw()
+
 
     def on_update(self, delta_time):
         """ Movement and game logic """
         self.player_sprite.update()
         self.actor_list.update()
         self.item_list.update()
+        self.enemy_list.update()
+        if not self.player_sprite.has_turn:
+            new_enemies = arcade.SpriteList()
+            for enemy in self.enemy_list:
+                if enemy.is_alive:
+                    if self.player_sprite.is_alive:
+                        enemy.take_turn(self.player_sprite, self.grid)
+                    new_enemies.append(enemy)
+            self.player_sprite.has_turn = True
+            self.enemy_list = new_enemies
+        
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -171,35 +184,171 @@ class GameView(arcade.View):
 
         print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
 
+        self.recent_coords = [row, column]
+
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
         if row >= constants.ROW_COUNT or column >= constants.COLUMN_COUNT:
             # Simply return from this method since nothing needs updating
             return
 
-        # Flip the location between 1 and 0.
-        # if self.grid[row][column] == 0:
-        #     self.grid[row][column] = 1
-        # else:
-        #     self.grid[row][column] = 0
-
-        # Rebuild the shapes
-        self.recreate_grid()
-
     def on_key_press(self, key, modifiers):
         """
         Called whenever a key is pressed
         """
-        item = None
-        if key == arcade.key.UP:
-            item = self.player_sprite.move_dir("Up", self.grid)
-        elif key == arcade.key.DOWN:
-            item = self.player_sprite.move_dir("Down", self.grid)
-        elif key == arcade.key.RIGHT:
-            item = self.player_sprite.move_dir("Right", self.grid)
-        elif key == arcade.key.LEFT:
-            item = self.player_sprite.move_dir("Left", self.grid)
+        #Open inventory command, e toggles inventory
+        if key == arcade.key.E:
+            self.Inventory_open = not self.Inventory_open
+            self.highlighted_item = 0
+        
+        #display help message
+        if key == arcade.key.H:
+            self.help_message()
+        
+        if key == arcade.key.ESCAPE:
+            self.quit_game()
+        
+        if not self.Inventory_open:
+            #player movement, each movement potentially picks up item
+            item = None
+            if key == arcade.key.UP:
+                direction = 'Up'
+                item = self.player_sprite.move_dir("Up", self.grid)
+            elif key == arcade.key.DOWN:
+                direction = 'Down'
+                item = self.player_sprite.move_dir("Down", self.grid)
+            elif key == arcade.key.RIGHT:
+                direction = 'Right'
+                item = self.player_sprite.move_dir("Right", self.grid)
+            elif key == arcade.key.LEFT:
+                direction = 'Left'
+                item = self.player_sprite.move_dir("Left", self.grid)
+            self.pick_up_item(item)
 
+
+        #if inventory is open
+        if self.Inventory_open:
+
+            #Up and down to determine item to interact with (highlighting appropriate line)
+            if key == arcade.key.UP and self.highlighted_item > 0:
+                self.highlighted_item -= 1
+            elif key == arcade.key.DOWN and self.highlighted_item < len(self.player_sprite.inv) - 1:
+                self.highlighted_item += 1
+
+            #Dropping Item with D (cant drop if there is already an item at location)
+            elif key == arcade.key.D:
+                if 0 <= self.highlighted_item < len(self.player_sprite.inv):
+    
+                    #if there is no item at location already:
+                    col = int(self.player_sprite.center_x / constants.TILE_WIDTH)
+                    row = int(self.player_sprite.center_y / constants.TILE_HEIGHT)
+                    if not self.grid[row, col].has_item:
+
+                        # drop item on correct tile, set tile to have item
+                        self.player_sprite.inv[self.highlighted_item].set_position(self.player_sprite.center_x, self.player_sprite.center_y)
+                        self.item_list.append(self.player_sprite.inv[self.highlighted_item])
+                        self.grid[row, col].setitem(self.player_sprite.inv[self.highlighted_item])
+                        # Remove the highlighted item from the inventory
+                        del self.player_sprite.inv[self.highlighted_item]
+
+            #using item with U
+            elif key == arcade.key.U:
+                if 0 <= self.highlighted_item < len(self.player_sprite.inv)-1:
+                    self.use(self.player_sprite.inv[self.highlighted_item])
+
+
+    def recreate_grid(self):
+        x: int = 0
+        y: int = 0
+        for row in self.grid.grid:
+            for t in row:
+                if t.tile_type == TileType.Floor:
+                    color = arcade.color.DARK_GRAY
+                else:
+                    color = arcade.color.BLACK
+                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH + 7.5,
+                                                              y * constants.TILE_HEIGHT + 7.5,
+                                                              constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
+                self.shape_list.append(current_rect)
+                x += 1
+            y += 1
+            x = 0
+
+    # Method to determine center_x and center_y of an item
+    def rand_pos(self):
+        """ Determines a randomized position on the grid/screen for each of a set of Items """
+
+        # For each item in item_list
+        def rand_thing(obj_list):
+            for obj in obj_list:
+                # Get random grid position
+                row = randint(0, self.grid.n_rows - 1)
+                col = randint(0, self.grid.n_cols - 1)
+
+                # Set the temporary grid position
+                temp_pos = self.grid.grid[row][col]
+
+                # While TileType != Floor and TileType != Trail and Tile has an item
+                while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
+                    or temp_pos.has_item):
+                    # Determine random position again
+                    # Get random grid position
+                    row = randint(0, self.grid.n_rows - 1)
+                    col = randint(0, self.grid.n_cols - 1)
+
+                    # Set the temporary grid position
+                    temp_pos = self.grid.grid[row][col]
+
+                # Set this Item's position
+                obj.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+                self.grid[row, col].setitem(obj)
+        
+        rand_thing(self.item_list)
+        rand_thing(self.enemy_list)
+
+    def use(self, item, weapon=None, armor=None, monster=None):
+        """ use function used to call an Item's use method with the correct parameters. """
+        # Match the item's class
+        # Use methods have different parameters dependent on the class
+        # Call the corresponding use method with the correct parameters
+        # NOTE: Cannot use a match statement here since each item has unique values for it's fields
+        if isinstance(item, Gold):
+            item.use(self.player_sprite)
+        elif isinstance(item, MagicMapping):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, IncreaseMaxHealth):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyRing):
+            item.use(self.player_sprite)
+        elif isinstance(item, IdentifyPotion):
+            item.use(self.player_sprite)
+        elif isinstance(item, Poison):
+            item.use(self.player_sprite)
+        elif isinstance(item, MonsterDetection):
+            item.use(self.player_sprite, self.grid)
+        elif isinstance(item, RestoreStrength):
+            item.use(self.player_sprite)
+        elif isinstance(item, Healing):
+            item.use(self.player_sprite)
+        elif isinstance(item, Light):
+            item.use(self.player_sprite)
+        elif isinstance(item, TeleportTo):
+            item.use(self.player_sprite, self.grid, self.recent_coords)
+        elif isinstance(item, TeleportAway):
+            item.use(self.player_sprite, monster, self.grid)
+        elif isinstance(item, DrainLife):
+            item.use(self.player_sprite, monster)
+        elif issubclass(type(item), Ring):
+            if self.player_sprite.ring and item.charges > 0:
+                self.player_sprite.ring.unequip(self.player_sprite, self.grid)
+            item.use(self.player_sprite, self.grid)
+            self.player_sprite.ring = item
+
+        else:  # Items that reach here do not have a use method. They should not be passed into this function
+            pass
+
+
+    def pick_up_item(self, item):
         # Set index variable -> Will be used to pop item off of list AFTER loop as to not cause off-by-one error
         index = -1
 
@@ -247,102 +396,74 @@ class GameView(arcade.View):
             y += 1
             x = 0
 
-    # Method to determine center_x and center_y of an item
-    def rand_pos(self):
-        """ Determines a randomized position on the grid/screen for each of a set of Items """
+    def display_inventory(self):
+        #draw box to contain inventory, title underline. draw another rectange to help with directons
+        # self.shape_list.append(rect)
+        # self.appended = True
+        arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175, arcade.color.BLACK, font_size=20, width=280, align="center", font_name="Kenney Rocket")
+        arcade.draw_line(constants.SCREEN_WIDTH / 2 - 150, constants.SCREEN_HEIGHT / 2 + 165, constants.SCREEN_WIDTH / 2 + 150, constants.SCREEN_HEIGHT / 2 + 165, arcade.color.DARK_RED, line_width=2)
+        arcade.draw_line(627, 487, 727, 487, arcade.color.DARK_RED, line_width=2)
+        arcade.draw_line(627, 487, 627, 392, arcade.color.DARK_RED, line_width=2)
+        arcade.draw_line(627, 392, 727, 392, arcade.color.DARK_RED, line_width=2)
+        arcade.draw_line(727, 487, 727, 392, arcade.color.DARK_RED, line_width=2)
+        instructions = [
+            "UP/DOWN to select",
+            "D to drop item",
+            "U to use/equip item",
+            "R to throw item",
+            "E to exit inventory"
+        ]
+        text_x = 630
+        text_y = 475
+        for instruction in instructions:
+            arcade.draw_text(instruction, text_x, text_y, arcade.color.BLACK, font_size=8, font_name="Arial")
+            text_y -= 20 
 
-        # For each item in item_list
-        for item in self.item_list:
-            # Get random grid position
-            row = randint(0, self.grid.n_rows - 1)
-            col = randint(0, self.grid.n_cols - 1)
+        # Draw inventory items with highlighting
+        for i, item in enumerate(self.player_sprite.inv):
+            y = constants.SCREEN_HEIGHT / 2 + 150 - i * 15
+            color = arcade.color.RED if i == self.highlighted_item else arcade.color.BLACK
+            if (not constants.items_info[type(item)][0] and not issubclass(type(item), Armor)
+                    and type(item) is not Gold and type(item) is not Weapon):
+                arcade.draw_text(item.hidden_title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
+            else:
+                arcade.draw_text(item.title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
+        
+    
+    def hide_inventory(self):
+        arcade.draw_text("INVENTORY", 1062, 
+                        constants.SCREEN_HEIGHT - 200,
+                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                        width=150)
+        arcade.draw_text(self.player_sprite.player_inventory(), 1062, 
+                    constants.SCREEN_HEIGHT - 220,
+                    arcade.color.BLACK, font_size=10, multiline=True, 
+                    width=150) 
+    
+    def help_message(self):
+        pass
 
-            # Set the temporary grid position
-            temp_pos = self.grid.grid[row][col]
+    def battlemessage(self, message):
+        box_width = 200
+        box_height = 100
+        box_x = constants.SCREEN_WIDTH / 2 
+        box_y = constants.SCREEN_HEIGHT / 2
+        box_color = arcade.color.ICEBERG
+        border_color = arcade.color.DARK_RED
+        rotation_angle = 0
 
-            # While TileType != Floor and TileType != Trail and Tile has an item
-            while ((temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail)
-                   or temp_pos.has_item):
-                # Determine random position again
-                # Get random grid position
-                row = randint(0, self.grid.n_rows - 1)
-                col = randint(0, self.grid.n_cols - 1)
+        # Draw box
+        arcade.draw_rectangle_filled(box_x, box_y, box_width, box_height, box_color)
+        arcade.draw_rectangle_outline(box_x, box_y, box_width, box_height, border_color, 4)
 
-                # Set the temporary grid position
-                temp_pos = self.grid.grid[row][col]
+        # Draw text
+        arcade.draw_text("BATTLE!", box_x - box_width / 2, box_y + (box_height / 4) * 3,
+                         arcade.color.BLACK, font_size=20, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
 
-            # Set this Item's position
-            item.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
-            self.grid[row, col].setitem(item)
+        arcade.draw_text(message, box_x - box_width / 2, box_y + box_height / 2,
+                         arcade.color.BLACK, font_size=10, width = 150, multiline = True, anchor_x="left", )                 
 
-    def use(self, item, weapon=None, armor=None, monster=None):
-        """ use function used to call an Item's use method with the correct parameters. """
+    def quit_game(self):
+        end_view = EndView()
+        self.window.show_view(end_view)
 
-        # Match the item's class
-        # Use methods have different parameters dependent on the class
-        # Call the corresponding use method with the correct parameters
-        # NOTE: Cannot use a match statement here since each item has unique values for it's fields
-        if isinstance(item, Gold):
-            item.use(self.player_sprite)
-        elif isinstance(item, MagicMapping):
-            item.use(self.player_sprite, self.grid)
-        elif isinstance(item, IdentifyWeapon):
-            item.use(self.player_sprite, weapon)
-        elif isinstance(item, IdentifyArmor):
-            item.use(self.player_sprite, armor)
-        elif isinstance(item, RemoveCurse):
-            item.use(self.player_sprite)
-        elif isinstance(item, Poison):
-            item.use(self.player_sprite)
-        elif isinstance(item, MonsterDetection):
-            item.use(self.player_sprite, self.grid)
-        elif isinstance(item, RestoreStrength):
-            item.use(self.player_sprite)
-        elif isinstance(item, Healing):
-            item.use(self.player_sprite)
-        elif isinstance(item, Light):
-            item.use(self.player_sprite)
-        elif isinstance(item, TeleportTo):
-            item.use(self.player_sprite, self.grid)
-        elif isinstance(item, TeleportAway):
-            item.use(self.player_sprite, monster, self.grid)
-        elif isinstance(item, SlowMonster):
-            item.use(self.player_sprite, monster)
-        elif isinstance(item, AddStrength):
-            item.use(self.player_sprite)
-        elif isinstance(item, IncreaseDamage):
-            item.use(self.player_sprite)
-        elif isinstance(item, Teleportation):
-            item.use(self.player_sprite, self.grid)
-        elif isinstance(item, Dexterity):
-            item.use(self.player_sprite)
-        else:  # Items that reach here do not have a use method. They should not be passed into this function
-            pass
-
-    # def on_key_release(self, key, modifiers):
-    #     """
-    #     Called when the user releases a key
-    #     """
-    #     if key == arcade.key.UP:
-    #         self.up_pressed = False
-    #     if key == arcade.key.DOWN:
-    #         self.down_pressed = False
-    #     if key == arcade.key.RIGHT:
-    #         self.right_pressed = False
-    #     if key == arcade.key.LEFT:
-    #         self.left_pressed = False
-
-    # #textbox
-    # def on_click_open(self, event):
-    #     # The code in this function is run when we click the ok button.
-    #     # The code below opens the message box and auto-dismisses it when done.
-    #     message_box = arcade.gui.UIMessageBox(
-    #         width=300,
-    #         height=200,
-    #         message_text=(
-    #             self.player_sprite.player_inventory
-    #         ),
-    #         callback=self.on_message_box_close,buttons=["Ok", "Cancel"]
-    #     )
-
-    #     self.manager.add(message_box)

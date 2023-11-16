@@ -16,21 +16,20 @@ MARGIN = 2
 SPRITE_SCALING = TILE_HEIGHT / 1920
 
 # Do the math to figure out our screen dimensions
+
+# 15 * 70 + x = 17 * 72
 SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue Testing"
-
-# Create a constant for what index gold is stored at in the Player's inventory
-GOLD_IND = 0
 
 # Project-Wide dictionary
 # To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
 # Format: Class: [Revealed by Player, Description]
 items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [False, ''], ScaleMail: [False, ''],
               ChainMail: [False, ''], SplintMail: [False, ''], BandedMail: [False, ''], PlateMail: [False, ''],
-              MagicMapping: [False, ''], IdentifyWeapon: [False, ''], IdentifyArmor: [False, ''],
-              RemoveCurse: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
+              MagicMapping: [False, ''], IdentifyRing: [False, ''], IncreaseMaxHealth: [False, ''],
+              IdentifyPotion: [False, ''], Poison: [False, ''], MonsterDetection: [False, ''],
               RestoreStrength: [False, ''], Healing: [False, ''], Light: [False, ''],
-              TeleportTo: [False, ''], TeleportAway: [False, ''], SlowMonster: [False, ''],
+              TeleportTo: [False, ''], TeleportAway: [False, ''], DrainLife: [False, ''],
               AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
               Gold: [True, ''], Weapon: [False, '']}

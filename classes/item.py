@@ -5,8 +5,7 @@ from random import randint
 import sys
 import project_constants as constants
 
-# TODO: Test use methods
-# TODO: Make an unequip method?
+# TODO: Create charges, use methods, and unequip methods for remaining items
 
 # Constants
 # Colors of Potions
@@ -26,12 +25,12 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Studded Leather": [15, "armor"], "Scale Mail": [13, "armor"],
          "Chain Mail": [12, "armor"], "Splint Mail": [10, "armor"],
          "Banded Mail": [10, "armor"], "Plate Mail": [5, "armor"],
-         "Magic Mapping": [14, "scroll"], "Identify Weapon": [16, "scroll"],
-         "Identify Armor": [17, "scroll"], "Remove Curse": [17, "scroll"],
+         "Magic Mapping": [14, "scroll"], "Identify Ring": [16, "scroll"],
+         "Increase Max Health": [17, "scroll"], "Identify Potion": [17, "scroll"],
          "Poison": [18, "potion"], "Monster Detection": [16, "potion"],
          "Restore Strength": [23, "potion"], "Healing": [23, "potion"],
          "Light": [22, "wand"], "Teleport To": [16, "wand"],
-         "Teleport Away": [16, "wand"], "Slow Monster": [21, "wand"],
+         "Teleport Away": [16, "wand"], "Drain Life": [21, "wand"],
          "Add Strength": [19, "ring"], "Increase Damage": [18, "ring"],
          "Teleportation": [15, "ring"], "Dexterity": [18, "ring"],
          "Gold": [35, "gold"], "Weapon": [5, "weapon"]}
@@ -137,22 +136,22 @@ def create_items(to_create: list) -> list:
                     constants.items_info[MagicMapping][1] = item[1]
                 items_list.append(MagicMapping(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
                                                desc=constants.items_info[MagicMapping][1]))
-            case "Identify Weapon":
-                if constants.items_info[IdentifyWeapon][1] == '':
-                    constants.items_info[IdentifyWeapon][1] = item[1]
-                items_list.append(IdentifyWeapon(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                                 desc=constants.items_info[IdentifyWeapon][1]))
+            case "Increase Max Health":
+                if constants.items_info[IncreaseMaxHealth][1] == '':
+                    constants.items_info[IncreaseMaxHealth][1] = item[1]
+                items_list.append(IncreaseMaxHealth(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
+                                                    desc=constants.items_info[IncreaseMaxHealth][1]))
 
-            case "Identify Armor":
-                if constants.items_info[IdentifyArmor][1] == '':
-                    constants.items_info[IdentifyArmor][1] = item[1]
-                items_list.append(IdentifyArmor(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                                desc=constants.items_info[IdentifyArmor][1]))
-            case "Remove Curse":
-                if constants.items_info[RemoveCurse][1] == '':
-                    constants.items_info[RemoveCurse][1] = item[1]
-                items_list.append(RemoveCurse(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
-                                              desc=constants.items_info[RemoveCurse][1]))
+            case "Identify Ring":
+                if constants.items_info[IdentifyRing][1] == '':
+                    constants.items_info[IdentifyRing][1] = item[1]
+                items_list.append(IdentifyRing(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
+                                               desc=constants.items_info[IdentifyRing][1]))
+            case "Identify Potion":
+                if constants.items_info[IdentifyPotion][1] == '':
+                    constants.items_info[IdentifyPotion][1] = item[1]
+                items_list.append(IdentifyPotion(filename="static/scroll.png", scale=constants.SPRITE_SCALING,
+                                                 desc=constants.items_info[IdentifyPotion][1]))
             case "Poison":
                 if constants.items_info[Poison][1] == '':
                     constants.items_info[Poison][1] = item[1]
@@ -188,11 +187,11 @@ def create_items(to_create: list) -> list:
                     constants.items_info[TeleportAway][1] = item[1]
                 items_list.append(TeleportAway(filename="static/wand.png", scale=constants.SPRITE_SCALING,
                                                desc=constants.items_info[TeleportAway][1]))
-            case "Slow Monster":
-                if constants.items_info[SlowMonster][1] == '':
-                    constants.items_info[SlowMonster][1] = item[1]
-                items_list.append(SlowMonster(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                              desc=constants.items_info[SlowMonster][1]))
+            case "Drain Life":
+                if constants.items_info[DrainLife][1] == '':
+                    constants.items_info[DrainLife][1] = item[1]
+                items_list.append(DrainLife(filename="static/wand.png", scale=constants.SPRITE_SCALING,
+                                            desc=constants.items_info[DrainLife][1]))
             case "Add Strength":
                 if constants.items_info[AddStrength][1] == '':
                     constants.items_info[AddStrength][1] = item[1]
@@ -274,10 +273,7 @@ class Gold(Item):
 
     def use(self, player):
         # Update player with additional gold
-        player.inv[constants.GOLD_IND].gold += self.gold
-
-        # Update the title
-        player.inv[constants.GOLD_IND].title = f"{player.inv[constants.GOLD_IND].gold} gold"
+        player.gold += self.gold
 
 
 # ---Armor Classes---
@@ -447,23 +443,23 @@ class PlateMail(Armor):
 # --spawn chance: int = 4
 # --title: str = Scroll of Magic Mapping
 # --hidden_title: str = *desc* scroll
-# -Identify Weapon
-# Identifies a weapon
+# -Increase Max Health
+# Increase Player's max hp by 5
 # --desc: str = *Random Description*
 # --spawn chance: int = 6
-# --title: str = Scroll of Identify Weapon
+# --title: str = Scroll of Increase Max Health
 # --hidden_title: str = *desc* scroll
-# -Identify Armor
-# Identifies the armor
+# -Identify Ring
+# Identifies a random ring for the player
 # --desc: str = *Random Description*
 # --spawn chance: int = 7
-# --title: str = Scroll of Identify Armor
+# --title: str = Scroll of Identify Ring
 # --hidden_title: str = *desc* scroll
-# -Remove Curse
-# Removes curse from an item
+# -Identify Potion
+# Identifies a random potion for the player
 # --desc: str = *Random Description*
 # --spawn chance: int = 7
-# --title: str = Scroll of Remove Curse
+# --title: str = Scroll of Identify Potion
 # --hidden_title: str = *desc* scroll
 class Scroll(Item):
     def __init__(
@@ -474,11 +470,13 @@ class Scroll(Item):
             is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
-            spawn_chance: int = 0
+            spawn_chance: int = 0,
+            charges: int = 1
     ):
         Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
+        self.charges = charges
 
 
 # Subclasses scrolls (Super: Scroll)
@@ -496,19 +494,29 @@ class MagicMapping(Scroll):
                         spawn_chance=ITEMS["Magic Mapping"][0])
         self.desc = desc
 
+    # TODO: Test this, probably done
     def use(self, player, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[MagicMapping][0]:
-            # Set used in constants.items_info
-            constants.items_info[MagicMapping][0] = True
+        """ This reveals the entire level. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[MagicMapping][0]:
+                # Set used in constants.items_info
+                constants.items_info[MagicMapping][0] = True
 
-        # Reveal the map
-        for row in range(grid.n_rows):
-            for col in range(grid.n_cols):
-                grid[row][col].is_hidden = False
+            # Reveal the map
+            for row in range(grid.n_rows):
+                for col in range(grid.n_cols):
+                    grid.grid[row][col].is_hidden = False
+
+            # Set charges
+            self.charges -= 1
+
+            # Set title
+            self.title = "USED Scroll of Magic Mapping"
 
 
-class IdentifyWeapon(Scroll):
+class IncreaseMaxHealth(Scroll):
     def __init__(
             self,
             filename: str = None,
@@ -517,68 +525,116 @@ class IdentifyWeapon(Scroll):
             enchantment: bool = False,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Weapon",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Identify Weapon"][0])
-        self.desc = desc
-
-    def use(self, player, weapon):
-        # Check if the Player has already used the item
-        if not constants.items_info[IdentifyWeapon][0]:
-            # Set used in constants.items_info
-            constants.items_info[IdentifyWeapon][0] = True
-
-        # Identify the Weapon
-        # This will be in constants.items_info
-        pass
-
-
-class IdentifyArmor(Scroll):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
-            desc: str = ''
-    ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Armor",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Identify Armor"][0])
-        self.desc = desc
-
-    def use(self, player, armor):
-        # Check if the Player has already used the item
-        if not constants.items_info[IdentifyArmor][0]:
-            # Set used in constants.items_info
-            constants.items_info[IdentifyArmor][0] = True
-
-        # Identify the Armor
-        constants.items_info[type(armor)][0] = True
-
-
-class RemoveCurse(Scroll):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            is_hidden: bool = True,
-            enchantment: bool = False,
-            desc: str = ''
-    ):
-        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Remove Curse",
-                        hidden_title=f"{desc} scroll", enchantment=enchantment,
-                        spawn_chance=ITEMS["Remove Curse"][0])
+        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
+                        title="Scroll of Increase Max Health", hidden_title=f"{desc} scroll", enchantment=enchantment,
+                        spawn_chance=ITEMS["Increase Max Health"][0])
         self.desc = desc
 
     def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[RemoveCurse][0]:
-            # Set used in constants.items_info
-            constants.items_info[RemoveCurse][0] = True
+        """ This increases the Player's max hp by 5 points. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[IncreaseMaxHealth][0]:
+                # Set used in constants.items_info
+                constants.items_info[IncreaseMaxHealth][0] = True
 
-        # Haven't defined what a curse is yet
-        pass
+            # Increase max hp
+            player.max_hp += 5
+
+            # Set charges
+            self.charges -= 1
+
+            # Set title
+            self.title = "USED Scroll of Increase Max Health"
+
+
+class IdentifyRing(Scroll):
+    def __init__(
+            self,
+            filename: str = None,
+            scale: float = 1,
+            is_hidden: bool = True,
+            enchantment: bool = False,
+            desc: str = ''
+    ):
+        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Ring",
+                        hidden_title=f"{desc} scroll", enchantment=enchantment,
+                        spawn_chance=ITEMS["Identify Ring"][0])
+        self.desc = desc
+
+    def use(self, player):
+        """ This randomly sets a ring in the Player's inventory to be discovered. If there are none, none are
+        discovered. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[IdentifyRing][0]:
+                # Set used in constants.items_info
+                constants.items_info[IdentifyRing][0] = True
+
+            # Set a random ring to be discovered in Player's inventory
+            # Create a variable to allow only one potion to be discovered
+            disc = False
+            for item in player.inv:
+                if disc:
+                    break
+                elif issubclass(type(item), Ring):
+                    # Discover the potion
+                    constants.items_info[type(item)][0] = True
+
+                    # Set discovered equal to true
+                    disc = True
+
+            # Set charges
+            self.charges -= 1
+
+            # Set title
+            self.title = "USED Scroll of Identify Ring"
+
+
+class IdentifyPotion(Scroll):
+    def __init__(
+            self,
+            filename: str = None,
+            scale: float = 1,
+            is_hidden: bool = True,
+            enchantment: bool = False,
+            desc: str = ''
+    ):
+        Scroll.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Scroll of Identify Potion",
+                        hidden_title=f"{desc} scroll", enchantment=enchantment,
+                        spawn_chance=ITEMS["Identify Potion"][0])
+        self.desc = desc
+
+    def use(self, player):
+        """ This randomly sets a potion in the Player's inventory to be discovered. If there are none, none are
+        discovered. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[IdentifyPotion][0]:
+                # Set used in constants.items_info
+                constants.items_info[IdentifyPotion][0] = True
+
+            # Set a random potion to be discovered in Player's inventory
+            # Create a variable to allow only one potion to be discovered
+            disc = False
+            for item in player.inv:
+                if disc:
+                    break
+                elif issubclass(type(item), Potion):
+                    # Discover the potion
+                    constants.items_info[type(item)][0] = True
+
+                    # Set discovered equal to true
+                    disc = True
+
+            # Set charges
+            self.charges -= 1
+
+            # Set title
+            self.title = "USED Scroll of Identify Potion"
 
 
 # ---Potion Classes---
@@ -626,11 +682,13 @@ class Potion(Item):
             is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
-            spawn_chance: int = 0
+            spawn_chance: int = 0,
+            charges: int = 1
     ):
         Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
+        self.charges = charges
 
 
 # Subclasses: potion types (Super: Potion)
@@ -649,13 +707,29 @@ class Poison(Potion):
         self.desc = desc
 
     def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[Poison][0]:
-            # Set used in constants.items_info
-            constants.items_info[Poison][0] = True
+        """ Removes a random amount of strength from the Player (between 1-3). """
+        # Make sure the Player can only activate this once
+        if self.charges != 0 and player.str > 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Poison][0]:
+                # Set used in constants.items_info
+                constants.items_info[Poison][0] = True
 
-        # Reduce strength by 1-3 points
-        player.str -= randint(1, 3)
+            # Decide how much strength to reduce (1-3 points)
+            rm_str = randint(1, 3)
+
+            # If the Player does not have enough strength to remove
+            while rm_str > player.str:
+                rm_str = randint(1, 3)
+
+            # Update the Player's strength
+            player.str -= rm_str
+
+            # Set charges
+            self.charges -= 1
+
+            # Update title
+            self.title = "EMPTY Poison Potion"
 
 
 class MonsterDetection(Potion):
@@ -672,14 +746,21 @@ class MonsterDetection(Potion):
                         spawn_chance=ITEMS["Monster Detection"][0])
         self.desc = desc
 
+    # TODO: Write this when Evan implements monsters
     def use(self, player, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[MonsterDetection][0]:
-            # Set used in constants.items_info
-            constants.items_info[MonsterDetection][0] = True
+        # Check if Player has already used item
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[MonsterDetection][0]:
+                # Set used in constants.items_info
+                constants.items_info[MonsterDetection][0] = True
 
-        # Reveal monsters on grid
-        pass
+            # Reveal monsters on grid
+            # Update charges
+            self.charges -= 1
+
+            # Update title
+            self.title = "EMPTY Monster Detection Potion"
 
 
 class RestoreStrength(Potion):
@@ -697,6 +778,7 @@ class RestoreStrength(Potion):
         self.desc = desc
 
     def use(self, player):
+        """ Simply restores the Player's strength to maximum. """
         # Check if the Player has already used the item
         if not constants.items_info[RestoreStrength][0]:
             # Set used in constants.items_info
@@ -704,6 +786,9 @@ class RestoreStrength(Potion):
 
         # Restore Player's strength
         player.str = player.str_max
+
+        # Update title
+        self.title = "EMPTY Restore Strength Potion"
 
 
 class Healing(Potion):
@@ -721,19 +806,32 @@ class Healing(Potion):
         self.desc = desc
 
     def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[Healing][0]:
-            # Set used in constants.items_info
-            constants.items_info[Healing][0] = True
+        """ For every level the Player has, add 1d4 worth of hp.
+        If the Player is at max hp, add 1 to max and current hp. """
+        # Make sure the Player can only use this item once
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Healing][0]:
+                # Set used in constants.items_info
+                constants.items_info[Healing][0] = True
 
-        # Heal 1d4 per character level or Increase max hp if at full health
-        if player.hp == player.max_hp:  # Update hp and max hp if already at full health
-            player.max_hp += 1
-            player.hp += 1
-        else:  # Heal 1d4 for every level the Player has
-            for level in range(player.level):
-                heal = randint(1, 4)
-                player.hp += heal
+            # Heal 1d4 per character level or Increase max hp if at full health
+            if player.health == player.max_hp:  # Update hp and max hp if already at full health
+                player.max_hp += 1
+                player.health += 1
+            else:  # Heal 1d4 for every level the Player has
+                for level in range(player.level):
+                    heal = randint(1, 4)
+                    if player.max_hp < heal + player.health:  # Make sure the Player doesn't get 'over-healed'
+                        player.health = player.max_hp
+                    else:
+                        player.health += heal
+
+            # Update charges
+            self.charges -= 1
+
+            # Update title
+            self.title = "EMPTY Healing Potion"
 
 
 # ---Wand Classes---
@@ -755,7 +853,7 @@ class Healing(Potion):
 # --title: str = Wand of Light
 # --hidden_title: str = *desc* wand
 # -Teleport To
-# Teleports player to random empty floor tile/hallway on map
+# Teleports player to selected floor tile/hallway on map
 # --desc: str = *Random Description*
 # --spawn chance: int = 6
 # --title: str = Wand of Teleport To
@@ -781,11 +879,13 @@ class Wand(Item):
             is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
-            spawn_chance: int = 0
+            spawn_chance: int = 0,
+            charges: int = -1
     ):
         Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
+        self.charges = charges if charges > -1 else randint(1, 5)
 
 
 # Subclasses wand types (Super: Wand)class
@@ -802,20 +902,22 @@ class Light(Wand):
                       hidden_title=f"{desc} wand", enchantment=enchantment,
                       spawn_chance=ITEMS["Light"][0])
         self.desc = desc
-        self.charges = randint(10, 19)
 
+    # TODO: Write this when Noah updates grid with visible/invisible tiles
     def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[Light][0]:
-            # Set used in constants.items_info
-            constants.items_info[Light][0] = True
+        # Check if enough charges to use again
+        if self.charges != 0:
+            if not constants.items_info[Light][0]:
+                # Set used in constants.items_info
+                constants.items_info[Light][0] = True
 
-        # Remove a charge
-        self.charges -= 1
+            # Reveal all tiles in a room
 
-        # Reveal all tiles in a room
-        # Don't know how to do this yet
-        pass
+            # Remove a charge
+            self.charges -= 1
+
+            # Update title
+            self.title = f"Wand of Light\nCharges: {self.charges}"
 
 
 class TeleportTo(Wand):
@@ -827,30 +929,36 @@ class TeleportTo(Wand):
             enchantment: bool = False,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Teleport To",
+        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden,
+                      title=f"Wand of Teleport To",
                       hidden_title=f"{desc} wand", enchantment=enchantment,
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
 
-    def use(self, player, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[TeleportTo][0]:
-            # Set used in constants.items_info
-            constants.items_info[TeleportTo][0] = True
+    def use(self, player, grid: Grid, click_coords: [int, int]):
+        """ Based on the most recent grid coordinates (given by a mouse left-click), the Player is teleported
+        there. """
+        # Check if coords is a floor or trail
+        row = click_coords[0]
+        col = click_coords[1]
 
-        # Determine random position
-        row = randint(0, grid.n_rows)
-        col = randint(0, grid.n_cols)
+        # Check for valid coordinates
+        if grid.grid[row][col].tile_type == TileType.Floor or grid.grid[row][col].tile_type == TileType.Trail:
+            # Check if enough charges to use again
+            if self.charges != 0:
+                # Make this discovered
+                if not constants.items_info[TeleportTo][0]:
+                    # Set used in constants.items_info
+                    constants.items_info[TeleportTo][0] = True
 
-        # If the tile is not a Floor or Trail
-        while grid[row][col].tile_type != TileType.Floor and grid[row][col].tile_type != TileType.Trail:
-            # Determine random position
-            row = randint(0, grid.n_rows)
-            col = randint(0, grid.n_cols)
+                # Set Player's position
+                player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
 
-        # This might not work
-        # Set Player's new position
-        player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
+                # Update charges
+                self.charges -= 1
+
+                # Update title
+                self.title = f"Wand of Teleport To\nCharges: {self.charges}"
 
 
 class TeleportAway(Wand):
@@ -867,18 +975,27 @@ class TeleportAway(Wand):
                       spawn_chance=ITEMS["Teleport Away"][0])
         self.desc = desc
 
+    # TODO: Finish when Evan implements monsters
     def use(self, player, monster, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[TeleportAway][0]:
-            # Set used in constants.items_info
-            constants.items_info[TeleportAway][0] = True
+        """ """
+        # Check if enough charges to use again
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[TeleportAway][0]:
+                # Set used in constants.items_info
+                constants.items_info[TeleportAway][0] = True
 
-        # Move monster to a random location
-        # Not sure how to do this
-        pass
+            # Move monster to a random location
+            # Not sure how to do this
+
+            # Update charges
+            self.charges -= 1
+
+            # Update title
+            self.title = f"Wand of Teleport Away\nCharges: {self.charges}"
 
 
-class SlowMonster(Wand):
+class DrainLife(Wand):
     def __init__(
             self,
             filename: str = None,
@@ -887,20 +1004,27 @@ class SlowMonster(Wand):
             enchantment: bool = False,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Slow Monster",
+        Wand.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Wand of Drain Life",
                       hidden_title=f"{desc} wand", enchantment=enchantment,
-                      spawn_chance=ITEMS["Slow Monster"][0])
+                      spawn_chance=ITEMS["Drain Life"][0])
         self.desc = desc
 
+    # TODO: Finish when monsters are implemented
     def use(self, player, monster):
-        # Check if the Player has already used the item
-        if not constants.items_info[SlowMonster][0]:
-            # Set used in constants.items_info
-            constants.items_info[SlowMonster][0] = True
+        """ """
+        # Check if enough charges to use again
+        if self.charges != 0:
+            if not constants.items_info[DrainLife][0]:
+                # Set used in constants.items_info
+                constants.items_info[DrainLife][0] = True
 
-        # Slow monster
-        # Not sure how to do this
-        pass
+            # Remove half hp (int)
+            # Evenly remove amongst alive monsters
+            # Update charges
+            self.charges -= 1
+
+            # Update title
+            self.title = f"Wand of Drain Life\nCharges: {self.charges}"
 
 
 # ---Ring Classes---
@@ -913,6 +1037,7 @@ class SlowMonster(Wand):
 # -title: str
 # -hidden_title: str
 # -spawn_chance: int
+# -charges: int
 # -------------------------------
 # Ring types (Super: Ring)
 # -Add Strength
@@ -948,11 +1073,13 @@ class Ring(Item):
             is_hidden: bool = True,
             title: str = '',
             hidden_title: str = '',
-            spawn_chance: int = 0
+            spawn_chance: int = 0,
+            charges: int = 1
     ):
         Item.__init__(self, filename=filename, scale=scale, enchantment=enchantment, is_hidden=is_hidden, title=title,
                       spawn_chance=spawn_chance)
         self.hidden_title = hidden_title
+        self.charges = charges
 
 
 # Subclasses ring types (Super: Ring)
@@ -970,16 +1097,29 @@ class AddStrength(Ring):
                       spawn_chance=ITEMS["Add Strength"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[AddStrength][0]:
-            # Set used in constants.items_info
-            constants.items_info[AddStrength][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Adds one to current and max strength. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
 
-        # Add one to the maximum strength
-        # Might not work
-        player.str_max += 1
-        player.str += 1
+            # Check if the Player has already used the item
+            if not constants.items_info[AddStrength][0]:
+                # Set used in constants.items_info
+                constants.items_info[AddStrength][0] = True
+
+            # Add one to current and maximum strength
+            player.str_max += 1
+            player.str += 1
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from strength and max strength. """
+        # Undo changes
+        player.str -= 1
+        player.str_max -= 1
 
 
 class IncreaseDamage(Ring):
@@ -996,15 +1136,30 @@ class IncreaseDamage(Ring):
                       spawn_chance=ITEMS["Increase Damage"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[IncreaseDamage][0]:
-            # Set used in constants.items_info
-            constants.items_info[IncreaseDamage][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Increases the Player's equipped weapon's power by 1. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[IncreaseDamage][0]:
+                # Set used in constants.items_info
+                constants.items_info[IncreaseDamage][0] = True
 
-        # Update the weapon's power += 1
-        # Call weapon.update
-        pass
+            # Update the weapon's power += 1
+            player.weapon.power += 1
+
+            # Call weapon.update
+            player.weapon.update()
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from weapon's power. """
+        # Undo changes
+        player.weapon.power -= 1
+        player.weapon.update()
 
 
 class Teleportation(Ring):
@@ -1022,24 +1177,42 @@ class Teleportation(Ring):
         self.desc = desc
 
     def use(self, player, grid: Grid):
-        # Check if the Player has already used the item
-        if not constants.items_info[Teleportation][0]:
-            # Set used in constants.items_info
-            constants.items_info[Teleportation][0] = True
+        """ Once initially put on, the Player is teleported to a random floor or trail. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Teleportation][0]:
+                # Set used in constants.items_info
+                constants.items_info[Teleportation][0] = True
 
-        # Determine random position
-        row = randint(0, grid.n_rows)
-        col = randint(0, grid.n_cols)
+            # Get random grid position
+            row = randint(0, grid.n_rows - 1)
+            col = randint(0, grid.n_cols - 1)
 
-        # If the tile is not a Floor or Trail
-        while grid[row][col].tile_type != TileType.Floor and grid[row][col].tile_type != TileType.Trail:
-            # Determine random position
-            row = randint(0, grid.n_rows)
-            col = randint(0, grid.n_cols)
+            # Set the temporary grid position
+            temp_pos = grid.grid[row][col]
 
-        # This might not work
-        # Set Player's new position
-        player.set_position(col * constants.TILE_WIDTH, row * constants.TILE_HEIGHT)
+            # While TileType != Floor and TileType != Trail and Tile has an item
+            while temp_pos.tile_type != TileType.Floor and temp_pos.tile_type != TileType.Trail:
+                # Determine random position again
+                # Get random grid position
+                row = randint(0, grid.n_rows - 1)
+                col = randint(0, grid.n_cols - 1)
+
+                # Set the temporary grid position
+                temp_pos = grid.grid[row][col]
+
+            # Set the Player's position
+            player.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+
+            # Update charges
+            self.charges -= 1
+
+            # Set title to reflect used charges
+            self.title = "(DEPLETED) Ring of Teleportation"
+
+    def unequip(self, player=None, grid: Grid = None):
+        """ Nothing happens when you unequip this ring. Must have an unequip method though. """
         pass
 
 
@@ -1057,14 +1230,26 @@ class Dexterity(Ring):
                       spawn_chance=ITEMS["Dexterity"][0])
         self.desc = desc
 
-    def use(self, player):
-        # Check if the Player has already used the item
-        if not constants.items_info[Dexterity][0]:
-            # Set used in constants.items_info
-            constants.items_info[Dexterity][0] = True
+    def use(self, player, grid: Grid = None):
+        """ Increases the Player's dex score by 1. """
+        # Make sure this hasn't already been used
+        if self.charges != 0:
+            # Check if the Player has already used the item
+            if not constants.items_info[Dexterity][0]:
+                # Set used in constants.items_info
+                constants.items_info[Dexterity][0] = True
 
-        # Not sure how to represent this
-        pass
+            # Add one to Player's dex score
+            player.dex += 1
+
+            # Update charges
+            self.charges -= 1
+
+    def unequip(self, player, grid: Grid = None):
+        """ When this ring is unequipped, the Player loses the benefits of having it equipped.
+        This removes 1 from Player's dex. """
+        # Update dex score
+        player.dex -= 1
 
 
 # ---Weapon Classes---
@@ -1075,7 +1260,7 @@ class Weapon(Item):
                  is_hidden: bool = True,
                  enchantment: bool = False):
         Item.__init__(self, filename=filename, scale=scale, is_hidden=is_hidden, title="Mace",
-                        enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
+                      enchantment=enchantment, spawn_chance=ITEMS["Weapon"][0])
         self.power = 2
         self.accuracy = 2
 
