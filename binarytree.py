@@ -2,7 +2,21 @@ import random
 from typing import Optional
 from typing import Tuple
 from random import randint
-import arcade
+
+
+class Room:
+    x: int
+    y: int
+    w: int
+    h: int
+    center: Tuple[int, int]
+
+    def __init__(self, x: int, y: int, w: int, h: int):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.center = ((x + w // 2), (y + h // 2))
 
 
 class RoomContainer:
@@ -90,33 +104,52 @@ def split_room(room: RoomContainer) -> Tuple[RoomContainer, RoomContainer]:
         return lhs, rhs
 
 
-def tree_to_list(node: Optional[Node]) -> list[RoomContainer]:
-    rooms: list[RoomContainer] = []
+def get_rooms(node: Optional[Node]) -> list[Room]:
+    rooms: list[Room] = []
 
-    def walk_and_add(n: Optional[Node]):
+    def walk_and_add_rooms(n: Optional[Node]):
         if n is not None:
-            rooms.append(n.val)
-            walk_and_add(n.lhs)
-            walk_and_add(n.rhs)
+            if n.lhs is None and n.rhs is None:
+                x = n.val.x
+                y = n.val.y
+                w = randint(int(n.val.w * 0.60), int(n.val.w * 0.80))
+                h = randint(int(n.val.h * 0.60), int(n.val.h * 0.80))
+                rooms.append(Room(x, y, w, h))
+            walk_and_add_rooms(n.lhs)
+            walk_and_add_rooms(n.rhs)
 
-    walk_and_add(node)
+    walk_and_add_rooms(node)
+
     return rooms
 
 
-def get_floor_positions(node: Optional[Node]) -> list[Tuple[int, int]]:
-    positions: list[Tuple[int, int]] = []
+def create_trails(node: Optional[Node]) -> list[Tuple[int, int]]:
+    trails: list[Tuple[int, int]] = []
 
-    def walk_and_add_tiles(n: Optional[Node]):
+    def walk_and_add_trails(n: Optional[Node]):
         if n is not None:
             if n.lhs is None and n.rhs is None:
-                if random.random() < 0.80:
-                    for x in range(n.val.x + 1, n.val.x + n.val.w - 3):
-                        for y in range(n.val.y + 1, n.val.y + n.val.h - 3):
-                            positions.append((x, y))
-                    print("added room's tiles")
-            walk_and_add_tiles(n.lhs)
-            walk_and_add_tiles(n.rhs)
+                return
+            else:
+                lhs_center_x, lhs_center_y = n.lhs.val.center
+                rhs_center_x, rhs_center_y = n.rhs.val.center
+                if abs(lhs_center_x - rhs_center_x) > abs(lhs_center_y - rhs_center_y):
+                    if (r := randint(0, 1)) == 0:
+                        for x in range(lhs_center_x, rhs_center_x):
+                            trails.append((x, lhs_center_y))
+                    elif r == 1:
+                        for x in range(lhs_center_x, rhs_center_x):
+                            trails.append((x, rhs_center_y))
+                else:
+                    if (r := randint(0, 1)) == 0:
+                        for y in range(lhs_center_y, rhs_center_y):
+                            trails.append((lhs_center_x, y))
+                    elif r == 1:
+                        for y in range(lhs_center_y, rhs_center_y):
+                            trails.append((rhs_center_x, y))
+            walk_and_add_trails(n.lhs)
+            walk_and_add_trails(n.rhs)
 
-    walk_and_add_tiles(node)
+    walk_and_add_trails(node)
 
-    return positions
+    return trails

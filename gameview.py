@@ -33,9 +33,9 @@ class GameView(arcade.View):
         self.item_list = None
 
         # Grid
-        self.grid: Grid = Grid(46, 80)
+        self.grid: Grid = Grid(40, 70)
 
-        self.tree: Tree = Tree(0, 0, 46, 80)
+        self.tree: Tree = Tree(0, 0, 40, 70)
 
         # Set up the actor info
         self.player_sprite = None
@@ -93,32 +93,30 @@ class GameView(arcade.View):
         self.player_sprite.inv.append(RingMail())
 
         # This might all need to be in init
-
-        # self.grid.add_room(0, 0, 15, 15)
-
         populate_tree(self.tree.root, 4)
-        tile_positions = get_floor_positions(self.tree.root)
-        #
-        for pos in tile_positions:
-            (x, y) = pos
-            print(f"tile x: {x}, tile y: {y}")
-        #     (x, y) = pos
-        #     self.grid.grid[x][y].tile_type = TileType.Floor
+
+        rooms = get_rooms(self.tree.root)
+        trails = create_trails(self.tree.root)
+        for trail in trails:
+            x, y = trail
+            self.grid.grid[x][y].tile_type = TileType.Trail
+        for room in rooms:
+            self.grid.add_room(room)
 
         self.recreate_grid()
 
         # Create Items and place them in the item_list
-        temp_list = create_items(determine_items())
-        print(f"Number of classes: {len(temp_list)}")
-        for item in temp_list:
-            armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
-                      PlateMail]
-            if type(item) not in armors and type(item) is not Gold:
-                print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
-            else:
-                print(f"title: {item.title}, id: {item.id}")
-            self.item_list.append(item)
-        self.rand_pos()
+        # temp_list = create_items(determine_items())
+        # print(f"Number of classes: {len(temp_list)}")
+        # for item in temp_list:
+        #     armors = [Leather, RingMail, StuddedLeather, ScaleMail, ChainMail, SplintMail, BandedMail,
+        #               PlateMail]
+        #     if type(item) not in armors and type(item) is not Gold:
+        #         print(f"title: {item.title}, hidden title: {item.hidden_title}, id: {item.id}")
+        #     else:
+        #         print(f"title: {item.title}, id: {item.id}")
+        #     self.item_list.append(item)
+        # self.rand_pos()
 
     def on_draw(self):
         """ Render the screen. """
@@ -231,10 +229,17 @@ class GameView(arcade.View):
         y: int = 0
         for row in self.grid.grid:
             for t in row:
-                if t.tile_type == TileType.Floor:
-                    color = arcade.color.DARK_GRAY
-                else:
-                    color = arcade.color.BLACK
+                color: Tuple[int, int, int] = None
+                match t.tile_type:
+                    case TileType.Floor:
+                        color = arcade.color.DARK_GRAY
+                    case TileType.Wall:
+                        color = arcade.color.WHITE
+                    case TileType.Trail:
+                        color = arcade.color.RED
+                    case _:
+                        color = arcade.color.BLACK
+
                 current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
                                                               constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
