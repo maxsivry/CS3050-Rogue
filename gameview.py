@@ -103,19 +103,19 @@ class GameView(arcade.View):
         # Determine the Items' positions
         self.rand_pos()
 
-        #player stats
-        stats_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT, arcade.color.ICEBERG)
+        # player stats
+        stats_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT,
+                                                    arcade.color.ICEBERG)
         self.shape_list.append(stats_rect)
 
-        #title rect
-        title = arcade.create_rectangle_filled(525, constants.SCREEN_HEIGHT -41, 1050, 82, arcade.color.ICEBERG)
+        # title rect
+        title = arcade.create_rectangle_filled(525, constants.SCREEN_HEIGHT - 41, 1050, 82, arcade.color.ICEBERG)
         self.shape_list.append(title)
 
         # player stats
         current_rect = arcade.create_rectangle_filled(1137, constants.SCREEN_HEIGHT / 2, 174, constants.SCREEN_HEIGHT,
                                                       arcade.color.ICEBERG)
         self.shape_list.append(current_rect)
-
 
     def on_draw(self):
         """ Render the screen. """
@@ -130,24 +130,25 @@ class GameView(arcade.View):
         self.item_list.draw()
         self.player_sprite.draw()
 
-        #display player stats:
+        # display player stats:
         arcade.draw_text("STATS", 1062,
-                        constants.SCREEN_HEIGHT - 50,
-                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
-                        width=150)
+                         constants.SCREEN_HEIGHT - 50,
+                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                         width=150)
 
         arcade.draw_text(self.player_sprite.display_player_info(), 1062,
-                        constants.SCREEN_HEIGHT - 70,
-                        arcade.color.BLACK, font_size=10, multiline=True,
-                        width=150)
+                         constants.SCREEN_HEIGHT - 70,
+                         arcade.color.BLACK, font_size=10, multiline=True,
+                         width=150)
 
         arcade.draw_text("TO WIN OR TO ROGUE", 525,
-                        constants.SCREEN_HEIGHT - 41,
-                        arcade.color.BLACK, font_size=20,
-                        width=150, anchor_x="center", font_name="Kenney Rocket" )
+                         constants.SCREEN_HEIGHT - 41,
+                         arcade.color.BLACK, font_size=20,
+                         width=150, anchor_x="center", font_name="Kenney Rocket")
 
-        #if inventory is displayed
-        inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300, 400, arcade.color.ICEBERG)
+        # if inventory is displayed
+        inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300,
+                                                        400, arcade.color.ICEBERG)
         if not self.Inventory_open:
             self.hide_inventory()
         else:
@@ -155,7 +156,6 @@ class GameView(arcade.View):
             self.display_inventory()
 
         self.item_list.draw()
-
 
     def on_update(self, delta_time):
         """ Movement and game logic """
@@ -199,12 +199,12 @@ class GameView(arcade.View):
         """
         Called whenever a key is pressed
         """
-        #Open inventory command, e toggles inventory
+        # Open inventory command, e toggles inventory
         if key == arcade.key.E:
             self.Inventory_open = not self.Inventory_open
             self.highlighted_item = 0
 
-        #display help message
+        # display help message
         if key == arcade.key.H:
             self.help_message()
 
@@ -212,7 +212,7 @@ class GameView(arcade.View):
             self.quit_game()
 
         if not self.Inventory_open:
-            #player movement, each movement potentially picks up item
+            # player movement, each movement potentially picks up item
             item = None
             if key == arcade.key.UP:
                 direction = 'Up'
@@ -226,49 +226,29 @@ class GameView(arcade.View):
             elif key == arcade.key.LEFT:
                 direction = 'Left'
                 item = self.player_sprite.move_dir("Left", self.grid)
-            self.pick_up_item(item)
-
-
-
-
-            #Dropping Item with D (cant drop if there is already an item at location)
+            # Dropping Item with D (cant drop if there is already an item at location)
             elif key == arcade.key.D:
                 if 0 <= self.highlighted_item < len(self.player_sprite.inv):
 
-                    #if there is no item at location already:
+                    # if there is no item at location already:
                     col = int(self.player_sprite.center_x / constants.TILE_WIDTH)
                     row = int(self.player_sprite.center_y / constants.TILE_HEIGHT)
                     if not self.grid[row, col].has_item:
-
                         # drop item on correct tile, set tile to have item
-                        self.player_sprite.inv[self.highlighted_item].set_position(self.player_sprite.center_x, self.player_sprite.center_y)
+                        self.player_sprite.inv[self.highlighted_item].set_position(self.player_sprite.center_x,
+                                                                                   self.player_sprite.center_y)
                         self.item_list.append(self.player_sprite.inv[self.highlighted_item])
                         self.grid[row, col].setitem(self.player_sprite.inv[self.highlighted_item])
                         # Remove the highlighted item from the inventory
                         del self.player_sprite.inv[self.highlighted_item]
 
-            #using item with U
+            # using item with U
             elif key == arcade.key.U:
-                if 0 <= self.highlighted_item < len(self.player_sprite.inv)-1:
+                if 0 <= self.highlighted_item < len(self.player_sprite.inv) - 1:
                     self.use(self.player_sprite.inv[self.highlighted_item])
 
-
-    def recreate_grid(self):
-        x: int = 0
-        y: int = 0
-        for row in self.grid.grid:
-            for t in row:
-                if t.tile_type == TileType.Floor:
-                    color = arcade.color.DARK_GRAY
-                else:
-                    color = arcade.color.BLACK
-                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH + 7.5,
-                                                              y * constants.TILE_HEIGHT + 7.5,
-                                                              constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
-                self.shape_list.append(current_rect)
-                x += 1
-            y += 1
-            x = 0
+            # Pick up item
+            self.pick_up_item(item)
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self):
@@ -343,7 +323,6 @@ class GameView(arcade.View):
         else:  # Items that reach here do not have a use method. They should not be passed into this function
             pass
 
-
     def pick_up_item(self, item):
         # Set index variable -> Will be used to pop item off of list AFTER loop as to not cause off-by-one error
         index = -1
@@ -393,8 +372,11 @@ class GameView(arcade.View):
             x = 0
 
     def display_inventory(self):
-        arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175, arcade.color.BLACK, font_size=20, width=280, align="center", font_name="Kenney Rocket")
-        arcade.draw_line(constants.SCREEN_WIDTH / 2 - 150, constants.SCREEN_HEIGHT / 2 + 165, constants.SCREEN_WIDTH / 2 + 150, constants.SCREEN_HEIGHT / 2 + 165, arcade.color.DARK_RED, line_width=2)
+        arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175,
+                         arcade.color.BLACK, font_size=20, width=280, align="center", font_name="Kenney Rocket")
+        arcade.draw_line(constants.SCREEN_WIDTH / 2 - 150, constants.SCREEN_HEIGHT / 2 + 165,
+                         constants.SCREEN_WIDTH / 2 + 150, constants.SCREEN_HEIGHT / 2 + 165, arcade.color.DARK_RED,
+                         line_width=2)
         arcade.draw_line(627, 487, 727, 487, arcade.color.DARK_RED, line_width=2)
         arcade.draw_line(627, 487, 627, 392, arcade.color.DARK_RED, line_width=2)
         arcade.draw_line(627, 392, 727, 392, arcade.color.DARK_RED, line_width=2)
@@ -418,20 +400,21 @@ class GameView(arcade.View):
             color = arcade.color.RED if i == self.highlighted_item else arcade.color.BLACK
             if (not constants.items_info[type(item)][0] and not issubclass(type(item), Armor)
                     and type(item) is not Gold and type(item) is not issubclass(type(self.inv[i]), Weapon)):
-                arcade.draw_text(item.hidden_title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
+                arcade.draw_text(item.hidden_title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10,
+                                 multiline=True, width=280)
             else:
-                arcade.draw_text(item.title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True, width=280)
-
+                arcade.draw_text(item.title, constants.SCREEN_WIDTH / 2 - 140, y, color, font_size=10, multiline=True,
+                                 width=280)
 
     def hide_inventory(self):
         arcade.draw_text("INVENTORY", 1062,
-                        constants.SCREEN_HEIGHT - 200,
-                        arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
-                        width=150)
+                         constants.SCREEN_HEIGHT - 200,
+                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                         width=150)
         arcade.draw_text(self.player_sprite.player_inventory(), 1062,
-                    constants.SCREEN_HEIGHT - 220,
-                    arcade.color.BLACK, font_size=10, multiline=True,
-                    width=150)
+                         constants.SCREEN_HEIGHT - 220,
+                         arcade.color.BLACK, font_size=10, multiline=True,
+                         width=150)
 
     def help_message(self):
         pass
@@ -454,9 +437,8 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=20, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
 
         arcade.draw_text(message, box_x - box_width / 2, box_y + box_height / 2,
-                         arcade.color.BLACK, font_size=10, width = 150, multiline = True, anchor_x="left", )
+                         arcade.color.BLACK, font_size=10, width=150, multiline=True, anchor_x="left", )
 
     def quit_game(self):
         end_view = EndView(self.player_sprite)
         self.window.show_view(end_view)
-
