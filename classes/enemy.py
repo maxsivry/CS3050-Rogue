@@ -17,7 +17,7 @@ def create_monsters(level):
 
     num_monsters = (int)(random.randint(2, 5) + level * .8)
 
-    for _ in range(num_monsters):
+    for _ in range(num_monsters+15):
         monster_type = random.randint(0, 100 - level)
         if monster_type < DRAGON_CHANCE and level > 3:
             monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
@@ -43,6 +43,7 @@ class Enemy(Actor):
         self.is_alive = True
         # XP rewarded upon defeat
         self.reward = 1
+        self.range = 15
 
     def get_damage(self):
         hit = random.randint(1, 10)
@@ -56,27 +57,27 @@ class Enemy(Actor):
             true_damage = damage - player.get_defense()
             if true_damage > 0:
                 if player.take_damage(true_damage):
-                    print("You were killed by " + self.name)
+                    self.log("You were killed by " + self.name)
             else:
-                print("You took no damage")
+                self.log("You took no damage")
         else:
-            print("The " + self.name + " missed...")
+            self.log("The " + self.name + " missed...")
 
     def take_damage(self, damage):
         self.health -= damage
-        print("The " + self.name + " lost", damage, "health")
+        self.log("The " + self.name + " lost " + str(damage) + " health")
         if self.health <= 0:
             self.die()
             return True
         return False
 
     def die(self):
-        print("You defeated the " + self.name)
+        self.log("You defeated the " + self.name)
         self.is_alive = False
 
     # Returns true if the enemy is one tile away from the player
     # Currently always returns false 
-    def is_near(self, player, game):
+    def is_near(self, player, grid):
 
         # #convert location to tile location player
         player_col = int(player.center_x / constants.TILE_WIDTH)
@@ -126,7 +127,7 @@ class Enemy(Actor):
         col_diff = player_col - monster_col
 
         # #if monster is close enough to "see" (if monster row or col is within 10)
-        if (abs(row_diff) < 15) and (abs(col_diff) < 15):
+        if (abs(row_diff) < self.range) and (abs(col_diff) < self.range):
 
             # check if either potential move is invalid
             # If the player is above or below the monster
@@ -142,19 +143,35 @@ class Enemy(Actor):
             if not valid1 and valid2:
                 self.center_x = (new_monster_col2) * constants.TILE_WIDTH
                 self.center_y = (new_monster_row2) * constants.TILE_HEIGHT
+                grid[monster_row, monster_col].has_item = False
+                grid[monster_row, monster_col].item = None
+                grid[new_monster_row2, new_monster_col2].has_item = True
+                grid[new_monster_row2, new_monster_col2].item = self
 
             elif not valid2 and valid1:
                 self.center_x = (new_monster_col) * constants.TILE_WIDTH
                 self.center_y = (new_monster_row) * constants.TILE_HEIGHT
+                grid[monster_row, monster_col].has_item = False
+                grid[monster_row, monster_col].item = None
+                grid[new_monster_row, new_monster_col].has_item = True
+                grid[new_monster_row, new_monster_col].item = self
 
             # if both moves are valid
             elif valid1 and valid2:
                 if random.choice([True, False]):
                     self.center_x = (new_monster_col) * constants.TILE_WIDTH
                     self.center_y = (new_monster_row) * constants.TILE_HEIGHT
+                    grid[monster_row, monster_col].has_item = False
+                    grid[monster_row, monster_col].item = None
+                    grid[new_monster_row, new_monster_col].has_item = True
+                    grid[new_monster_row, new_monster_col].item = self
                 else:
                     self.center_x = (new_monster_col2) * constants.TILE_WIDTH
                     self.center_y = (new_monster_row2) * constants.TILE_HEIGHT
+                    grid[monster_row, monster_col].has_item = False
+                    grid[monster_row, monster_col].item = None
+                    grid[new_monster_row2, new_monster_col2].has_item = True
+                    grid[new_monster_row2, new_monster_col2].item = self
 
         else:
             return
@@ -172,6 +189,7 @@ class Slime(Enemy):
         self.name = "Slime"
         self.is_alive = True
         self.reward = random.randint(1, 2)
+        self.range = 3
 
     def get_damage(self):
         hit = random.randint(1, 10)
@@ -192,6 +210,7 @@ class Crab(Enemy):
         self.name = "Crab"
         self.is_alive = True
         self.reward = random.randint(2, 3)
+        self.range = 15
 
     def get_damage(self):
         hit = random.randint(1, 10)
@@ -212,6 +231,7 @@ class Wraith(Enemy):
         self.name = "Wraith"
         self.is_alive = True
         self.reward = random.randint(3, 4)
+        self.range = 20
 
     def get_damage(self):
         hit = random.randint(1, 10)
@@ -231,7 +251,8 @@ class Dragon(Enemy):
         self.health = random.randint(15, 20)
         self.name = "Dragon"
         self.is_alive = True
-        self.reward = 20
+        self.reward = 100
+        self.range = 20
 
     def get_damage(self):
         hit = random.randint(1, 10)
