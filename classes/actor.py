@@ -33,6 +33,10 @@ class Actor(arcade.Sprite):
         self.change_x = 0
         self.change_y = 0
 
+    def log(self, message):
+        print(message)
+        constants.battle_message += message + "\n"
+
 
 class Player(Actor):
     def __init__(
@@ -44,6 +48,7 @@ class Player(Actor):
 
         # Start at default level (1)
         self.level = 1
+        self.turn_count = 0
 
         # Initialize starting XP & XP till next level
         self.xp = 0
@@ -68,6 +73,7 @@ class Player(Actor):
         # Initialize hp to default starting hp (12) & max hp (initially the same)
         self.max_hp = 12
         self.health = 12
+        self.regen_rate = 5
 
         # Initialize str to default starting str (16) & max str (initially the same)
         self.str_max = 16
@@ -208,14 +214,27 @@ class Player(Actor):
 
             # Update level, xp, and lvl_xp
             # NOTE: At max level, your level will stay the same and xp will equal lvl_xp at 8,000,000
-            self.xp = self.xp - self.lvl_xp if avail_lvl else XP_LEVELS[21]
-            self.level += 1 if avail_lvl else 21
-            self.lvl_xp = XP_LEVELS[self.level + 1] if avail_lvl else XP_LEVELS[21]
+            if avail_lvl:
+                self.xp = self.xp - self.lvl_xp
+                self.lvl_xp = XP_LEVELS[self.level + 1]
+                self.level += 1
+                self.max_hp += randint(1,3)
+                self.str += randint(0,2)
+                self.dex += randint(0,2)
+                self.log("Welcome to level " + str(self.level))
+            else:
+                self.xp = XP_LEVELS[21]
+                self.level = 21
+                self.lvl_xp = XP_LEVELS[21]
+            # self.xp = self.xp - self.lvl_xp if avail_lvl else XP_LEVELS[21]
+            # self.level += 1 if avail_lvl else 21
+            # self.lvl_xp = XP_LEVELS[self.level + 1] if avail_lvl else XP_LEVELS[21]
 
     # Damages the player, returns true if the damage kills the player
     def take_damage(self, damage):
         self.health -= damage
-        print("You lost", damage, "health")
+        message = "You lost " + str(damage) + " health"
+        self.log(message)
         if self.health <= 0:
             self.die()
             return True
@@ -237,7 +256,8 @@ class Player(Actor):
         if damage > 0:
             enemy.take_damage(damage)
         else:
-            print("You miss the " + enemy.name + "...", )
+            message = "You miss the " + enemy.name + "..."
+            self.log(message)
 
         if not enemy.is_alive:
             self.update_level(enemy.reward)
@@ -247,4 +267,15 @@ class Player(Actor):
         return self.base_defense + self.armor
 
     def end_turn(self):
+        # Heals the player if damaged
+        # Regen slows down the more times it happens
+        # Regen speed returns to normal the as
+        # the player spends turns at full health 
+        self.turn_count += 1
+        if self.turn_count % self.regen_rate == 0:
+            if self.health < self.max_hp:
+                self.health += 1
+                self.regen_rate += 3
+            elif self.regen_rate > 5:
+                self.regen_rate -= 1
         self.has_turn = False
