@@ -149,13 +149,12 @@ class GameView(arcade.View):
         # if inventory is displayed
         inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300,
                                                         400, arcade.color.ICEBERG)
+
         if not self.Inventory_open:
             self.hide_inventory()
         else:
             inventory_rect.draw()
             self.display_inventory()
-
-        self.item_list.draw()
 
     def on_update(self, delta_time):
         """ Movement and game logic """
@@ -216,16 +215,25 @@ class GameView(arcade.View):
             item = None
             if key == arcade.key.UP:
                 direction = 'Up'
-                item = self.player_sprite.move_dir("Up", self.grid)
+                item = self.player_sprite.move_dir(direction, self.grid)
             elif key == arcade.key.DOWN:
                 direction = 'Down'
-                item = self.player_sprite.move_dir("Down", self.grid)
+                item = self.player_sprite.move_dir(direction, self.grid)
             elif key == arcade.key.RIGHT:
                 direction = 'Right'
-                item = self.player_sprite.move_dir("Right", self.grid)
+                item = self.player_sprite.move_dir(direction, self.grid)
             elif key == arcade.key.LEFT:
                 direction = 'Left'
-                item = self.player_sprite.move_dir("Left", self.grid)
+                item = self.player_sprite.move_dir(direction, self.grid)
+            # Pick up item
+            self.pick_up_item(item)
+        else:
+            # Move the highlighted item up
+            if key == arcade.key.UP and self.highlighted_item > 0:
+                self.highlighted_item -= 1
+            # Move the highlighted item down
+            elif key == arcade.key.DOWN and self.highlighted_item < len(self.player_sprite.inv) - 1:
+                self.highlighted_item += 1
             # Dropping Item with D (cant drop if there is already an item at location)
             elif key == arcade.key.D:
                 if 0 <= self.highlighted_item < len(self.player_sprite.inv):
@@ -244,16 +252,12 @@ class GameView(arcade.View):
 
             # using item with U
             elif key == arcade.key.U:
-                if 0 <= self.highlighted_item < len(self.player_sprite.inv) - 1:
+                if 0 <= self.highlighted_item < len(self.player_sprite.inv):
                     self.use(self.player_sprite.inv[self.highlighted_item])
-
-            # Pick up item
-            self.pick_up_item(item)
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self):
         """ Determines a randomized position on the grid/screen for each of a set of Items """
-
         # For each item in item_list
         def rand_thing(obj_list):
             for obj in obj_list:
@@ -307,7 +311,7 @@ class GameView(arcade.View):
         elif isinstance(item, TeleportAway):
             item.use(self.player_sprite, monster, self.grid)
         elif isinstance(item, DrainLife):
-            item.use(self.player_sprite, monster)
+            item.use(self.player_sprite, self.enemy_list)
         elif issubclass(type(item), Ring):
             if self.player_sprite.ring and item.charges > 0:
                 self.player_sprite.ring.unequip(self.player_sprite, self.grid)

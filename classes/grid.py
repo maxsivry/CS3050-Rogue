@@ -20,8 +20,6 @@ class Grid:
 
             self.grid.append(new_col)
 
-        print("made room")
-
     # method to get item at index
     def __getitem__(self, index):
         row, col = index

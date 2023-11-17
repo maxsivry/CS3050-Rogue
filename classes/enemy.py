@@ -10,14 +10,15 @@ CRAB_CHANCE = 30
 WRAITH_CHANCE = 10
 DRAGON_CHANCE = 1
 
+
 def create_monsters(level):
     # Create area to store created objects
     monster_list = []
 
-    num_monsters = (int) (random.randint(2,5) + level*.8)
+    num_monsters = (int)(random.randint(2, 5) + level * .8)
 
     for _ in range(num_monsters):
-        monster_type = random.randint(0, 100-level)
+        monster_type = random.randint(0, 100 - level)
         if monster_type < DRAGON_CHANCE and level > 3:
             monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
         if monster_type < WRAITH_CHANCE:
@@ -81,7 +82,7 @@ class Enemy(Actor):
         player_col = int(player.center_x / constants.TILE_WIDTH)
         player_row = int(player.center_y / constants.TILE_HEIGHT)
 
-        #convert location to tile location monster
+        # convert location to tile location monster
         monster_col = int(self.center_x / constants.TILE_WIDTH)
         monster_row = int(self.center_y / constants.TILE_HEIGHT)
         row_diff = player_row - monster_row
@@ -106,19 +107,19 @@ class Enemy(Actor):
         # function that takes in grid and returns true if move is valid
         def checkvalid(grid, rM, cM):
             return (
-            (grid[rM, cM].tile_type != TileType.Wall)
-            and (grid[rM, cM].tile_type != TileType.Empty)
-            and (rM < constants.ROW_COUNT)
-            and (cM < constants.COLUMN_COUNT)
-            and (rM >= 0)
-            and (cM >= 0)
-        )
+                    (grid[rM, cM].tile_type != TileType.Wall)
+                    and (grid[rM, cM].tile_type != TileType.Empty)
+                    and (rM < constants.ROW_COUNT)
+                    and (cM < constants.COLUMN_COUNT)
+                    and (rM >= 0)
+                    and (cM >= 0)
+            )
 
         # #convert location to tile location player
         player_col = int(player.center_x / constants.TILE_WIDTH)
         player_row = int(player.center_y / constants.TILE_HEIGHT)
 
-        #convert location to tile location monster
+        # convert location to tile location monster
         monster_col = int(self.center_x / constants.TILE_WIDTH)
         monster_row = int(self.center_y / constants.TILE_HEIGHT)
         row_diff = player_row - monster_row
@@ -127,7 +128,7 @@ class Enemy(Actor):
         # #if monster is close enough to "see" (if monster row or col is within 10)
         if (abs(row_diff) < 15) and (abs(col_diff) < 15):
 
-            #check if either potential move is invalid
+            # check if either potential move is invalid
             # If the player is above or below the monster
             new_monster_row = monster_row + (1 if row_diff > 0 else -1)
             new_monster_col = monster_col
@@ -136,17 +137,17 @@ class Enemy(Actor):
             new_monster_row2 = monster_row
             new_monster_col2 = monster_col + (1 if col_diff > 0 else -1)
             valid2 = checkvalid(grid, new_monster_row2, new_monster_col2)
-            
-            #if only one move is invalid, do the other
+
+            # if only one move is invalid, do the other
             if not valid1 and valid2:
                 self.center_x = (new_monster_col2) * constants.TILE_WIDTH
                 self.center_y = (new_monster_row2) * constants.TILE_HEIGHT
-            
+
             elif not valid2 and valid1:
                 self.center_x = (new_monster_col) * constants.TILE_WIDTH
-                self.center_y = (new_monster_row ) * constants.TILE_HEIGHT
-            
-            #if both moves are valid
+                self.center_y = (new_monster_row) * constants.TILE_HEIGHT
+
+            # if both moves are valid
             elif valid1 and valid2:
                 if random.choice([True, False]):
                     self.center_x = (new_monster_col) * constants.TILE_WIDTH
@@ -157,6 +158,7 @@ class Enemy(Actor):
 
         else:
             return
+
 
 # Basic
 class Slime(Enemy):
@@ -169,13 +171,14 @@ class Slime(Enemy):
         self.health = 7
         self.name = "Slime"
         self.is_alive = True
-        self.reward = random.randint(1,2)
-    
+        self.reward = random.randint(1, 2)
+
     def get_damage(self):
         hit = random.randint(1, 10)
         if hit > 5:
             return random.randint(1, 3)
         return 0
+
 
 # Weak but has a lot of health
 class Crab(Enemy):
@@ -185,16 +188,17 @@ class Crab(Enemy):
             scale: float = 1
     ):
         super().__init__(filename=filename, scale=scale)
-        self.health = random.randint(10,14)
+        self.health = random.randint(10, 14)
         self.name = "Crab"
         self.is_alive = True
-        self.reward = random.randint(2,3)
-    
+        self.reward = random.randint(2, 3)
+
     def get_damage(self):
         hit = random.randint(1, 10)
         if hit > 7:
             return random.randint(1, 2)
         return 0
+
 
 # Glass Cannon
 class Wraith(Enemy):
@@ -204,16 +208,17 @@ class Wraith(Enemy):
             scale: float = 1
     ):
         super().__init__(filename=filename, scale=scale)
-        self.health = random.randint(1,4)
+        self.health = random.randint(1, 4)
         self.name = "Wraith"
         self.is_alive = True
-        self.reward = random.randint(3,4)
-    
+        self.reward = random.randint(3, 4)
+
     def get_damage(self):
         hit = random.randint(1, 10)
         if hit > 4:
             return random.randint(1, 2) + random.randint(1, 2)
         return 0
+
 
 # Very rare; You're screwed if you try to fight this at low level
 class Dragon(Enemy):
@@ -223,11 +228,11 @@ class Dragon(Enemy):
             scale: float = 1
     ):
         super().__init__(filename=filename, scale=scale)
-        self.health = random.randint(15,20)
+        self.health = random.randint(15, 20)
         self.name = "Dragon"
         self.is_alive = True
         self.reward = 20
-    
+
     def get_damage(self):
         hit = random.randint(1, 10)
         if hit > 2:

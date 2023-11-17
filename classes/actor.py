@@ -90,7 +90,8 @@ class Player(Actor):
     def display_player_info(self) -> str:
         """ Simply returns a string representing the most important stats. """
         return (f'Level: {self.level}\nGold: {self.gold}\nHP: {self.health}({self.max_hp})\n'
-                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}\n{self.str}')
+                f'Armor: {str(self.armor)}\nXP: {str(self.xp)}/{str(self.lvl_xp)}\n'
+                f'DEX: {self.dex}')
 
     def player_inventory(self) -> str:
         """ Simply returns a formatted string representing the Player's inventory """
@@ -102,9 +103,9 @@ class Player(Actor):
             if (not constants.items_info[type(self.inv[i])][0] and not issubclass(type(self.inv[i]), Armor)
                     and type(self.inv[i]) is not Gold and not issubclass(type(self.inv[i]), Weapon)):
                 # If it hasn't been discovered and is not an Armor class
-                return_str += f"{i}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
+                return_str += f"{i + 1}. {self.inv[i].hidden_title}\n"  # The Player can only see the hidden title
             else:
-                return_str += f"{i}. {self.inv[i].title}\n"  # The Player is allowed to see the actual title
+                return_str += f"{i + 1}. {self.inv[i].title}\n"  # The Player is allowed to see the actual title
 
         # Return the formatted string
         return return_str

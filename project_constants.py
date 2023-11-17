@@ -29,7 +29,7 @@ items_info = {Leather: [False, ''], RingMail: [False, ''], StuddedLeather: [Fals
               ChainMail: [False, ''], SplintMail: [False, ''], BandedMail: [False, ''], PlateMail: [False, ''],
               IdentifyRing: [False, ''], IncreaseMaxHealth: [False, ''], IdentifyPotion: [False, ''],
               Poison: [False, ''], RestoreStrength: [False, ''], Healing: [False, ''],
-              TeleportTo: [False, ''], TeleportAway: [False, ''], DrainLife: [False, ''],
-              AddStrength: [False, ''], IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
+              TeleportTo: [False, ''], DrainLife: [False, ''], AddStrength: [False, ''],
+              IncreaseDamage: [False, ''], Teleportation: [False, ''], Dexterity: [False, ''],
               Gold: [True, ''], Weapon: [False, ''], Mace: [False, ''], Longsword: [False, ''], Club: [False, ''],
               Scimitar: [False, '']}

@@ -26,8 +26,7 @@ ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Identify Ring": [16, "scroll"], "Increase Max Health": [17, "scroll"],
          "Identify Potion": [17, "scroll"], "Poison": [18, "potion"],
          "Restore Strength": [23, "potion"], "Healing": [23, "potion"],
-         "Teleport To": [16, "wand"], "Teleport Away": [16, "wand"],
-         "Drain Life": [21, "wand"], "Add Strength": [19, "ring"],
+         "Teleport To": [16, "wand"], "Drain Life": [21, "wand"], "Add Strength": [19, "ring"],
          "Increase Damage": [18, "ring"], "Teleportation": [15, "ring"],
          "Dexterity": [18, "ring"], "Gold": [35, "gold"], "Mace": [5, "weapon"],
          "Longsword": [5, "weapon"], "Club": [5, "weapon"], "Scimitar": [5, "weapon"]}
@@ -164,11 +163,6 @@ def create_items(to_create: list) -> list:
                     constants.items_info[TeleportTo][1] = item[1]
                 items_list.append(TeleportTo(filename="static/wand.png", scale=constants.SPRITE_SCALING,
                                              desc=constants.items_info[TeleportTo][1]))
-            case "Teleport Away":
-                if constants.items_info[TeleportAway][1] == '':
-                    constants.items_info[TeleportAway][1] = item[1]
-                items_list.append(TeleportAway(filename="static/wand.png", scale=constants.SPRITE_SCALING,
-                                               desc=constants.items_info[TeleportAway][1]))
             case "Drain Life":
                 if constants.items_info[DrainLife][1] == '':
                     constants.items_info[DrainLife][1] = item[1]
@@ -436,7 +430,7 @@ class IncreaseMaxHealth(Scroll):
             scale: float = 1,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Increase Max Health",
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of\n Increase Max\n Health",
                         hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Increase Max Health"][0])
         self.desc = desc
 
@@ -456,7 +450,7 @@ class IncreaseMaxHealth(Scroll):
             self.charges -= 1
 
             # Set title
-            self.title = "USED Scroll of Increase Max Health"
+            self.title = "USED\n Scroll of\n Increase Max\n Health"
 
 
 class IdentifyRing(Scroll):
@@ -466,7 +460,7 @@ class IdentifyRing(Scroll):
             scale: float = 1,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Identify Ring",
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of\n Identify Ring",
                         hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Identify Ring"][0])
         self.desc = desc
 
@@ -497,7 +491,7 @@ class IdentifyRing(Scroll):
             self.charges -= 1
 
             # Set title
-            self.title = "USED Scroll of Identify Ring"
+            self.title = "USED\n Scroll of\n Identify Ring"
 
 
 class IdentifyPotion(Scroll):
@@ -507,7 +501,7 @@ class IdentifyPotion(Scroll):
             scale: float = 1,
             desc: str = ''
     ):
-        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of Identify Potion",
+        Scroll.__init__(self, filename=filename, scale=scale, title="Scroll of\n Identify Potion",
                         hidden_title=f"{desc} scroll", spawn_chance=ITEMS["Identify Potion"][0])
         self.desc = desc
 
@@ -538,7 +532,7 @@ class IdentifyPotion(Scroll):
             self.charges -= 1
 
             # Set title
-            self.title = "USED Scroll of Identify Potion"
+            self.title = "USED\n Scroll of\n Identify Potion"
 
 
 # ---Potion Classes---
@@ -619,7 +613,7 @@ class Poison(Potion):
             self.charges -= 1
 
             # Update title
-            self.title = "EMPTY Poison Potion"
+            self.title = "EMPTY\n Poison Potion"
 
 
 class RestoreStrength(Potion):
@@ -629,7 +623,7 @@ class RestoreStrength(Potion):
             scale: float = 1,
             desc: str = ''
     ):
-        Potion.__init__(self, filename=filename, scale=scale, title="Restore Strength Potion",
+        Potion.__init__(self, filename=filename, scale=scale, title="Restore\n Strength Potion",
                         hidden_title=f"{desc} potion", spawn_chance=ITEMS["Restore Strength"][0])
         self.desc = desc
 
@@ -644,7 +638,7 @@ class RestoreStrength(Potion):
         player.str = player.str_max
 
         # Update title
-        self.title = "EMPTY Restore Strength Potion"
+        self.title = "EMPTY\n Restore\n Strength Potion"
 
 
 class Healing(Potion):
@@ -684,7 +678,7 @@ class Healing(Potion):
             self.charges -= 1
 
             # Update title
-            self.title = "EMPTY Healing Potion"
+            self.title = "EMPTY\n Healing Potion"
 
 
 # ---Wand Classes---
@@ -702,12 +696,6 @@ class Healing(Potion):
 # --desc: str = *Random Description*
 # --spawn chance: int = 6
 # --title: str = Wand of Teleport To
-# --hidden_title: str = *desc* wand
-# -Teleport Away
-# Teleports MONSTER to random empty floor tile/hallway on map
-# --desc: str = *Random Description*
-# --spawn chance: int = 6
-# --title: str = Wand of Teleport Away
 # --hidden_title: str = *desc* wand
 # -Slow Monster
 # Slows monster (moves every three actions the player takes)
@@ -739,7 +727,7 @@ class TeleportTo(Wand):
             scale: float = 1,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, title=f"Wand of Teleport To", hidden_title=f"{desc} wand",
+        Wand.__init__(self, filename=filename, scale=scale, title=f"Wand of\n Teleport To", hidden_title=f"{desc} wand",
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
 
@@ -766,38 +754,7 @@ class TeleportTo(Wand):
                 self.charges -= 1
 
                 # Update title
-                self.title = f"Wand of Teleport To\nCharges: {self.charges}"
-
-
-class TeleportAway(Wand):
-    def __init__(
-            self,
-            filename: str = None,
-            scale: float = 1,
-            desc: str = ''
-    ):
-        Wand.__init__(self, filename=filename, scale=scale, title="Wand of Teleport Away", hidden_title=f"{desc} wand",
-                      spawn_chance=ITEMS["Teleport Away"][0])
-        self.desc = desc
-
-    # TODO: Finish when Evan implements monsters
-    def use(self, player, monster, grid: Grid):
-        """ """
-        # Check if enough charges to use again
-        if self.charges != 0:
-            # Check if the Player has already used the item
-            if not constants.items_info[TeleportAway][0]:
-                # Set used in constants.items_info
-                constants.items_info[TeleportAway][0] = True
-
-            # Move monster to a random location
-            # Not sure how to do this
-
-            # Update charges
-            self.charges -= 1
-
-            # Update title
-            self.title = f"Wand of Teleport Away\nCharges: {self.charges}"
+                self.title = f"Wand of\n Teleport To\n Charges: {self.charges}"
 
 
 class DrainLife(Wand):
@@ -807,13 +764,12 @@ class DrainLife(Wand):
             scale: float = 1,
             desc: str = ''
     ):
-        Wand.__init__(self, filename=filename, scale=scale, title="Wand of Drain Life", hidden_title=f"{desc} wand",
+        Wand.__init__(self, filename=filename, scale=scale, title="Wand of\n Drain Life", hidden_title=f"{desc} wand",
                       spawn_chance=ITEMS["Drain Life"][0])
         self.desc = desc
 
-    # TODO: Finish when monsters are implemented
-    def use(self, player, monster):
-        """ """
+    def use(self, player, monster_list):
+        """ Removes half the player's current health and deals damage to all monsters on the level. """
         # Check if enough charges to use again
         if self.charges != 0:
             if not constants.items_info[DrainLife][0]:
@@ -821,12 +777,19 @@ class DrainLife(Wand):
                 constants.items_info[DrainLife][0] = True
 
             # Remove half hp (int)
+            half_hp = player.health // 2
+            player.health -= half_hp
+
             # Evenly remove amongst alive monsters
+            to_drain = half_hp // len(monster_list)
+            for monster in monster_list:
+                monster.take_damage(to_drain)
+
             # Update charges
             self.charges -= 1
 
             # Update title
-            self.title = f"Wand of Drain Life\nCharges: {self.charges}"
+            self.title = f"Wand of\n Drain Life\n Charges: {self.charges}"
 
 
 # ---Ring Classes---
@@ -887,7 +850,7 @@ class AddStrength(Ring):
             scale: float = 1,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Add Strength",
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of\n Add Strength",
                       hidden_title=f"{desc} ring", spawn_chance=ITEMS["Add Strength"][0])
         self.desc = desc
 
@@ -923,7 +886,7 @@ class IncreaseDamage(Ring):
             scale: float = 1,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Increase Damage",
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of\n Increase\n Damage",
                       hidden_title=f"{desc} ring", spawn_chance=ITEMS["Increase Damage"][0])
         self.desc = desc
 
@@ -960,7 +923,7 @@ class Teleportation(Ring):
             scale: float = 1,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Teleportation",
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of\n Teleportation",
                       hidden_title=f"{desc} ring", spawn_chance=ITEMS["Teleportation"][0])
         self.desc = desc
 
@@ -997,7 +960,7 @@ class Teleportation(Ring):
             self.charges -= 1
 
             # Set title to reflect used charges
-            self.title = "(DEPLETED) Ring of Teleportation"
+            self.title = f"(DEPLETED)\n {self.title}"
 
     def unequip(self, player=None, grid: Grid = None):
         """ Nothing happens when you unequip this ring. Must have an unequip method though. """
@@ -1011,7 +974,7 @@ class Dexterity(Ring):
             scale: float = 1,
             desc: str = ''
     ):
-        Ring.__init__(self, filename=filename, scale=scale, title="Ring of Dexterity",
+        Ring.__init__(self, filename=filename, scale=scale, title="Ring of\n Dexterity",
                       hidden_title=f"{desc} ring", spawn_chance=ITEMS["Dexterity"][0])
         self.desc = desc
 
@@ -1041,8 +1004,10 @@ class Dexterity(Ring):
 class Weapon(Item):
     def __init__(self,
                  filename: str = None,
-                 scale: float = 1):
-        Item.__init__(self, filename=filename, scale=scale, title="Weapon", spawn_chance=ITEMS["Weapon"][0])
+                 scale: float = 1,
+                 title: str = "Weapon",
+                 spawn_chance: int = 0):
+        Item.__init__(self, filename=filename, scale=scale, title=title, spawn_chance=spawn_chance)
         self.power = 2
         self.accuracy = 2
 
@@ -1059,8 +1024,8 @@ class Weapon(Item):
 
     # Changes title to reflect if the weapon has been buffed or debuffed in any way
     def update(self):
-        str_mod = self.power - Weapon.power
-        dex_mod = self.power - Weapon.power
+        str_mod = self.power - self.power
+        dex_mod = self.power - self.power
         change = ""
         if str_mod > 0:
             change += "+" + str(str_mod)
@@ -1072,12 +1037,8 @@ class Weapon(Item):
         elif dex_mod < 0:
             change += str(dex_mod)
 
-        change += Weapon.name
+        change += self.title
         self.title = change
-
-    power = 2
-    accuracy = 2
-    name = "Weapon"
 
 
 # Starting weapon
@@ -1085,7 +1046,7 @@ class Mace(Weapon):
     def __init__(self,
                  filename: str = None,
                  scale: float = 1):
-        Item.__init__(self, filename=filename, scale=scale, title="Mace", spawn_chance=ITEMS["Mace"][0])
+        Weapon.__init__(self, filename=filename, scale=scale, title="Mace", spawn_chance=ITEMS["Mace"][0])
         self.power = 2
         self.accuracy = 2
 
@@ -1099,17 +1060,13 @@ class Mace(Weapon):
         else:
             return 0
 
-    power = 2
-    accuracy = 2
-    name = "Mace"
-
 
 # Good at everything
 class Longsword(Weapon):
     def __init__(self,
                  filename: str = None,
                  scale: float = 1):
-        Item.__init__(self, filename=filename, scale=scale, title="Longsword", spawn_chance=ITEMS["Longsword"][0])
+        Weapon.__init__(self, filename=filename, scale=scale, title="Longsword", spawn_chance=ITEMS["Longsword"][0])
         self.power = 3
         self.accuracy = 2
 
@@ -1122,17 +1079,13 @@ class Longsword(Weapon):
         else:
             return 0
 
-    power = 3
-    accuracy = 2
-    name = "Longsword"
-
 
 # low accuracy high damage better str scaling
 class Club(Weapon):
     def __init__(self,
                  filename: str = None,
                  scale: float = 1):
-        Item.__init__(self, filename=filename, scale=scale, title="Club", spawn_chance=ITEMS["Club"][0])
+        Weapon.__init__(self, filename=filename, scale=scale, title="Club", spawn_chance=ITEMS["Club"][0])
         self.power = 4
         self.accuracy = 1
 
@@ -1145,18 +1098,13 @@ class Club(Weapon):
         else:
             return 0
 
-    power = 4
-    accuracy = 1
-    name = "Club"
-
 
 # Accurate and has dex scaling
 class Scimitar(Weapon):
     def __init__(self,
                  filename: str = None,
                  scale: float = 1):
-        Item.__init__(self, filename=filename, scale=scale, title="Scimitar",
-                      spawn_chance=ITEMS["Scimitar"][0])
+        Weapon.__init__(self, filename=filename, scale=scale, title="Scimitar", spawn_chance=ITEMS["Scimitar"][0])
         self.power = 1
         self.accuracy = 4
 
@@ -1168,7 +1116,3 @@ class Scimitar(Weapon):
             return damage
         else:
             return 0
-
-    power = 1
-    accuracy = 4
-    name = "Scimitar"
