@@ -24,12 +24,13 @@ class GameView(arcade.View):
     highlighted_item = 0
     appended = False
     recent_coords = []
+    highlighted_box = ''
+    help_screen  = False
 
     def __init__(self):
         """
         Initializer
         """
-
         # Call the parent class initializer
         super().__init__()
 
@@ -41,21 +42,18 @@ class GameView(arcade.View):
 
         # Grid
         self.grid: Grid = Grid(40, 70)
-
         self.tree: Tree = Tree(0, 0, 40, 70)
 
         # Set up the actor info
         self.player_sprite = None
 
         # Track the current state of what key is pressed
-
         self.left_pressed = False
-
         self.right_pressed = False
-
         self.up_pressed = False
-
         self.down_pressed = False
+        self.item_choice = False
+        highlighted_box = 'Yes'
 
         # Track the most recent set of grid coordinates given by a click (to be used with wands)
         self.recent_coords = [0, 0]
@@ -131,33 +129,13 @@ class GameView(arcade.View):
         self.player_sprite.draw()
 
         # display player stats:
-        arcade.draw_text("STATS", 1062,
-                         constants.SCREEN_HEIGHT - 50,
-                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
-                         width=150)
-
-        arcade.draw_text(self.player_sprite.display_player_info(), 1062,
-                         constants.SCREEN_HEIGHT - 70,
-                         arcade.color.BLACK, font_size=10, multiline=True,
-                         width=150)
-
-        arcade.draw_text("TO WIN OR TO ROGUE", 525,
-                         constants.SCREEN_HEIGHT - 41,
-                         arcade.color.BLACK, font_size=20,
-                         width=150, anchor_x="center", font_name="Kenney Rocket")
-
-        # message = ""
-        # for enemy in self.enemy_list:
-        #     if enemy.message != "":
-        #         message += enemy.message + "\n"
-        #         #enemy.message = ""
-        
+        self.display_stats()
+                       
         if constants.battle_message != "":
             self.battlemessage(constants.battle_message)
 
         # if inventory is displayed
-        inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300,
-                                                        400, arcade.color.ICEBERG)
+        inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300, 400, arcade.color.ICEBERG)
 
         if not self.Inventory_open:
             self.hide_inventory()
@@ -165,7 +143,12 @@ class GameView(arcade.View):
             inventory_rect.draw()
             self.display_inventory()
         
-
+        if self.item_choice:
+            self.display_item()
+        
+        if self.help_screen:
+            self.help_message()
+        
     def on_update(self, delta_time):
         """ Movement and game logic """
         self.player_sprite.update()
@@ -218,12 +201,13 @@ class GameView(arcade.View):
 
         # display help message
         if key == arcade.key.H:
-            self.help_message()
+            self.help_screen = not self.help_screen
 
         if key == arcade.key.ESCAPE:
             self.quit_game()
 
         if not self.Inventory_open:
+            self.item_choice = False
             # player movement, each movement potentially picks up item
             item = None
             if key == arcade.key.UP:
@@ -266,7 +250,21 @@ class GameView(arcade.View):
             # using item with U
             elif key == arcade.key.U:
                 if 0 <= self.highlighted_item < len(self.player_sprite.inv):
-                    self.use(self.player_sprite.inv[self.highlighted_item])
+                    self.item_choice = True
+            if self.item_choice:
+                if key == arcade.key.RIGHT:
+                    self.highlighted_box = "No"
+                elif key == arcade.key.LEFT:
+                    self.highlighted_box = "Yes"
+                if key == arcade.key.ENTER:
+                        if self.highlighted_box == 'Yes':
+                            self.use(self.player_sprite.inv[self.highlighted_item])
+                            #CHECK THIS FUNCTIONALITY
+                            # del self.player_sprite.inv[self.highlighted_item]
+                        self.item_choice = False
+
+                    
+                
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self):
@@ -293,7 +291,7 @@ class GameView(arcade.View):
                     temp_pos = self.grid.grid[row][col]
 
                 # Set this Item's position
-                obj.set_position((col * constants.TILE_WIDTH) + 7.5, (row * constants.TILE_HEIGHT) + 7.5)
+                obj.set_position((col * constants.TILE_WIDTH), (row * constants.TILE_HEIGHT))
                 self.grid[row, col].setitem(obj)
 
         rand_thing(self.item_list)
@@ -394,7 +392,7 @@ class GameView(arcade.View):
             "UP/DOWN to select",
             "D to drop item",
             "U to use/equip item",
-            "R to throw item",
+            "Enter to select y/n",
             "E to exit inventory"
         ]
         text_x = 630
@@ -427,8 +425,33 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=10, multiline=True,
                          width=150)
 
+
     def help_message(self):
-        pass
+
+        arcade.draw_rectangle_filled(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
+                                     constants.SCREEN_WIDTH - 20, constants.SCREEN_HEIGHT - 20,
+                                     arcade.color.BLACK)
+        arcade.draw_rectangle_outline(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
+                                       constants.SCREEN_WIDTH - 20, constants.SCREEN_HEIGHT - 20,
+                                       arcade.color.RED, border_width=5)
+
+        # Display the help message
+        help_text = (
+            "Advance at your own risk!\n"
+            "Control the player with the arrow keys.\n"
+            "Collect gold and items to level up.\n"
+            "Fight monsters by running into them,\n"
+            "but be careful that your health bar\n"
+            "does not hit zero! To toggle your\n"
+            "inventory, press E. To quit the game,\n"
+            "press ESC. To toggle the help screen,\n"
+            "Good luck!"
+        )
+
+        arcade.draw_text(help_text, constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
+                         arcade.color.WHITE, font_size=16, width=constants.SCREEN_WIDTH - 40,
+                         align="center", anchor_x="center", anchor_y="center", font_name="Arial")
+
 
     def battlemessage(self, message):
         box_width = 300
@@ -450,6 +473,49 @@ class GameView(arcade.View):
         arcade.draw_text(message, box_x-140, box_y + (box_height / 4),
                          arcade.color.BLACK, font_size=10, width=150, anchor_x="left")
 
+
+
     def quit_game(self):
         end_view = EndView(self.player_sprite)
         self.window.show_view(end_view)
+
+
+    def display_item(self):
+        arcade.draw_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 - 200,
+                                     150, 80, arcade.color.LIGHT_GRAY)
+        arcade.draw_text("Use this item?", constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 - 190,
+                         arcade.color.BLACK, font_size=12, anchor_x="center")
+
+        # Draw "Yes" box
+        arcade.draw_rectangle_filled(constants.SCREEN_WIDTH / 2 - 40, constants.SCREEN_HEIGHT / 2 - 230,
+                                     60, 30, arcade.color.GREEN if self.highlighted_box == "Yes" else arcade.color.LIGHT_GREEN)
+        arcade.draw_text("Yes", constants.SCREEN_WIDTH / 2 - 40, constants.SCREEN_HEIGHT / 2 - 225,
+                         arcade.color.BLACK, font_size=12, anchor_x="center", anchor_y="center")
+
+        # Draw "No" box
+        arcade.draw_rectangle_filled(constants.SCREEN_WIDTH / 2 + 40, constants.SCREEN_HEIGHT / 2 - 230,
+                                     60, 30, arcade.color.RED if self.highlighted_box == "No" else arcade.color.LIGHT_RED_OCHRE)
+        arcade.draw_text("No", constants.SCREEN_WIDTH / 2 + 40, constants.SCREEN_HEIGHT / 2 - 225,
+                         arcade.color.BLACK, font_size=12, anchor_x="center", anchor_y="center")
+        
+    def display_stats(self):
+        # display player stats:
+        arcade.draw_text("STATS", 1062,
+                         constants.SCREEN_HEIGHT - 50,
+                         arcade.color.BLACK, font_size=10, font_name="Kenney Rocket",
+                         width=150)
+
+        arcade.draw_text(self.player_sprite.display_player_info(), 1062,
+                         constants.SCREEN_HEIGHT - 70,
+                         arcade.color.BLACK, font_size=10, multiline=True,
+                         width=150)
+
+        arcade.draw_text("TO WIN OR TO ROGUE", 525,
+                         constants.SCREEN_HEIGHT - 41,
+                         arcade.color.BLACK, font_size=20,
+                         width=150, anchor_x="center", font_name="Kenney Rocket")
+
+        arcade.draw_text("press h for help", 525,
+                         constants.SCREEN_HEIGHT - 56,
+                         arcade.color.BLACK, font_size=10,
+                         width=150, anchor_x="center", font_name="Kenney Rocket") 
