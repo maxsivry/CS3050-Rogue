@@ -95,7 +95,7 @@ class GameView(arcade.View):
         for monster in monsters:
             self.enemy_list.append(monster)
 
-        # Create Items and place them in the item_list
+        # # Create Items and place them in the item_list
         temp_list = create_items(determine_items())
         for item in temp_list:
             self.item_list.append(item)
@@ -146,6 +146,15 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=20,
                          width=150, anchor_x="center", font_name="Kenney Rocket")
 
+        # message = ""
+        # for enemy in self.enemy_list:
+        #     if enemy.message != "":
+        #         message += enemy.message + "\n"
+        #         #enemy.message = ""
+        
+        if constants.battle_message != "":
+            self.battlemessage(constants.battle_message)
+
         # if inventory is displayed
         inventory_rect = arcade.create_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2, 300,
                                                         400, arcade.color.ICEBERG)
@@ -155,6 +164,7 @@ class GameView(arcade.View):
         else:
             inventory_rect.draw()
             self.display_inventory()
+        
 
     def on_update(self, delta_time):
         """ Movement and game logic """
@@ -198,6 +208,9 @@ class GameView(arcade.View):
         """
         Called whenever a key is pressed
         """
+
+        constants.battle_message = ""
+
         # Open inventory command, e toggles inventory
         if key == arcade.key.E:
             self.Inventory_open = not self.Inventory_open
@@ -308,8 +321,6 @@ class GameView(arcade.View):
             item.use(self.player_sprite)
         elif isinstance(item, TeleportTo):
             item.use(self.player_sprite, self.grid, self.recent_coords)
-        elif isinstance(item, TeleportAway):
-            item.use(self.player_sprite, monster, self.grid)
         elif isinstance(item, DrainLife):
             item.use(self.player_sprite, self.enemy_list)
         elif issubclass(type(item), Ring):
@@ -420,10 +431,10 @@ class GameView(arcade.View):
         pass
 
     def battlemessage(self, message):
-        box_width = 200
-        box_height = 100
-        box_x = constants.SCREEN_WIDTH / 2
-        box_y = constants.SCREEN_HEIGHT / 2
+        box_width = 300
+        box_height = 150
+        box_x = (constants.SCREEN_WIDTH / 2)
+        box_y = (constants.SCREEN_HEIGHT / 2)
         box_color = arcade.color.ICEBERG
         border_color = arcade.color.DARK_RED
         rotation_angle = 0
@@ -433,11 +444,11 @@ class GameView(arcade.View):
         arcade.draw_rectangle_outline(box_x, box_y, box_width, box_height, border_color, 4)
 
         # Draw text
-        arcade.draw_text("BATTLE!", box_x - box_width / 2, box_y + (box_height / 4) * 3,
-                         arcade.color.BLACK, font_size=20, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
-
-        arcade.draw_text(message, box_x - box_width / 2, box_y + box_height / 2,
-                         arcade.color.BLACK, font_size=10, width=150, multiline=True, anchor_x="left", )
+        arcade.draw_text("BATTLE!", box_x, box_y + (box_height / 2),
+                         arcade.color.BLACK, font_size=16, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
+        
+        arcade.draw_text(message, box_x-140, box_y + (box_height / 4),
+                         arcade.color.BLACK, font_size=10, width=150, anchor_x="left")
 
     def quit_game(self):
         end_view = EndView(self.player_sprite)
