@@ -1039,6 +1039,9 @@ class Weapon(Item):
 
         change += self.title
         self.title = change
+    
+    def use(self, player):
+        player.weapon = self
 
 
 # Starting weapon
