@@ -1,5 +1,6 @@
 from classes.tile import *
-from binarytree import Room
+from binarytree import Room, RoomType
+from random import randint
 
 
 class Grid:
@@ -30,19 +31,25 @@ class Grid:
         row, col = index
         self.grid[row][col] = value
     
+    def hide_all(self):
+        for _ in self.grid:
+            for tile in _:
+                tile.is_hidden = True
+
     # Reveals a tile and recursively reveals tiles around it if the tile is a Floor tile
-    def reveal_tiles(self, col, row):
-        current = self.grid[row][col]
+    def reveal_tiles(self, col: int, row: int):
+        # print(f"x: {row}, y: {col}")
+        current = self.grid[int(row)][int(col)]
         if current.is_hidden:
-            self.grid[row][col].reveal()
+            self.grid[int(row)][int(col)].reveal()
             if current.tile_type != TileType.Empty and current.tile_type != TileType.Trail:
-                if (current.tile_type == TileType.Floor):
+                if current.tile_type == TileType.Floor:
                     for i in range(-1,2):
                         for j in range(-1,2):
                             new_col = col + i
-                            if new_col >= 0 and new_col <= self.n_cols:
+                            if new_col >= 0 and new_col < self.n_cols:
                                 new_row = row + j
-                                if new_row >= 0 and new_row <= self.n_rows:
+                                if new_row >= 0 and new_row < self.n_rows:
                                     self.reveal_tiles(new_col, new_row)
 
     def add_room(self, room: Room):
@@ -81,6 +88,11 @@ class Grid:
                     self.grid[x][y].tile_type = TileType.Floor
         except IndexError:
             pass
+
+        if room.room_type == RoomType.Stairs:
+            stair_x = randint(room.x + 2, room.x + room.w - 2)
+            stair_y = randint(room.y + 2, room.y + room.h - 2)
+            self.grid[stair_x][stair_y].tile_type = TileType.Stairs
 
 
 if __name__ == "__main__":
