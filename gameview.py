@@ -1,31 +1,29 @@
 import arcade
 import project_constants as constants
-from classes.item import *
-from classes.grid import Grid
 from binarytree import *
 from classes.actor import *
 from classes.enemy import *
 import arcade.gui
 from endview import EndView
 
-
 # TODO: Make it so items can't spawn on boundaries
+
 
 class GameView(arcade.View):
     # Global variables
-    grid = None
+    grid: Grid = None
     actor_list = None
     player_sprite = None
-    left_pressed = False
-    right_pressed = False
-    up_pressed = False
-    down_pressed = False
-    Inventory_open = False
-    highlighted_item = 0
-    appended = False
-    recent_coords = []
-    highlighted_box = ''
-    help_screen  = False
+    left_pressed: bool = False
+    right_pressed: bool = False
+    up_pressed: bool = False
+    down_pressed: bool = False
+    Inventory_open: bool = False
+    highlighted_item: int = 0
+    appended: bool = False
+    recent_coords: Tuple[int, int] = ()
+    highlighted_box: str = ''
+    help_screen: bool = False
 
     def __init__(self):
         """
@@ -39,6 +37,7 @@ class GameView(arcade.View):
         self.actor_list = None
         self.item_list = None
         self.enemy_list = None
+        self.floor_num = -1
 
         # Grid
         self.grid: Grid = Grid(40, 70)
@@ -56,7 +55,7 @@ class GameView(arcade.View):
         highlighted_box = 'Yes'
 
         # Track the most recent set of grid coordinates given by a click (to be used with wands)
-        self.recent_coords = [0, 0]
+        self.recent_coords = (0, 0)
 
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
@@ -71,24 +70,16 @@ class GameView(arcade.View):
         self.tile_list = arcade.SpriteList()
         self.shape_list = arcade.ShapeElementList()
 
+        # temp_x, temp_y = self.generate_floor()
+        # player_x, player_y = constants.tile_at(temp_x, temp_y)
+        player_x, player_y = self.generate_floor()
+        # print(f"player x: {player_x}, player y: {player_y}")
+
         # Set up the player
         self.player_sprite = Player(filename="static/sprite.png",
                                     scale=constants.SPRITE_SCALING)
-        self.player_sprite.center_x = 30
-        self.player_sprite.center_y = 30
-
-        # This might all need to be in init
-        populate_tree(self.tree.root, 4)
-
-        rooms = get_rooms(self.tree.root)
-        trails = create_trails(self.tree.root)
-        for trail in trails:
-            x, y = trail
-            self.grid.grid[x][y].tile_type = TileType.Trail
-        for room in rooms:
-            self.grid.add_room(room)
-
-        self.recreate_grid()
+        self.player_sprite.center_x = player_x * constants.TILE_WIDTH
+        self.player_sprite.center_y = player_y * constants.TILE_HEIGHT
 
         monsters = create_monsters(self.player_sprite.level)
         for monster in monsters:
@@ -141,7 +132,7 @@ class GameView(arcade.View):
             draw_all(self.actor_list)
             draw_all(self.item_list)
             draw_all(self.enemy_list)
-        
+
         self.player_sprite.draw()
 
         # # Draw all the sprites.
@@ -152,7 +143,7 @@ class GameView(arcade.View):
 
         # display player stats:
         self.display_stats()
-                       
+
         if constants.battle_message != "":
             self.battlemessage(constants.battle_message)
 
@@ -164,13 +155,13 @@ class GameView(arcade.View):
         else:
             inventory_rect.draw()
             self.display_inventory()
-        
+
         if self.item_choice:
             self.display_item()
-        
+
         if self.help_screen:
             self.help_message()
-        
+
     def on_update(self, delta_time):
         """ Movement and game logic """
         self.player_sprite.update()
@@ -186,16 +177,12 @@ class GameView(arcade.View):
                     new_enemies.append(enemy)
             self.player_sprite.has_turn = True
             self.enemy_list = new_enemies
-        
-
 
         if not self.player_sprite.is_alive:
             self.quit_game()
-        
-        
+
         player_x, player_y = constants.tile_at(self.player_sprite.center_x, self.player_sprite.center_y)
         self.grid.reveal_tiles(player_x, player_y)
-            
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -206,9 +193,9 @@ class GameView(arcade.View):
         column = int(x / constants.TILE_WIDTH)
         row = int(y / constants.TILE_HEIGHT)
 
-        print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
+        # print(f"Click coordinates: ({x}, {y}). Grid coordinates: ({row}, {column}). ")
 
-        self.recent_coords = [row, column]
+        self.recent_coords = (row, column)
 
         # Make sure we are on-grid. It is possible to click in the upper right
         # corner in the margin and go to a grid location that doesn't exist
@@ -251,6 +238,13 @@ class GameView(arcade.View):
             elif key == arcade.key.LEFT:
                 direction = 'Left'
                 item = self.player_sprite.move_dir(direction, self.grid)
+            elif key == arcade.key.U:
+                col = int(self.player_sprite.center_x / constants.TILE_WIDTH)
+                row = int(self.player_sprite.center_y / constants.TILE_HEIGHT)
+                if self.grid.grid[row][col].tile_type == TileType.Stairs:
+                    player_x, player_y = self.generate_floor()
+                    self.player_sprite.center_x = player_x * constants.TILE_WIDTH
+                    self.player_sprite.center_y = player_y * constants.TILE_HEIGHT
             # Pick up item
             self.pick_up_item(item)
         else:
@@ -286,14 +280,11 @@ class GameView(arcade.View):
                 elif key == arcade.key.LEFT:
                     self.highlighted_box = "Yes"
                 if key == arcade.key.ENTER:
-                        if self.highlighted_box == 'Yes':
-                            self.use(self.player_sprite.inv[self.highlighted_item])
-                            #CHECK THIS FUNCTIONALITY
-                            # del self.player_sprite.inv[self.highlighted_item]
-                        self.item_choice = False
-
-                    
-                
+                    if self.highlighted_box == 'Yes':
+                        self.use(self.player_sprite.inv[self.highlighted_item])
+                        # CHECK THIS FUNCTIONALITY
+                        # del self.player_sprite.inv[self.highlighted_item]
+                    self.item_choice = False
 
     # Method to determine center_x and center_y of an item
     def rand_pos(self):
@@ -379,7 +370,7 @@ class GameView(arcade.View):
                     else:
                         # Otherwise, add the instance of the Item to the Player's inventory
                         self.player_sprite.inv.append(self.item_list[i])
-                    print(self.player_sprite.player_inventory())
+                    # print(self.player_sprite.player_inventory())
         # Check if index was changed
         if index != -1:
             self.item_list.pop(index)
@@ -387,9 +378,8 @@ class GameView(arcade.View):
     def recreate_grid(self):
         x: int = 0
         y: int = 0
-        for row in self.grid.grid:
-            for t in row:
-                color: Tuple[int, int, int] = None
+        for y, row in enumerate(self.grid.grid):
+            for x, t in enumerate(row):
                 file = ""
                 match t.tile_type:
                     case TileType.Floor:
@@ -401,21 +391,21 @@ class GameView(arcade.View):
                     case TileType.Trail:
                         color = arcade.color.RED
                         file = "static/path.png"
+                    case TileType.Stairs:
+                        color = arcade.color.BLUE
+                        file = "static/stairs.png"
                     case _:
                         color = arcade.color.BLACK
-                
+
                 if file != "":
                     current_tile = arcade.Sprite(filename=file, scale=constants.TILE_HEIGHT/30,
-                                                 center_x= x * constants.TILE_WIDTH,
-                                                 center_y = y * constants.TILE_HEIGHT)
+                                                 center_x=x * constants.TILE_WIDTH,
+                                                 center_y=y * constants.TILE_HEIGHT)
                     self.tile_list.append(current_tile)
                 if constants.DEBUG:
                     current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
                                                                 constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                     self.shape_list.append(current_rect)
-                x += 1
-            y += 1
-            x = 0
 
     def display_inventory(self):
         arcade.draw_text("INVENTORY", constants.SCREEN_WIDTH / 2 - 140, constants.SCREEN_HEIGHT / 2 + 175,
@@ -464,9 +454,7 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=10, multiline=True,
                          width=150)
 
-
     def help_message(self):
-
         arcade.draw_rectangle_filled(constants.SCREEN_WIDTH // 2, constants.SCREEN_HEIGHT // 2,
                                      constants.SCREEN_WIDTH - 20, constants.SCREEN_HEIGHT - 20,
                                      arcade.color.BLACK)
@@ -491,7 +479,6 @@ class GameView(arcade.View):
                          arcade.color.WHITE, font_size=16, width=constants.SCREEN_WIDTH - 40,
                          align="center", anchor_x="center", anchor_y="center", font_name="Arial")
 
-
     def battlemessage(self, message):
         box_width = 300
         box_height = 150
@@ -508,16 +495,13 @@ class GameView(arcade.View):
         # Draw text
         arcade.draw_text("BATTLE!", box_x, box_y + (box_height / 2),
                          arcade.color.BLACK, font_size=16, anchor_x="center", anchor_y="top", font_name="Kenney Rocket")
-        
+
         arcade.draw_text(message, box_x-140, box_y + (box_height / 4),
                          arcade.color.BLACK, font_size=10, width=150, anchor_x="left")
-
-
 
     def quit_game(self):
         end_view = EndView(self.player_sprite)
         self.window.show_view(end_view)
-
 
     def display_item(self):
         arcade.draw_rectangle_filled(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2 - 200,
@@ -536,7 +520,7 @@ class GameView(arcade.View):
                                      60, 30, arcade.color.RED if self.highlighted_box == "No" else arcade.color.LIGHT_RED_OCHRE)
         arcade.draw_text("No", constants.SCREEN_WIDTH / 2 + 40, constants.SCREEN_HEIGHT / 2 - 225,
                          arcade.color.BLACK, font_size=12, anchor_x="center", anchor_y="center")
-        
+
     def display_stats(self):
         # display player stats:
         arcade.draw_text("STATS", 1062,
@@ -557,4 +541,30 @@ class GameView(arcade.View):
         arcade.draw_text("press h for help", 525,
                          constants.SCREEN_HEIGHT - 56,
                          arcade.color.BLACK, font_size=10,
-                         width=150, anchor_x="center", font_name="Kenney Rocket") 
+                         width=150, anchor_x="center", font_name="Kenney Rocket")
+
+    def generate_floor(self) -> Tuple[int, int]:
+        self.floor_num += 1
+        self.tree = Tree(0, 0, 40, 70)
+        populate_tree(self.tree.root, 4)
+
+        rooms = get_rooms(self.tree.root)
+        trails = create_trails(self.tree.root)
+        for trail in trails:
+            x, y = trail
+            self.grid.grid[x][y].tile_type = TileType.Trail
+        for room in rooms:
+            self.grid.add_room(room)
+
+        spawn_room_idx = -1
+        for idx, room in enumerate(rooms):
+            if room.room_type == RoomType.PlayerSpawn:
+                spawn_room_idx = idx
+
+        spawn_x = randint(rooms[spawn_room_idx].x + 1, rooms[spawn_room_idx].x + rooms[spawn_room_idx].w)
+        spawn_y = randint(rooms[spawn_room_idx].y + 1, rooms[spawn_room_idx].y + rooms[spawn_room_idx].h)
+
+        self.recreate_grid()
+        self.grid.hide_all()
+
+        return spawn_y, spawn_x
