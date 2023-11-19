@@ -13,7 +13,7 @@ MARGIN = 2
 
 # This needs to be changed later I just have it like this for
 # an example sprite
-SPRITE_SCALING = TILE_HEIGHT / 1920
+SPRITE_SCALING = TILE_HEIGHT / 13
 
 # Do the math to figure out our screen dimensions
 
