@@ -1,7 +1,12 @@
-import random
-from typing import Optional
-from typing import Tuple
-from random import randint
+from typing import Optional, Tuple
+from random import randint, randrange
+from enum import Enum, auto
+
+
+class RoomType(Enum):
+    Normal = auto(),
+    PlayerSpawn = auto(),
+    Stairs = auto(),
 
 
 class Room:
@@ -10,6 +15,7 @@ class Room:
     w: int
     h: int
     center: Tuple[int, int]
+    room_type: RoomType
 
     def __init__(self, x: int, y: int, w: int, h: int):
         self.x = x
@@ -17,6 +23,7 @@ class Room:
         self.w = w
         self.h = h
         self.center = ((x + w // 2), (y + h // 2))
+        self.room_type = RoomType.Normal
 
 
 class RoomContainer:
@@ -119,6 +126,16 @@ def get_rooms(node: Optional[Node]) -> list[Room]:
             walk_and_add_rooms(n.rhs)
 
     walk_and_add_rooms(node)
+
+    def assign_room_type(new_type: RoomType):
+        idx = randrange(len(rooms))
+        if rooms[idx].room_type == RoomType.Normal:
+            rooms[idx].room_type = new_type
+        else:
+            assign_room_type(new_type)
+
+    assign_room_type(RoomType.PlayerSpawn)
+    assign_room_type(RoomType.Stairs)
 
     return rooms
 
