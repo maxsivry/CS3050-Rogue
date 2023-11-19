@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import arcade
 from classes.tile import TileType
 from classes.grid import Grid
@@ -731,12 +733,11 @@ class TeleportTo(Wand):
                       spawn_chance=ITEMS["Teleport To"][0])
         self.desc = desc
 
-    def use(self, player, grid: Grid, click_coords: [int, int]):
+    def use(self, player, grid: Grid, click_coords: Tuple[int, int]):
         """ Based on the most recent grid coordinates (given by a mouse left-click), the Player is teleported
         there. """
         # Check if coords is a floor or trail
-        row = click_coords[0]
-        col = click_coords[1]
+        row, col = click_coords
 
         # Check for valid coordinates
         if grid.grid[row][col].tile_type == TileType.Floor or grid.grid[row][col].tile_type == TileType.Trail:
