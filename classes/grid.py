@@ -29,6 +29,21 @@ class Grid:
     def __setitem__(self, index, value):
         row, col = index
         self.grid[row][col] = value
+    
+    # Reveals a tile and recursively reveals tiles around it if the tile is a Floor tile
+    def reveal_tiles(self, col, row):
+        current = self.grid[row][col]
+        if current.is_hidden:
+            self.grid[row][col].reveal()
+            if current.tile_type != TileType.Empty and current.tile_type != TileType.Trail:
+                if (current.tile_type == TileType.Floor):
+                    for i in range(-1,2):
+                        for j in range(-1,2):
+                            new_col = col + i
+                            if new_col >= 0 and new_col <= self.n_cols:
+                                new_row = row + j
+                                if new_row >= 0 and new_row <= self.n_rows:
+                                    self.reveal_tiles(new_col, new_row)
 
     def add_room(self, room: Room):
         border_x: int = room.x - 1
