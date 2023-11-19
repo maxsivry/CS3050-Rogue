@@ -22,7 +22,12 @@ SCREEN_WIDTH = (TILE_WIDTH + MARGIN) * COLUMN_COUNT + MARGIN
 SCREEN_HEIGHT = (TILE_HEIGHT + MARGIN) * ROW_COUNT + MARGIN
 SCREEN_TITLE = "Rogue"
 
+DEBUG = False
+
 battle_message = ""
+
+def tile_at(pixel_x, pixel_y):
+    return (pixel_x // constants.TILE_WIDTH, pixel_y // constants.TILE_HEIGHT)
 
 # Project-Wide dictionary
 # To allow undiscovered items to maintain the same description even when new instances of the discovered items are made
