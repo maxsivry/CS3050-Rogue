@@ -68,6 +68,7 @@ class GameView(arcade.View):
         self.actor_list = arcade.SpriteList()
         self.item_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
+        self.tile_list = arcade.SpriteList()
         self.shape_list = arcade.ShapeElementList()
 
         # Set up the player
@@ -121,6 +122,7 @@ class GameView(arcade.View):
         self.clear()
         # Draw the shapes representing our current grid
         self.shape_list.draw()
+        self.tile_list.draw()
 
         # Draw all the sprites.
         self.actor_list.draw()
@@ -361,16 +363,26 @@ class GameView(arcade.View):
         for row in self.grid.grid:
             for t in row:
                 color: Tuple[int, int, int] = None
+                file = ""
                 match t.tile_type:
                     case TileType.Floor:
                         color = arcade.color.DARK_GRAY
+                        file = "static/floor.png"
                     case TileType.Wall:
                         color = arcade.color.WHITE
+                        file = "static/wall.png"
                     case TileType.Trail:
                         color = arcade.color.RED
+                        file = "static/path.png"
                     case _:
                         color = arcade.color.BLACK
-
+                
+                if file != "":
+                    current_tile = arcade.Sprite(filename=file, scale=constants.TILE_HEIGHT/30,
+                                                 center_x= x * constants.TILE_WIDTH,
+                                                 center_y = y * constants.TILE_HEIGHT)
+                    self.tile_list.append(current_tile)
+                
                 current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
                                                               constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
                 self.shape_list.append(current_rect)
