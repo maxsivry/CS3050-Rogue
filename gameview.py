@@ -241,7 +241,7 @@ class GameView(arcade.View):
             elif key == arcade.key.U:
                 col = int(self.player_sprite.center_x / constants.TILE_WIDTH)
                 row = int(self.player_sprite.center_y / constants.TILE_HEIGHT)
-                if self.grid.grid[row][col].tile_type == TileType.Stairs:
+                if self.grid.grid[row][col].tile_type == TileType.Stairs or True:
                     player_x, player_y = self.generate_floor()
                     self.player_sprite.center_x = player_x * constants.TILE_WIDTH
                     self.player_sprite.center_y = player_y * constants.TILE_HEIGHT
@@ -545,6 +545,7 @@ class GameView(arcade.View):
 
     def generate_floor(self) -> Tuple[int, int]:
         self.floor_num += 1
+        self.grid = Grid(constants.ROW_COUNT, constants.COLUMN_COUNT)
         self.tree = Tree(0, 0, 40, 70)
         populate_tree(self.tree.root, 4)
 
