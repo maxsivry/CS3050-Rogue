@@ -22,7 +22,7 @@ class Tile:
 
     def reveal(self):
         if self.tile_type != TileType.Empty:
-            self.is_hidden = True
+            self.is_hidden = False
 
     def setitem(self, item):
         if not self.has_item:
