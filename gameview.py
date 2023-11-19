@@ -122,13 +122,33 @@ class GameView(arcade.View):
         self.clear()
         # Draw the shapes representing our current grid
         self.shape_list.draw()
-        self.tile_list.draw()
+        # self.tile_list.draw()
 
-        # Draw all the sprites.
-        self.actor_list.draw()
-        self.enemy_list.draw()
-        self.item_list.draw()
+        def draw_all(object_list):
+            for obj in object_list:
+                obj_x, obj_y = constants.tile_at(obj.center_x, obj.center_y)
+                if not self.grid.grid[obj_y][obj_x].is_hidden:
+                    obj.draw()
+
+        # Draw all the sprites, does not hide any if DEBUG is True
+        if constants.DEBUG:
+            draw_all(self.tile_list)
+            self.actor_list.draw()
+            self.item_list.draw()
+            self.enemy_list.draw()
+        else:
+            draw_all(self.tile_list)
+            draw_all(self.actor_list)
+            draw_all(self.item_list)
+            draw_all(self.enemy_list)
+        
         self.player_sprite.draw()
+
+        # # Draw all the sprites.
+        # self.actor_list.draw()
+        # self.enemy_list.draw()
+        # self.item_list.draw()
+        # self.player_sprite.draw()
 
         # display player stats:
         self.display_stats()
@@ -166,9 +186,16 @@ class GameView(arcade.View):
                     new_enemies.append(enemy)
             self.player_sprite.has_turn = True
             self.enemy_list = new_enemies
+        
+
 
         if not self.player_sprite.is_alive:
             self.quit_game()
+        
+        
+        player_x, player_y = constants.tile_at(self.player_sprite.center_x, self.player_sprite.center_y)
+        self.grid.reveal_tiles(player_x, player_y)
+            
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -382,10 +409,10 @@ class GameView(arcade.View):
                                                  center_x= x * constants.TILE_WIDTH,
                                                  center_y = y * constants.TILE_HEIGHT)
                     self.tile_list.append(current_tile)
-                
-                current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
-                                                              constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
-                self.shape_list.append(current_rect)
+                if constants.DEBUG:
+                    current_rect = arcade.create_rectangle_filled(x * constants.TILE_WIDTH, y * constants.TILE_HEIGHT,
+                                                                constants.TILE_WIDTH, constants.TILE_HEIGHT, color)
+                    self.shape_list.append(current_rect)
                 x += 1
             y += 1
             x = 0
