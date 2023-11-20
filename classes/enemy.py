@@ -11,15 +11,17 @@ WRAITH_CHANCE = 10
 DRAGON_CHANCE = 1
 
 
-def create_monsters(level):
+def create_monsters(floor):
     # Create area to store created objects
     monster_list = []
 
-    num_monsters = int(random.randint(5, 15) + level)
+    # On later floors more monsters are likely spawn
+    num_monsters = int(random.randint(5, 15) + floor//5)
 
+    # Generates monsters
     for _ in range(num_monsters):
-        monster_type = random.randint(0, 100 - level)
-        if monster_type < DRAGON_CHANCE and level > 3:
+        monster_type = random.randint(0, 100 - floor)
+        if monster_type < DRAGON_CHANCE and floor > 3:
             monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
         if monster_type < WRAITH_CHANCE:
             monster_list.append(Wraith(filename="static/wraith.png", scale=constants.SPRITE_SCALING))
@@ -27,6 +29,14 @@ def create_monsters(level):
             monster_list.append(Crab(filename="static/crab.png", scale=constants.SPRITE_SCALING))
         else:
             monster_list.append(Slime(filename="static/slime.png", scale=constants.SPRITE_SCALING))
+    
+    # Garuntees a dragon spawns on every floor that's a multiple of 5 and that 4 spawn on the last floor
+    if floor > 0:
+        if floor%20 == 0:
+            for _ in range(4):
+                monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
+        elif floor%5 == 0:
+            monster_list.append(Dragon(filename="static/dragon.png", scale=constants.SPRITE_SCALING))
 
     return monster_list
 
