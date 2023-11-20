@@ -4,9 +4,14 @@ from gameview import GameView
 
 class StartView(arcade.View):
     key_pressed = False
+    sound = None
+    sp = None
 
     def on_show_view(self):
         arcade.set_background_color(arcade.csscolor.MIDNIGHT_BLUE)
+        #sound from freesound.org https://freesound.org/people/holizna/sounds/629154/
+        self.sound = arcade.load_sound("static/sounds/intro.wav")
+        self.sp = arcade.play_sound(self.sound, looping=True)
 
     def on_draw(self):
         """ Draw this view """
@@ -25,6 +30,8 @@ class StartView(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.UP:
+            if self.sound:
+                arcade.stop_sound(self.sp)
             game_view = GameView()
             game_view.setup()
             self.window.show_view(game_view)

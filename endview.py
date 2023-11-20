@@ -12,6 +12,9 @@ class EndView(arcade.View):
 
     def on_show_view(self):
         arcade.set_background_color(arcade.csscolor.MIDNIGHT_BLUE)
+        #sound from https://pixabay.com/music/modern-classical-gymnopedie-1-erik-satie-176573/
+        sound = arcade.load_sound("static/sounds/Satie.wav")
+        arcade.play_sound(sound, looping=True)
 
     def on_draw(self):
         """ Draw this view """
