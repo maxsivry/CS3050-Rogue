@@ -8,19 +8,6 @@ import sys
 import project_constants as constants
 
 # Constants
-# Colors of Potions
-POTION_COLORS = ["blue", "red", "green", "black", "grey", "yellow", "orange", "purple"]
-
-# Metals of Rings
-RING_METALS = ["iron", "steel", "silver", "gold", "platinum", "copper", "bronze"]
-
-# Wood of Wands
-WAND_WOODS = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "cherry"]
-
-# Paper of Scrolls
-SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper",
-                 "tattered paper"]
-
 # key: [spawn_chance, class type]
 ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
          "Studded Leather": [15, "armor"], "Scale Mail": [13, "armor"],
