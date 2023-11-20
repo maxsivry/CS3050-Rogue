@@ -18,7 +18,8 @@ RING_METALS = ["iron", "steel", "silver", "gold", "platinum", "copper", "bronze"
 WAND_WOODS = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "cherry"]
 
 # Paper of Scrolls
-SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper"]
+SCROLL_PAPERS = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper",
+                 "tattered paper"]
 
 # key: [spawn_chance, class type]
 ITEMS = {"Leather": [20, "armor"], "Ring Mail": [15, "armor"],
@@ -43,14 +44,12 @@ def determine_items() -> list:
     # Each sublist has the form [class, characteristic]
     items_list = []
 
-    # Set globals
-    global POTION_COLORS, RING_METALS, WAND_WOODS, SCROLL_PAPERS
-
     # Create lists of "defining characteristics" to be used in describing items
-    potion_colors = POTION_COLORS
-    ring_metals = RING_METALS
-    wand_woods = WAND_WOODS
-    scroll_papers = SCROLL_PAPERS
+    potion_colors = ["blue", "red", "green", "black", "grey", "yellow", "orange", "purple"]
+    ring_metals = ["iron", "steel", "silver", "gold", "platinum", "copper", "bronze"]
+    wand_woods = ["walnut", "oak", "mahogany", "beech", "spruce", "ash", "birch", "cherry"]
+    scroll_papers = ["fresh parchment", "destroyed parchment", "burned", "cardboard", "papyrus", "rice paper",
+                 "tattered paper"]
 
     # Create a flag to set if the item is getting spawned more than once
     spawn_again = False
@@ -61,7 +60,7 @@ def determine_items() -> list:
         item_respawn_chance = ITEMS[item][0]
         while randint(0, 100) <= item_respawn_chance:
             # If it spawns, put it in a sublist to be put in the return list
-            sublist = [item, -1]
+            sublist = [item, '']
 
             # Determine defining characteristic based on class type
             match ITEMS[item][1]:

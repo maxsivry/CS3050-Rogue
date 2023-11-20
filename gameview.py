@@ -118,7 +118,7 @@ class GameView(arcade.View):
         def draw_all(object_list):
             for obj in object_list:
                 obj_x, obj_y = constants.tile_at(obj.center_x, obj.center_y)
-                if not self.grid.grid[obj_y][obj_x].is_hidden:
+                if not self.grid.grid[int(obj_y)][int(obj_x)].is_hidden:
                     obj.draw()
 
         # Draw all the sprites, does not hide any if DEBUG is True
