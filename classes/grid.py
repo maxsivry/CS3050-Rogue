@@ -90,8 +90,8 @@ class Grid:
             pass
 
         if room.room_type == RoomType.Stairs:
-            stair_x = randint(room.x + 2, room.x + room.w - 2)
-            stair_y = randint(room.y + 2, room.y + room.h - 2)
+            stair_x = randint(room.x + 1, room.x + room.w - 1)
+            stair_y = randint(room.y + 1, room.y + room.h - 1)
             self.grid[stair_x][stair_y].tile_type = TileType.Stairs
 
 
