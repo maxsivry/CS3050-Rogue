@@ -579,8 +579,8 @@ class GameView(arcade.View):
             if room.room_type == RoomType.PlayerSpawn:
                 spawn_room_idx = idx
 
-        spawn_x = randint(rooms[spawn_room_idx].x + 1, rooms[spawn_room_idx].x + rooms[spawn_room_idx].w)
-        spawn_y = randint(rooms[spawn_room_idx].y + 1, rooms[spawn_room_idx].y + rooms[spawn_room_idx].h)
+        spawn_x = randint(rooms[spawn_room_idx].x + 1, rooms[spawn_room_idx].x + rooms[spawn_room_idx].w - 1)
+        spawn_y = randint(rooms[spawn_room_idx].y + 1, rooms[spawn_room_idx].y + rooms[spawn_room_idx].h - 1)
 
         self.recreate_grid()
         self.grid.hide_all()
