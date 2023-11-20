@@ -15,7 +15,7 @@ def create_monsters(level):
     # Create area to store created objects
     monster_list = []
 
-    num_monsters = (int)(random.randint(5, 15) + level)
+    num_monsters = int(random.randint(5, 15) + level)
 
     for _ in range(num_monsters):
         monster_type = random.randint(0, 100 - level)

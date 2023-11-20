@@ -43,6 +43,9 @@ def determine_items() -> list:
     # Each sublist has the form [class, characteristic]
     items_list = []
 
+    # Set globals
+    global POTION_COLORS, RING_METALS, WAND_WOODS, SCROLL_PAPERS
+
     # Create lists of "defining characteristics" to be used in describing items
     potion_colors = POTION_COLORS
     ring_metals = RING_METALS
