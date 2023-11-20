@@ -8,6 +8,8 @@ from endview import EndView
 
 # TODO: Make it so items can't spawn on boundaries
 
+NUM_FLOORS = 20
+
 
 class GameView(arcade.View):
     # Global variables
@@ -188,7 +190,7 @@ class GameView(arcade.View):
             self.enemy_list = new_enemies
 
         if not self.player_sprite.is_alive:
-            self.quit_game()
+            self.quit_game(False)
 
         player_x, player_y = constants.tile_at(self.player_sprite.center_x, self.player_sprite.center_y)
         self.grid.reveal_tiles(player_x, player_y)
@@ -231,7 +233,7 @@ class GameView(arcade.View):
             self.help_screen = not self.help_screen
 
         if key == arcade.key.ESCAPE:
-            self.quit_game()
+            self.quit_game(False)
 
         if not self.Inventory_open:
             self.item_choice = False
@@ -510,10 +512,10 @@ class GameView(arcade.View):
         arcade.draw_text(message, box_x-140, box_y + (box_height / 4),
                          arcade.color.BLACK, font_size=10, width=150, anchor_x="left")
 
-    def quit_game(self):
+    def quit_game(self, win):
         if self.background_music:
                 arcade.stop_sound(self.sp)
-        end_view = EndView(self.player_sprite)
+        end_view = EndView(self.player_sprite, win)
         self.window.show_view(end_view)
 
     def display_item(self):
@@ -558,6 +560,8 @@ class GameView(arcade.View):
 
     def generate_floor(self) -> Tuple[int, int]:
         self.floor_num += 1
+        if self.floor_num > NUM_FLOORS:
+            self.quit_game(True)
         self.grid = Grid(constants.ROW_COUNT, constants.COLUMN_COUNT)
         self.tree = Tree(0, 0, 40, 70)
         populate_tree(self.tree.root, 4)

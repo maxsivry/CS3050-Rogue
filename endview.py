@@ -4,11 +4,14 @@ import subprocess
 
 
 class EndView(arcade.View):
-    def __init__(self, player_sprite):
+    def __init__(self, player_sprite, win):
         super().__init__()
 
         # Store the player sprite as an instance variable
         self.player_sprite = player_sprite
+        self.end_text = "Game Over!"
+        if win:
+            self.end_text = "You Won!"
 
     def on_show_view(self):
         arcade.set_background_color(arcade.csscolor.MIDNIGHT_BLUE)
@@ -19,7 +22,7 @@ class EndView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         self.clear()
-        arcade.draw_text("Game Over!",
+        arcade.draw_text(self.end_text,
                          self.window.width / 2, self.window.height / 2,
                          arcade.color.WHITE,
                          font_size=50,
