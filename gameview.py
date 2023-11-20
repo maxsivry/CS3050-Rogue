@@ -24,6 +24,9 @@ class GameView(arcade.View):
     recent_coords: Tuple[int, int] = ()
     highlighted_box: str = ''
     help_screen: bool = False
+    button_press_sound = None
+    background_music = None
+    sp = None
 
     def __init__(self):
         """
@@ -59,6 +62,12 @@ class GameView(arcade.View):
 
         # Set the background color
         arcade.set_background_color(arcade.color.BLACK)
+
+         #sound from freesound.org: https://freesound.org/people/JarredGibb/sounds/219479/
+        #https://freesound.org/people/Migfus20/sounds/559850/
+        self.button_press_sound = arcade.Sound("static/sounds/click.wav", streaming=True)
+        self.background_music = arcade.Sound("static/sounds/jazz.wav", streaming=True)
+        self.sp = self.background_music.play(volume=0.5, loop=True)
 
     def setup(self):
         """ Set up the game and initialize the variables. """
@@ -212,11 +221,13 @@ class GameView(arcade.View):
 
         # Open inventory command, e toggles inventory
         if key == arcade.key.E:
+            self.button_press_sound.play(volume=0.5)
             self.Inventory_open = not self.Inventory_open
             self.highlighted_item = 0
 
         # display help message
         if key == arcade.key.H:
+            self.button_press_sound.play(volume=0.5)
             self.help_screen = not self.help_screen
 
         if key == arcade.key.ESCAPE:
@@ -500,6 +511,8 @@ class GameView(arcade.View):
                          arcade.color.BLACK, font_size=10, width=150, anchor_x="left")
 
     def quit_game(self):
+        if self.background_music:
+                arcade.stop_sound(self.sp)
         end_view = EndView(self.player_sprite)
         self.window.show_view(end_view)
 
