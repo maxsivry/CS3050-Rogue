@@ -81,7 +81,7 @@ class GameView(arcade.View):
         self.player_sprite.center_x = player_x * constants.TILE_WIDTH
         self.player_sprite.center_y = player_y * constants.TILE_HEIGHT
 
-        monsters = create_monsters(self.player_sprite.level)
+        monsters = create_monsters(self.floor_num)
         for monster in monsters:
             self.enemy_list.append(monster)
 
@@ -567,5 +567,20 @@ class GameView(arcade.View):
 
         self.recreate_grid()
         self.grid.hide_all()
+
+        self.item_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
+
+        monsters = create_monsters(self.floor_num)
+        for monster in monsters:
+            self.enemy_list.append(monster)
+
+        # # Create Items and place them in the item_list
+        temp_list = create_items(determine_items())
+        for item in temp_list:
+            self.item_list.append(item)
+
+        # Determine the Items' positions
+        self.rand_pos()
 
         return spawn_y, spawn_x
